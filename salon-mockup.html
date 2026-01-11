@@ -1,0 +1,596 @@
+<!DOCTYPE html>
+<html lang="sr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>HairStudio - Mockup</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        .mockup-container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        .screen {
+            border: 2px solid #e5e7eb;
+            border-radius: 8px;
+            margin-bottom: 40px;
+            background: white;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+        }
+        .screen-header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 15px 20px;
+            border-radius: 6px 6px 0 0;
+            font-weight: bold;
+        }
+        .chart-placeholder {
+            background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+            height: 200px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            border-radius: 8px;
+        }
+        .card {
+            background: #f9fafb;
+            border: 1px solid #e5e7eb;
+            border-radius: 8px;
+            padding: 20px;
+        }
+        .service-card {
+            background: white;
+            border: 2px solid #e5e7eb;
+            border-radius: 12px;
+            padding: 16px;
+            transition: all 0.3s;
+        }
+        .service-card:hover {
+            border-color: #667eea;
+            box-shadow: 0 4px 12px rgba(102, 126, 234, 0.2);
+        }
+    </style>
+</head>
+<body class="bg-gray-100">
+    <div class="mockup-container">
+        <h1 class="text-4xl font-bold text-center mb-2 text-gray-800">HairStudio - Frizerski Salon</h1>
+        <p class="text-center text-gray-600 mb-8">Vizuelni Prikaz Aplikacije za Zakazivanje</p>
+        
+        <!-- ========== CUSTOMER DASHBOARD ========== -->
+        <div class="screen">
+            <div class="screen-header">👤 KLIJENT DASHBOARD</div>
+            <div class="p-6">
+                <!-- Navigation -->
+                <div class="flex justify-between items-center mb-6 pb-4 border-b">
+                    <div class="flex items-center gap-3">
+                        <div class="w-10 h-10 bg-gradient-to-r from-purple-500 to-pink-500 rounded-full"></div>
+                        <h2 class="text-2xl font-bold">HairStudio</h2>
+                    </div>
+                    <div class="flex gap-4">
+                        <button class="px-4 py-2 bg-purple-600 text-white rounded font-semibold">Početna</button>
+                        <button class="px-4 py-2 bg-gray-200 rounded hover:bg-gray-300">Usluge</button>
+                        <button class="px-4 py-2 bg-gray-200 rounded hover:bg-gray-300">Moje Rezervacije</button>
+                        <button class="px-4 py-2 bg-gray-200 rounded hover:bg-gray-300">Profil</button>
+                        <button class="px-4 py-2 bg-red-600 text-white rounded hover:bg-red-700">Odjavi se</button>
+                    </div>
+                </div>
+
+                <!-- Welcome Section -->
+                <div class="bg-gradient-to-r from-purple-500 to-pink-500 text-white rounded-lg p-6 mb-6">
+                    <h3 class="text-2xl font-bold mb-2">Dobrodošli, Ana!</h3>
+                    <p>Imate 2 predstojeća zakazivanja ovog meseca</p>
+                </div>
+
+                <!-- Main Content -->
+                <div class="grid grid-cols-3 gap-6">
+                    <!-- Left Column -->
+                    <div class="col-span-2 space-y-6">
+                        <!-- Upcoming Appointments -->
+                        <div class="card">
+                            <h3 class="text-xl font-bold mb-4 flex items-center gap-2">
+                                📅 Predstojeća Zakazivanja
+                            </h3>
+                            <div class="space-y-4">
+                                <div class="bg-white p-4 rounded-lg border-2 border-purple-200">
+                                    <div class="flex justify-between items-start mb-2">
+                                        <div>
+                                            <p class="font-bold text-lg">Šišanje + Frizura</p>
+                                            <p class="text-sm text-gray-600">15. Januar 2025, 14:00</p>
+                                        </div>
+                                        <span class="px-3 py-1 bg-green-100 text-green-800 rounded-full text-sm font-semibold">Potvrđeno</span>
+                                    </div>
+                                    <div class="flex items-center gap-2 mt-3">
+                                        <div class="w-10 h-10 bg-gray-300 rounded-full"></div>
+                                        <div>
+                                            <p class="font-semibold">Marija Jovanović</p>
+                                            <p class="text-sm text-gray-600">Frizerski Stilista</p>
+                                        </div>
+                                    </div>
+                                    <div class="flex gap-2 mt-4">
+                                        <button class="flex-1 px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700">Detalji</button>
+                                        <button class="flex-1 px-4 py-2 bg-red-600 text-white rounded hover:bg-red-700">Otkaži</button>
+                                    </div>
+                                </div>
+
+                                <div class="bg-white p-4 rounded-lg border-2 border-gray-200">
+                                    <div class="flex justify-between items-start mb-2">
+                                        <div>
+                                            <p class="font-bold text-lg">Bojenje + Nega</p>
+                                            <p class="text-sm text-gray-600">22. Januar 2025, 10:00</p>
+                                        </div>
+                                        <span class="px-3 py-1 bg-yellow-100 text-yellow-800 rounded-full text-sm font-semibold">Čeka potvrdu</span>
+                                    </div>
+                                    <div class="flex items-center gap-2 mt-3">
+                                        <div class="w-10 h-10 bg-gray-300 rounded-full"></div>
+                                        <div>
+                                            <p class="font-semibold">Stefan Petrović</p>
+                                            <p class="text-sm text-gray-600">Kolorista</p>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- History -->
+                        <div class="card">
+                            <h3 class="text-xl font-bold mb-4">📋 Istorija Usluga</h3>
+                            <div class="space-y-2">
+                                <div class="flex justify-between items-center p-3 bg-white rounded border">
+                                    <div>
+                                        <p class="font-semibold">Šišanje</p>
+                                        <p class="text-sm text-gray-600">5. Decembar 2024 • Marija Jovanović</p>
+                                    </div>
+                                    <span class="font-bold text-purple-600">2,500 RSD</span>
+                                </div>
+                                <div class="flex justify-between items-center p-3 bg-white rounded border">
+                                    <div>
+                                        <p class="font-semibold">Frizura + Šminka</p>
+                                        <p class="text-sm text-gray-600">20. Novembar 2024 • Ana Stojanović</p>
+                                    </div>
+                                    <span class="font-bold text-purple-600">4,500 RSD</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Right Column -->
+                    <div class="space-y-6">
+                        <!-- Quick Action -->
+                        <div class="card bg-gradient-to-br from-purple-50 to-pink-50 border-2 border-purple-200">
+                            <h3 class="text-xl font-bold mb-4">⚡ Brza Akcija</h3>
+                            <button class="w-full px-4 py-4 bg-gradient-to-r from-purple-600 to-pink-600 text-white rounded-lg font-bold text-lg hover:from-purple-700 hover:to-pink-700 shadow-lg">
+                                🗓️ Zakaži Termin
+                            </button>
+                        </div>
+
+                        <!-- Services Overview -->
+                        <div class="card">
+                            <h3 class="text-xl font-bold mb-4">✨ Naše Usluge</h3>
+                            <div class="space-y-2">
+                                <div class="p-3 bg-white rounded border">
+                                    <p class="font-semibold">Šišanje</p>
+                                    <p class="text-sm text-gray-600">od 1,500 RSD</p>
+                                </div>
+                                <div class="p-3 bg-white rounded border">
+                                    <p class="font-semibold">Bojenje</p>
+                                    <p class="text-sm text-gray-600">od 3,500 RSD</p>
+                                </div>
+                                <div class="p-3 bg-white rounded border">
+                                    <p class="font-semibold">Nega</p>
+                                    <p class="text-sm text-gray-600">od 2,000 RSD</p>
+                                </div>
+                            </div>
+                            <button class="w-full mt-4 px-4 py-2 bg-purple-600 text-white rounded hover:bg-purple-700">Vidi Sve</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- ========== BOOKING PAGE ========== -->
+        <div class="screen">
+            <div class="screen-header">📅 ZAKAZIVANJE TERMINA</div>
+            <div class="p-6">
+                <div class="mb-6">
+                    <h2 class="text-2xl font-bold mb-2">Zakaži Novi Termin</h2>
+                    <p class="text-gray-600">Izaberite uslugu, frizera i vreme</p>
+                </div>
+
+                <div class="grid grid-cols-3 gap-6">
+                    <!-- Step 1: Services -->
+                    <div class="card">
+                        <h3 class="text-xl font-bold mb-4 pb-2 border-b">1️⃣ Izaberi Uslugu</h3>
+                        <div class="space-y-3">
+                            <div class="service-card cursor-pointer border-purple-400">
+                                <div class="flex justify-between items-start mb-2">
+                                    <div>
+                                        <p class="font-bold">Šišanje</p>
+                                        <p class="text-sm text-gray-600">45 min</p>
+                                    </div>
+                                    <span class="font-bold text-purple-600">1,500 RSD</span>
+                                </div>
+                            </div>
+                            <div class="service-card cursor-pointer">
+                                <div class="flex justify-between items-start mb-2">
+                                    <div>
+                                        <p class="font-bold">Bojenje + Šišanje</p>
+                                        <p class="text-sm text-gray-600">2h 30min</p>
+                                    </div>
+                                    <span class="font-bold text-purple-600">5,500 RSD</span>
+                                </div>
+                            </div>
+                            <div class="service-card cursor-pointer">
+                                <div class="flex justify-between items-start mb-2">
+                                    <div>
+                                        <p class="font-bold">Nega Kose</p>
+                                        <p class="text-sm text-gray-600">1h</p>
+                                    </div>
+                                    <span class="font-bold text-purple-600">2,000 RSD</span>
+                                </div>
+                            </div>
+                            <div class="service-card cursor-pointer">
+                                <div class="flex justify-between items-start mb-2">
+                                    <div>
+                                        <p class="font-bold">Frizura + Šminka</p>
+                                        <p class="text-sm text-gray-600">1h 30min</p>
+                                    </div>
+                                    <span class="font-bold text-purple-600">4,500 RSD</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Step 2: Stylist -->
+                    <div class="card">
+                        <h3 class="text-xl font-bold mb-4 pb-2 border-b">2️⃣ Izaberi Frizera</h3>
+                        <div class="space-y-3">
+                            <div class="service-card cursor-pointer border-purple-400">
+                                <div class="flex items-center gap-3 mb-2">
+                                    <div class="w-12 h-12 bg-gray-300 rounded-full"></div>
+                                    <div>
+                                        <p class="font-bold">Marija Jovanović</p>
+                                        <p class="text-sm text-gray-600">⭐⭐⭐⭐⭐ (4.9)</p>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="service-card cursor-pointer">
+                                <div class="flex items-center gap-3 mb-2">
+                                    <div class="w-12 h-12 bg-gray-300 rounded-full"></div>
+                                    <div>
+                                        <p class="font-bold">Stefan Petrović</p>
+                                        <p class="text-sm text-gray-600">⭐⭐⭐⭐ (4.7)</p>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="service-card cursor-pointer">
+                                <div class="flex items-center gap-3 mb-2">
+                                    <div class="w-12 h-12 bg-gray-300 rounded-full"></div>
+                                    <div>
+                                        <p class="font-bold">Ana Stojanović</p>
+                                        <p class="text-sm text-gray-600">⭐⭐⭐⭐⭐ (4.8)</p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Step 3: Date & Time -->
+                    <div class="card">
+                        <h3 class="text-xl font-bold mb-4 pb-2 border-b">3️⃣ Izaberi Datum i Vreme</h3>
+                        
+                        <!-- Calendar -->
+                        <div class="mb-4">
+                            <div class="grid grid-cols-7 gap-1 mb-2">
+                                <div class="text-center text-xs font-semibold p-1">Pon</div>
+                                <div class="text-center text-xs font-semibold p-1">Uto</div>
+                                <div class="text-center text-xs font-semibold p-1">Sre</div>
+                                <div class="text-center text-xs font-semibold p-1">Čet</div>
+                                <div class="text-center text-xs font-semibold p-1">Pet</div>
+                                <div class="text-center text-xs font-semibold p-1">Sub</div>
+                                <div class="text-center text-xs font-semibold p-1">Ned</div>
+                            </div>
+                            <div class="grid grid-cols-7 gap-1">
+                                <div class="p-2 text-center text-sm border rounded bg-gray-50">13</div>
+                                <div class="p-2 text-center text-sm border rounded bg-gray-50">14</div>
+                                <div class="p-2 text-center text-sm border rounded bg-purple-100 border-purple-400 font-bold">15</div>
+                                <div class="p-2 text-center text-sm border rounded bg-gray-50">16</div>
+                                <div class="p-2 text-center text-sm border rounded bg-gray-50">17</div>
+                                <div class="p-2 text-center text-sm border rounded bg-gray-50">18</div>
+                                <div class="p-2 text-center text-sm border rounded bg-gray-50">19</div>
+                            </div>
+                        </div>
+
+                        <!-- Time Slots -->
+                        <div>
+                            <p class="font-semibold mb-2">Dostupni termini - 15. Januar</p>
+                            <div class="grid grid-cols-2 gap-2">
+                                <button class="p-2 bg-green-100 border-2 border-green-500 rounded text-sm font-semibold hover:bg-green-200">
+                                    09:00
+                                </button>
+                                <button class="p-2 bg-red-100 border-2 border-red-400 rounded text-sm cursor-not-allowed text-gray-500">
+                                    10:00
+                                </button>
+                                <button class="p-2 bg-green-100 border-2 border-green-500 rounded text-sm font-semibold hover:bg-green-200">
+                                    11:00
+                                </button>
+                                <button class="p-2 bg-green-100 border-2 border-green-500 rounded text-sm font-semibold hover:bg-green-200">
+                                    14:00
+                                </button>
+                                <button class="p-2 bg-green-100 border-2 border-green-500 rounded text-sm font-semibold hover:bg-green-200">
+                                    15:00
+                                </button>
+                                <button class="p-2 bg-red-100 border-2 border-red-400 rounded text-sm cursor-not-allowed text-gray-500">
+                                    16:00
+                                </button>
+                            </div>
+                        </div>
+
+                        <!-- Confirm Button -->
+                        <button class="w-full mt-4 px-4 py-3 bg-gradient-to-r from-purple-600 to-pink-600 text-white rounded-lg font-bold hover:from-purple-700 hover:to-pink-700">
+                            Potvrdi Rezervaciju
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- ========== STYLIST DASHBOARD ========== -->
+        <div class="screen">
+            <div class="screen-header">✂️ FRIZER DASHBOARD (Stylist)</div>
+            <div class="p-6">
+                <div class="flex justify-between items-center mb-6 pb-4 border-b">
+                    <div class="flex items-center gap-3">
+                        <div class="w-10 h-10 bg-gradient-to-r from-purple-500 to-pink-500 rounded-full"></div>
+                        <h2 class="text-2xl font-bold">Panel Frizera</h2>
+                    </div>
+                    <div class="flex gap-4">
+                        <button class="px-4 py-2 bg-purple-600 text-white rounded">Dashboard</button>
+                        <button class="px-4 py-2 bg-gray-200 rounded">Kalendar</button>
+                        <button class="px-4 py-2 bg-gray-200 rounded">Klijenti</button>
+                        <button class="px-4 py-2 bg-gray-200 rounded">Usluge</button>
+                    </div>
+                </div>
+
+                <div class="grid grid-cols-3 gap-6">
+                    <!-- Today's Appointments -->
+                    <div class="col-span-2">
+                        <div class="flex justify-between items-center mb-4">
+                            <h3 class="text-xl font-bold">📅 Današnji Termini</h3>
+                            <span class="px-3 py-1 bg-purple-100 text-purple-800 rounded-full text-sm font-semibold">15. Januar 2025</span>
+                        </div>
+                        
+                        <div class="space-y-4">
+                            <div class="card border-2 border-purple-200">
+                                <div class="flex justify-between items-start mb-3">
+                                    <div>
+                                        <p class="font-bold text-lg">09:00 - 10:00</p>
+                                        <p class="text-purple-600 font-semibold">Šišanje</p>
+                                    </div>
+                                    <span class="px-3 py-1 bg-green-100 text-green-800 rounded-full text-sm">Potvrđeno</span>
+                                </div>
+                                <div class="flex items-center gap-3">
+                                    <div class="w-12 h-12 bg-gray-300 rounded-full"></div>
+                                    <div>
+                                        <p class="font-semibold">Petar Nikolić</p>
+                                        <p class="text-sm text-gray-600">+381 64 123 4567</p>
+                                    </div>
+                                </div>
+                                <div class="flex gap-2 mt-4">
+                                    <button class="flex-1 px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700">Detalji</button>
+                                    <button class="flex-1 px-4 py-2 bg-green-600 text-white rounded hover:bg-green-700">Završeno</button>
+                                </div>
+                            </div>
+
+                            <div class="card border-2 border-purple-200">
+                                <div class="flex justify-between items-start mb-3">
+                                    <div>
+                                        <p class="font-bold text-lg">14:00 - 16:30</p>
+                                        <p class="text-purple-600 font-semibold">Bojenje + Šišanje</p>
+                                    </div>
+                                    <span class="px-3 py-1 bg-green-100 text-green-800 rounded-full text-sm">Potvrđeno</span>
+                                </div>
+                                <div class="flex items-center gap-3">
+                                    <div class="w-12 h-12 bg-gray-300 rounded-full"></div>
+                                    <div>
+                                        <p class="font-semibold">Ana Marković</p>
+                                        <p class="text-sm text-gray-600">+381 64 987 6543</p>
+                                    </div>
+                                </div>
+                                <div class="flex gap-2 mt-4">
+                                    <button class="flex-1 px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700">Detalji</button>
+                                    <button class="flex-1 px-4 py-2 bg-green-600 text-white rounded hover:bg-green-700">Završeno</button>
+                                </div>
+                            </div>
+
+                            <div class="card border-2 border-gray-200">
+                                <div class="flex justify-between items-start mb-3">
+                                    <div>
+                                        <p class="font-bold text-lg">18:00 - 19:00</p>
+                                        <p class="text-purple-600 font-semibold">Nega Kose</p>
+                                    </div>
+                                    <span class="px-3 py-1 bg-yellow-100 text-yellow-800 rounded-full text-sm">Čeka potvrdu</span>
+                                </div>
+                                <div class="flex items-center gap-3">
+                                    <div class="w-12 h-12 bg-gray-300 rounded-full"></div>
+                                    <div>
+                                        <p class="font-semibold">Marko Stojanović</p>
+                                        <p class="text-sm text-gray-600">+381 64 555 1234</p>
+                                    </div>
+                                </div>
+                                <div class="flex gap-2 mt-4">
+                                    <button class="flex-1 px-4 py-2 bg-green-600 text-white rounded hover:bg-green-700">Potvrdi</button>
+                                    <button class="flex-1 px-4 py-2 bg-red-600 text-white rounded hover:bg-red-700">Odbij</button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Sidebar -->
+                    <div class="space-y-6">
+                        <!-- Stats -->
+                        <div class="card bg-gradient-to-br from-purple-50 to-pink-50">
+                            <h3 class="text-xl font-bold mb-4">📊 Statistika</h3>
+                            <div class="space-y-3">
+                                <div>
+                                    <p class="text-sm text-gray-600">Današnji termini</p>
+                                    <p class="text-2xl font-bold text-purple-600">5</p>
+                                </div>
+                                <div>
+                                    <p class="text-sm text-gray-600">Ovaj mesec</p>
+                                    <p class="text-2xl font-bold text-purple-600">87</p>
+                                </div>
+                                <div>
+                                    <p class="text-sm text-gray-600">Prosečna ocena</p>
+                                    <p class="text-2xl font-bold text-purple-600">4.9 ⭐</p>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- My Services -->
+                        <div class="card">
+                            <div class="flex justify-between items-center mb-4">
+                                <h3 class="text-xl font-bold">Moje Usluge</h3>
+                                <button class="px-3 py-1 bg-green-600 text-white text-sm rounded">+ Dodaj</button>
+                            </div>
+                            <div class="space-y-2">
+                                <div class="p-2 bg-white rounded border text-sm">
+                                    <p class="font-semibold">Šišanje</p>
+                                    <p class="text-gray-600">1,500 RSD</p>
+                                </div>
+                                <div class="p-2 bg-white rounded border text-sm">
+                                    <p class="font-semibold">Bojenje</p>
+                                    <p class="text-gray-600">3,500 RSD</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- ========== ADMIN PANEL ========== -->
+        <div class="screen">
+            <div class="screen-header">⚙️ ADMIN PANEL</div>
+            <div class="p-6">
+                <div class="flex justify-between items-center mb-6 pb-4 border-b">
+                    <h2 class="text-2xl font-bold">Admin Panel</h2>
+                    <div class="flex gap-4">
+                        <button class="px-4 py-2 bg-purple-600 text-white rounded">Dashboard</button>
+                        <button class="px-4 py-2 bg-gray-200 rounded">Korisnici</button>
+                        <button class="px-4 py-2 bg-gray-200 rounded">Usluge</button>
+                        <button class="px-4 py-2 bg-gray-200 rounded">Rezervacije</button>
+                        <button class="px-4 py-2 bg-gray-200 rounded">Statistika</button>
+                    </div>
+                </div>
+
+                <!-- Stats Cards -->
+                <div class="grid grid-cols-4 gap-4 mb-6">
+                    <div class="card text-center bg-gradient-to-br from-blue-50 to-blue-100">
+                        <p class="text-gray-600 mb-1">Ukupno Klijenata</p>
+                        <p class="text-3xl font-bold text-blue-600">324</p>
+                    </div>
+                    <div class="card text-center bg-gradient-to-br from-green-50 to-green-100">
+                        <p class="text-gray-600 mb-1">Aktivni Frizeri</p>
+                        <p class="text-3xl font-bold text-green-600">8</p>
+                    </div>
+                    <div class="card text-center bg-gradient-to-br from-purple-50 to-purple-100">
+                        <p class="text-gray-600 mb-1">Rezervacije Danas</p>
+                        <p class="text-3xl font-bold text-purple-600">24</p>
+                    </div>
+                    <div class="card text-center bg-gradient-to-br from-pink-50 to-pink-100">
+                        <p class="text-gray-600 mb-1">Prihod Ovaj Mesec</p>
+                        <p class="text-3xl font-bold text-pink-600">245K RSD</p>
+                    </div>
+                </div>
+
+                <div class="grid grid-cols-2 gap-6">
+                    <!-- Users List -->
+                    <div class="card">
+                        <div class="flex justify-between items-center mb-4">
+                            <h3 class="text-xl font-bold">Korisnici</h3>
+                            <button class="px-4 py-2 bg-green-600 text-white rounded text-sm">+ Dodaj</button>
+                        </div>
+                        
+                        <div class="space-y-2 max-h-96 overflow-y-auto">
+                            <div class="flex items-center justify-between p-3 bg-white rounded border">
+                                <div class="flex items-center gap-3">
+                                    <div class="w-10 h-10 bg-gray-300 rounded-full"></div>
+                                    <div>
+                                        <p class="font-semibold">Ana Marković</p>
+                                        <p class="text-sm text-gray-600">ana@example.com • Klijent</p>
+                                    </div>
+                                </div>
+                                <div class="flex gap-2">
+                                    <button class="px-3 py-1 bg-blue-600 text-white text-sm rounded">Uredi</button>
+                                    <button class="px-3 py-1 bg-red-600 text-white text-sm rounded">Obriši</button>
+                                </div>
+                            </div>
+                            <div class="flex items-center justify-between p-3 bg-white rounded border">
+                                <div class="flex items-center gap-3">
+                                    <div class="w-10 h-10 bg-gray-300 rounded-full"></div>
+                                    <div>
+                                        <p class="font-semibold">Marija Jovanović</p>
+                                        <p class="text-sm text-gray-600">marija@example.com • Frizer</p>
+                                    </div>
+                                </div>
+                                <div class="flex gap-2">
+                                    <button class="px-3 py-1 bg-blue-600 text-white text-sm rounded">Uredi</button>
+                                    <button class="px-3 py-1 bg-red-600 text-white text-sm rounded">Obriši</button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Statistics Chart -->
+                    <div class="card">
+                        <h3 class="text-xl font-bold mb-4">📊 Statistika Rezervacija</h3>
+                        <div class="chart-placeholder" style="height: 300px;">
+                            Grafikon: Broj rezervacija po nedeljama
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- ========== LOGIN PAGE ========== -->
+        <div class="screen">
+            <div class="screen-header">🔐 PRIJAVA</div>
+            <div class="p-6">
+                <div class="max-w-md mx-auto">
+                    <div class="text-center mb-8">
+                        <div class="w-20 h-20 bg-gradient-to-r from-purple-500 to-pink-500 rounded-full mx-auto mb-4"></div>
+                        <h1 class="text-4xl font-bold mb-2">HairStudio</h1>
+                        <p class="text-gray-600">Prijavite se na vaš nalog</p>
+                    </div>
+                    
+                    <div class="card">
+                        <form class="space-y-4">
+                            <div>
+                                <label class="block text-sm font-semibold mb-2">Email</label>
+                                <input type="email" class="w-full p-3 border rounded-lg focus:border-purple-500 focus:ring-2 focus:ring-purple-200" placeholder="email@example.com">
+                            </div>
+                            <div>
+                                <label class="block text-sm font-semibold mb-2">Lozinka</label>
+                                <input type="password" class="w-full p-3 border rounded-lg focus:border-purple-500 focus:ring-2 focus:ring-purple-200" placeholder="••••••••">
+                            </div>
+                            <button type="submit" class="w-full py-3 bg-gradient-to-r from-purple-600 to-pink-600 text-white rounded-lg font-semibold hover:from-purple-700 hover:to-pink-700">
+                                Prijavi se
+                            </button>
+                            <div class="text-center">
+                                <a href="#" class="text-purple-600 text-sm hover:underline">Zaboravili ste lozinku?</a>
+                            </div>
+                            <div class="text-center pt-4 border-t">
+                                <p class="text-sm text-gray-600">Nemate nalog? <a href="#" class="text-purple-600 font-semibold hover:underline">Registrujte se</a></p>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+    </div>
+</body>
+</html>
+

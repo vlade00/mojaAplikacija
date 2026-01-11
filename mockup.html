@@ -1,0 +1,469 @@
+<!DOCTYPE html>
+<html lang="sr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>FitGym - Mockup</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        .mockup-container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        .screen {
+            border: 2px solid #e5e7eb;
+            border-radius: 8px;
+            margin-bottom: 40px;
+            background: white;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+        }
+        .screen-header {
+            background: #1f2937;
+            color: white;
+            padding: 15px 20px;
+            border-radius: 6px 6px 0 0;
+            font-weight: bold;
+        }
+        .chart-placeholder {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            height: 200px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            border-radius: 8px;
+        }
+        .card {
+            background: #f9fafb;
+            border: 1px solid #e5e7eb;
+            border-radius: 8px;
+            padding: 20px;
+        }
+    </style>
+</head>
+<body class="bg-gray-100">
+    <div class="mockup-container">
+        <h1 class="text-4xl font-bold text-center mb-8 text-gray-800">FitGym - Vizuelni Prikaz Aplikacije</h1>
+        
+        <!-- ========== MEMBER DASHBOARD ========== -->
+        <div class="screen">
+            <div class="screen-header">📱 MEMBER DASHBOARD (Član)</div>
+            <div class="p-6">
+                <!-- Navigation -->
+                <div class="flex justify-between items-center mb-6 pb-4 border-b">
+                    <h2 class="text-2xl font-bold">FitGym</h2>
+                    <div class="flex gap-4">
+                        <button class="px-4 py-2 bg-blue-600 text-white rounded">Dashboard</button>
+                        <button class="px-4 py-2 bg-gray-200 rounded">Rezervacije</button>
+                        <button class="px-4 py-2 bg-gray-200 rounded">Napredak</button>
+                        <button class="px-4 py-2 bg-gray-200 rounded">Profil</button>
+                        <button class="px-4 py-2 bg-red-600 text-white rounded">Logout</button>
+                    </div>
+                </div>
+
+                <!-- Main Content -->
+                <div class="grid grid-cols-3 gap-6">
+                    <!-- Left Column -->
+                    <div class="col-span-2 space-y-6">
+                        <!-- Today's Workout -->
+                        <div class="card">
+                            <h3 class="text-xl font-bold mb-4">Današnji Trening</h3>
+                            <div class="space-y-3">
+                                <div class="flex items-center justify-between p-3 bg-white rounded border">
+                                    <div>
+                                        <p class="font-semibold">Bench Press</p>
+                                        <p class="text-sm text-gray-600">3x8 @ 80kg</p>
+                                    </div>
+                                    <input type="checkbox" class="w-5 h-5">
+                                </div>
+                                <div class="flex items-center justify-between p-3 bg-white rounded border">
+                                    <div>
+                                        <p class="font-semibold">Squat</p>
+                                        <p class="text-sm text-gray-600">4x10 @ 100kg</p>
+                                    </div>
+                                    <input type="checkbox" class="w-5 h-5">
+                                </div>
+                                <div class="flex items-center justify-between p-3 bg-white rounded border">
+                                    <div>
+                                        <p class="font-semibold">Deadlift</p>
+                                        <p class="text-sm text-gray-600">3x5 @ 120kg</p>
+                                    </div>
+                                    <input type="checkbox" class="w-5 h-5">
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Progress Chart -->
+                        <div class="card">
+                            <h3 class="text-xl font-bold mb-4">Napredak (Nedelja)</h3>
+                            <div class="chart-placeholder">
+                                📊 Grafikon: Broj dolazaka u teretanu
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Right Column -->
+                    <div class="space-y-6">
+                        <!-- Quick Actions -->
+                        <div class="card">
+                            <h3 class="text-xl font-bold mb-4">Brze Akcije</h3>
+                            <button class="w-full mb-3 px-4 py-3 bg-green-600 text-white rounded font-semibold hover:bg-green-700">
+                                🗓️ Rezerviši Trening
+                            </button>
+                            <button class="w-full px-4 py-3 bg-blue-600 text-white rounded font-semibold hover:bg-blue-700">
+                                👤 Rezerviši Čas sa Trenerom
+                            </button>
+                        </div>
+
+                        <!-- Active Plans -->
+                        <div class="card">
+                            <h3 class="text-xl font-bold mb-4">Aktivni Planovi</h3>
+                            <div class="space-y-2">
+                                <div class="p-3 bg-white rounded border">
+                                    <p class="font-semibold">Plan Snage</p>
+                                    <p class="text-sm text-gray-600">Trener: Marko</p>
+                                </div>
+                                <div class="p-3 bg-white rounded border">
+                                    <p class="font-semibold">Plan Kardio</p>
+                                    <p class="text-sm text-gray-600">Trener: Ana</p>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Stats -->
+                        <div class="card">
+                            <h3 class="text-xl font-bold mb-4">Statistika</h3>
+                            <div class="space-y-2">
+                                <div class="flex justify-between">
+                                    <span>Dolazaka ovog meseca:</span>
+                                    <span class="font-bold">18</span>
+                                </div>
+                                <div class="flex justify-between">
+                                    <span>Ukupno treninga:</span>
+                                    <span class="font-bold">156</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- ========== RESERVATIONS PAGE ========== -->
+        <div class="screen">
+            <div class="screen-header">📅 REZERVACIJE (Član)</div>
+            <div class="p-6">
+                <div class="flex justify-between items-center mb-6">
+                    <h2 class="text-2xl font-bold">Rezerviši Termin</h2>
+                    <div class="flex gap-2">
+                        <button class="px-4 py-2 bg-blue-600 text-white rounded">Teretana</button>
+                        <button class="px-4 py-2 bg-gray-200 rounded">Čas sa Trenerom</button>
+                    </div>
+                </div>
+
+                <!-- Calendar View -->
+                <div class="grid grid-cols-7 gap-2 mb-6">
+                    <div class="text-center font-semibold p-2">Pon</div>
+                    <div class="text-center font-semibold p-2">Uto</div>
+                    <div class="text-center font-semibold p-2">Sre</div>
+                    <div class="text-center font-semibold p-2">Čet</div>
+                    <div class="text-center font-semibold p-2">Pet</div>
+                    <div class="text-center font-semibold p-2">Sub</div>
+                    <div class="text-center font-semibold p-2">Ned</div>
+                    
+                    <!-- Calendar cells -->
+                    <div class="border rounded p-3 h-24 bg-gray-50">
+                        <div class="text-sm font-semibold mb-1">1</div>
+                        <div class="text-xs space-y-1">
+                            <div class="bg-green-200 p-1 rounded text-xs">10:00 ✅</div>
+                            <div class="bg-red-200 p-1 rounded text-xs">14:00 ❌</div>
+                        </div>
+                    </div>
+                    <div class="border rounded p-3 h-24 bg-gray-50">
+                        <div class="text-sm font-semibold mb-1">2</div>
+                        <div class="text-xs space-y-1">
+                            <div class="bg-green-200 p-1 rounded text-xs">16:00 ✅</div>
+                        </div>
+                    </div>
+                    <div class="border rounded p-3 h-24 bg-gray-50">
+                        <div class="text-sm font-semibold mb-1">3</div>
+                        <div class="text-xs space-y-1">
+                            <div class="bg-green-200 p-1 rounded text-xs">09:00 ✅</div>
+                            <div class="bg-green-200 p-1 rounded text-xs">18:00 ✅</div>
+                        </div>
+                    </div>
+                    <div class="border rounded p-3 h-24 bg-blue-100 border-blue-400">
+                        <div class="text-sm font-semibold mb-1">4</div>
+                        <div class="text-xs space-y-1">
+                            <div class="bg-green-200 p-1 rounded text-xs">10:00 ✅</div>
+                            <div class="bg-green-200 p-1 rounded text-xs">14:00 ✅</div>
+                            <div class="bg-green-200 p-1 rounded text-xs">18:00 ✅</div>
+                        </div>
+                    </div>
+                    <div class="border rounded p-3 h-24 bg-gray-50">
+                        <div class="text-sm font-semibold mb-1">5</div>
+                        <div class="text-xs space-y-1">
+                            <div class="bg-green-200 p-1 rounded text-xs">12:00 ✅</div>
+                        </div>
+                    </div>
+                    <div class="border rounded p-3 h-24 bg-gray-50">
+                        <div class="text-sm font-semibold mb-1">6</div>
+                    </div>
+                    <div class="border rounded p-3 h-24 bg-gray-50">
+                        <div class="text-sm font-semibold mb-1">7</div>
+                    </div>
+                </div>
+
+                <!-- Time Slots -->
+                <div class="card">
+                    <h3 class="text-xl font-bold mb-4">Dostupni Termini - 4. Januar 2025</h3>
+                    <div class="grid grid-cols-4 gap-3">
+                        <button class="p-3 bg-green-100 border-2 border-green-500 rounded hover:bg-green-200">
+                            <p class="font-semibold">10:00</p>
+                            <p class="text-xs text-gray-600">Slobodno</p>
+                        </button>
+                        <button class="p-3 bg-green-100 border-2 border-green-500 rounded hover:bg-green-200">
+                            <p class="font-semibold">14:00</p>
+                            <p class="text-xs text-gray-600">Slobodno</p>
+                        </button>
+                        <button class="p-3 bg-red-100 border-2 border-red-500 rounded cursor-not-allowed">
+                            <p class="font-semibold">16:00</p>
+                            <p class="text-xs text-gray-600">Zauzeto</p>
+                        </button>
+                        <button class="p-3 bg-green-100 border-2 border-green-500 rounded hover:bg-green-200">
+                            <p class="font-semibold">18:00</p>
+                            <p class="text-xs text-gray-600">Slobodno</p>
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- ========== TRAINER DASHBOARD ========== -->
+        <div class="screen">
+            <div class="screen-header">👨‍💼 TRAINER DASHBOARD (Trener)</div>
+            <div class="p-6">
+                <div class="flex justify-between items-center mb-6 pb-4 border-b">
+                    <h2 class="text-2xl font-bold">Panel Trenera</h2>
+                    <div class="flex gap-4">
+                        <button class="px-4 py-2 bg-blue-600 text-white rounded">Dashboard</button>
+                        <button class="px-4 py-2 bg-gray-200 rounded">Planovi</button>
+                        <button class="px-4 py-2 bg-gray-200 rounded">Članovi</button>
+                        <button class="px-4 py-2 bg-gray-200 rounded">Rezervacije</button>
+                    </div>
+                </div>
+
+                <div class="grid grid-cols-3 gap-6">
+                    <!-- Workout Plans -->
+                    <div class="col-span-2">
+                        <div class="flex justify-between items-center mb-4">
+                            <h3 class="text-xl font-bold">Planovi Treninga</h3>
+                            <button class="px-4 py-2 bg-green-600 text-white rounded">+ Novi Plan</button>
+                        </div>
+                        
+                        <div class="space-y-4">
+                            <div class="card">
+                                <div class="flex justify-between items-start mb-3">
+                                    <div>
+                                        <h4 class="font-bold text-lg">Plan Snage</h4>
+                                        <p class="text-sm text-gray-600">Član: Petar Petrović</p>
+                                    </div>
+                                    <div class="flex gap-2">
+                                        <button class="px-3 py-1 bg-blue-600 text-white text-sm rounded">Uredi</button>
+                                        <button class="px-3 py-1 bg-red-600 text-white text-sm rounded">Obriši</button>
+                                    </div>
+                                </div>
+                                
+                                <div class="space-y-2">
+                                    <div class="flex items-center gap-3 p-2 bg-white rounded">
+                                        <input type="checkbox" checked class="w-4 h-4">
+                                        <span>Bench Press - 3x8 @ 80kg</span>
+                                    </div>
+                                    <div class="flex items-center gap-3 p-2 bg-white rounded">
+                                        <input type="checkbox" checked class="w-4 h-4">
+                                        <span>Squat - 4x10 @ 100kg</span>
+                                    </div>
+                                    <div class="flex items-center gap-3 p-2 bg-white rounded">
+                                        <input type="checkbox" class="w-4 h-4">
+                                        <span>Deadlift - 3x5 @ 120kg</span>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="card">
+                                <div class="flex justify-between items-start mb-3">
+                                    <div>
+                                        <h4 class="font-bold text-lg">Plan Kardio</h4>
+                                        <p class="text-sm text-gray-600">Član: Ana Anić</p>
+                                    </div>
+                                    <div class="flex gap-2">
+                                        <button class="px-3 py-1 bg-blue-600 text-white text-sm rounded">Uredi</button>
+                                        <button class="px-3 py-1 bg-red-600 text-white text-sm rounded">Obriši</button>
+                                    </div>
+                                </div>
+                                
+                                <div class="space-y-2">
+                                    <div class="flex items-center gap-3 p-2 bg-white rounded">
+                                        <input type="checkbox" checked class="w-4 h-4">
+                                        <span>Trčanje - 30 min</span>
+                                    </div>
+                                    <div class="flex items-center gap-3 p-2 bg-white rounded">
+                                        <input type="checkbox" class="w-4 h-4">
+                                        <span>Bicikl - 45 min</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Sidebar -->
+                    <div class="space-y-6">
+                        <div class="card">
+                            <h3 class="text-xl font-bold mb-4">Današnje Rezervacije</h3>
+                            <div class="space-y-3">
+                                <div class="p-3 bg-white rounded border">
+                                    <p class="font-semibold">Petar Petrović</p>
+                                    <p class="text-sm text-gray-600">14:00 - 15:00</p>
+                                </div>
+                                <div class="p-3 bg-white rounded border">
+                                    <p class="font-semibold">Ana Anić</p>
+                                    <p class="text-sm text-gray-600">18:00 - 19:00</p>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="card">
+                            <h3 class="text-xl font-bold mb-4">Statistika Člana</h3>
+                            <div class="chart-placeholder" style="height: 150px;">
+                                📊 Grafikon napretka
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- ========== ADMIN PANEL ========== -->
+        <div class="screen">
+            <div class="screen-header">⚙️ ADMIN PANEL (Administrator)</div>
+            <div class="p-6">
+                <div class="flex justify-between items-center mb-6 pb-4 border-b">
+                    <h2 class="text-2xl font-bold">Admin Panel</h2>
+                    <div class="flex gap-4">
+                        <button class="px-4 py-2 bg-blue-600 text-white rounded">Dashboard</button>
+                        <button class="px-4 py-2 bg-gray-200 rounded">Korisnici</button>
+                        <button class="px-4 py-2 bg-gray-200 rounded">Rezervacije</button>
+                        <button class="px-4 py-2 bg-gray-200 rounded">Statistika</button>
+                    </div>
+                </div>
+
+                <!-- Stats Cards -->
+                <div class="grid grid-cols-4 gap-4 mb-6">
+                    <div class="card text-center">
+                        <p class="text-gray-600 mb-1">Ukupno Članova</p>
+                        <p class="text-3xl font-bold text-blue-600">156</p>
+                    </div>
+                    <div class="card text-center">
+                        <p class="text-gray-600 mb-1">Aktivni Treneri</p>
+                        <p class="text-3xl font-bold text-green-600">12</p>
+                    </div>
+                    <div class="card text-center">
+                        <p class="text-gray-600 mb-1">Rezervacije Danas</p>
+                        <p class="text-3xl font-bold text-orange-600">24</p>
+                    </div>
+                    <div class="card text-center">
+                        <p class="text-gray-600 mb-1">Prosečna Posećenost</p>
+                        <p class="text-3xl font-bold text-purple-600">78%</p>
+                    </div>
+                </div>
+
+                <div class="grid grid-cols-2 gap-6">
+                    <!-- Users List -->
+                    <div class="card">
+                        <div class="flex justify-between items-center mb-4">
+                            <h3 class="text-xl font-bold">Korisnici</h3>
+                            <button class="px-4 py-2 bg-green-600 text-white rounded text-sm">+ Dodaj</button>
+                        </div>
+                        
+                        <div class="space-y-2 max-h-96 overflow-y-auto">
+                            <div class="flex items-center justify-between p-3 bg-white rounded border">
+                                <div>
+                                    <p class="font-semibold">Petar Petrović</p>
+                                    <p class="text-sm text-gray-600">petar@example.com • Član</p>
+                                </div>
+                                <div class="flex gap-2">
+                                    <button class="px-3 py-1 bg-blue-600 text-white text-sm rounded">Uredi</button>
+                                    <button class="px-3 py-1 bg-red-600 text-white text-sm rounded">Obriši</button>
+                                </div>
+                            </div>
+                            <div class="flex items-center justify-between p-3 bg-white rounded border">
+                                <div>
+                                    <p class="font-semibold">Marko Marković</p>
+                                    <p class="text-sm text-gray-600">marko@example.com • Trener</p>
+                                </div>
+                                <div class="flex gap-2">
+                                    <button class="px-3 py-1 bg-blue-600 text-white text-sm rounded">Uredi</button>
+                                    <button class="px-3 py-1 bg-red-600 text-white text-sm rounded">Obriši</button>
+                                </div>
+                            </div>
+                            <div class="flex items-center justify-between p-3 bg-white rounded border">
+                                <div>
+                                    <p class="font-semibold">Ana Anić</p>
+                                    <p class="text-sm text-gray-600">ana@example.com • Član</p>
+                                </div>
+                                <div class="flex gap-2">
+                                    <button class="px-3 py-1 bg-blue-600 text-white text-sm rounded">Uredi</button>
+                                    <button class="px-3 py-1 bg-red-600 text-white text-sm rounded">Obriši</button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Statistics Chart -->
+                    <div class="card">
+                        <h3 class="text-xl font-bold mb-4">Statistika Posećenosti</h3>
+                        <div class="chart-placeholder" style="height: 300px;">
+                            📊 Grafikon: Broj dolazaka po nedeljama
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- ========== LOGIN PAGE ========== -->
+        <div class="screen">
+            <div class="screen-header">🔐 LOGIN PAGE</div>
+            <div class="p-6">
+                <div class="max-w-md mx-auto">
+                    <div class="text-center mb-8">
+                        <h1 class="text-4xl font-bold mb-2">FitGym</h1>
+                        <p class="text-gray-600">Prijavite se na vaš nalog</p>
+                    </div>
+                    
+                    <div class="card">
+                        <form class="space-y-4">
+                            <div>
+                                <label class="block text-sm font-semibold mb-2">Email</label>
+                                <input type="email" class="w-full p-3 border rounded" placeholder="email@example.com">
+                            </div>
+                            <div>
+                                <label class="block text-sm font-semibold mb-2">Lozinka</label>
+                                <input type="password" class="w-full p-3 border rounded" placeholder="••••••••">
+                            </div>
+                            <button type="submit" class="w-full py-3 bg-blue-600 text-white rounded font-semibold hover:bg-blue-700">
+                                Prijavi se
+                            </button>
+                            <div class="text-center">
+                                <a href="#" class="text-blue-600 text-sm">Zaboravili ste lozinku?</a>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+    </div>
+</body>
+</html>
+

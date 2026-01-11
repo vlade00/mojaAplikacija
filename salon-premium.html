@@ -1,0 +1,616 @@
+<!DOCTYPE html>
+<html lang="sr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>HairStudio Premium - Mockup</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700&family=Inter:wght@400;500;600;700&display=swap');
+        
+        body {
+            font-family: 'Inter', sans-serif;
+        }
+        .font-display {
+            font-family: 'Playfair Display', serif;
+        }
+        .tab-content {
+            display: none;
+        }
+        .tab-content.active {
+            display: block;
+        }
+        .tab-button {
+            cursor: pointer;
+            padding: 12px 24px;
+            border: none;
+            background: transparent;
+            color: #6b7280;
+            border-bottom: 3px solid transparent;
+            transition: all 0.3s;
+            font-weight: 600;
+        }
+        .tab-button.active {
+            color: #6366f1;
+            border-bottom-color: #6366f1;
+        }
+        .glass-effect {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+        }
+        .gradient-bg {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        }
+        .gradient-text {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+        .service-card {
+            transition: all 0.3s ease;
+            border: 2px solid transparent;
+        }
+        .service-card:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1);
+            border-color: #6366f1;
+        }
+        .appointment-card {
+            background: linear-gradient(135deg, #f8fafc 0%, #ffffff 100%);
+            border-left: 4px solid #6366f1;
+        }
+        .stylist-card {
+            background: white;
+            transition: all 0.3s;
+        }
+        .stylist-card:hover {
+            transform: scale(1.02);
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+        }
+    </style>
+</head>
+<body class="bg-gray-50">
+    <div class="max-w-7xl mx-auto p-6">
+        <!-- Header -->
+        <div class="text-center mb-8">
+            <div class="inline-flex items-center justify-center w-24 h-24 bg-gradient-to-br from-indigo-500 via-purple-500 to-pink-500 rounded-3xl mb-4 shadow-xl">
+                <i class="fas fa-cut text-white text-4xl"></i>
+            </div>
+            <h1 class="text-5xl font-display font-bold mb-2 gradient-text">HairStudio</h1>
+            <p class="text-gray-500 text-lg">Premium Frizerski Salon - Vizuelni Prikaz</p>
+        </div>
+
+        <!-- Tabs -->
+        <div class="bg-white rounded-2xl shadow-lg p-2 mb-6 flex gap-2 overflow-x-auto">
+            <button class="tab-button active whitespace-nowrap" onclick="showTab('login')">
+                <i class="fas fa-sign-in-alt mr-2"></i>Prijava
+            </button>
+            <button class="tab-button whitespace-nowrap" onclick="showTab('customer')">
+                <i class="fas fa-user mr-2"></i>Klijent Dashboard
+            </button>
+            <button class="tab-button whitespace-nowrap" onclick="showTab('booking')">
+                <i class="fas fa-calendar-check mr-2"></i>Zakazivanje
+            </button>
+            <button class="tab-button whitespace-nowrap" onclick="showTab('stylist')">
+                <i class="fas fa-user-tie mr-2"></i>Frizer Panel
+            </button>
+            <button class="tab-button whitespace-nowrap" onclick="showTab('admin')">
+                <i class="fas fa-cog mr-2"></i>Admin Panel
+            </button>
+        </div>
+
+        <!-- LOGIN TAB -->
+        <div id="login" class="tab-content active">
+            <div class="bg-white rounded-3xl shadow-2xl overflow-hidden">
+                <div class="grid md:grid-cols-2 min-h-[600px]">
+                    <!-- Left: Image/Design -->
+                    <div class="gradient-bg p-12 flex flex-col justify-center text-white hidden md:flex">
+                        <div class="mb-8">
+                            <h2 class="text-4xl font-display font-bold mb-4">Dobrodošli nazad!</h2>
+                            <p class="text-xl opacity-90">Prijavite se i rezervišite termin u našem premium salonu</p>
+                        </div>
+                        <div class="space-y-4">
+                            <div class="flex items-center gap-4">
+                                <div class="w-12 h-12 bg-white bg-opacity-20 rounded-full flex items-center justify-center">
+                                    <i class="fas fa-star text-yellow-300"></i>
+                                </div>
+                                <div>
+                                    <p class="font-semibold">Premium Usluge</p>
+                                    <p class="text-sm opacity-80">Najkvalitetniji proizvodi i oprema</p>
+                                </div>
+                            </div>
+                            <div class="flex items-center gap-4">
+                                <div class="w-12 h-12 bg-white bg-opacity-20 rounded-full flex items-center justify-center">
+                                    <i class="fas fa-users text-yellow-300"></i>
+                                </div>
+                                <div>
+                                    <p class="font-semibold">Profesionalni Tim</p>
+                                    <p class="text-sm opacity-80">Iskusni frizeri i stilisti</p>
+                                </div>
+                            </div>
+                            <div class="flex items-center gap-4">
+                                <div class="w-12 h-12 bg-white bg-opacity-20 rounded-full flex items-center justify-center">
+                                    <i class="fas fa-clock text-yellow-300"></i>
+                                </div>
+                                <div>
+                                    <p class="font-semibold">Fleksibilno Zakazivanje</p>
+                                    <p class="text-sm opacity-80">Online rezervacija 24/7</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Right: Login Form -->
+                    <div class="p-12 flex flex-col justify-center">
+                        <div class="max-w-md mx-auto w-full">
+                            <h3 class="text-3xl font-bold mb-2 text-gray-800">Prijavite se</h3>
+                            <p class="text-gray-500 mb-8">Unesite svoje podatke za prijavu</p>
+                            
+                            <form class="space-y-6">
+                                <div>
+                                    <label class="block text-sm font-semibold text-gray-700 mb-2">
+                                        <i class="fas fa-envelope mr-2 text-indigo-500"></i>Email adresa
+                                    </label>
+                                    <input type="email" class="w-full p-4 border-2 border-gray-200 rounded-xl focus:border-indigo-500 focus:ring-2 focus:ring-indigo-200 transition" placeholder="vas.email@example.com">
+                                </div>
+                                <div>
+                                    <label class="block text-sm font-semibold text-gray-700 mb-2">
+                                        <i class="fas fa-lock mr-2 text-indigo-500"></i>Lozinka
+                                    </label>
+                                    <input type="password" class="w-full p-4 border-2 border-gray-200 rounded-xl focus:border-indigo-500 focus:ring-2 focus:ring-indigo-200 transition" placeholder="••••••••">
+                                    <a href="#" class="text-sm text-indigo-600 hover:text-indigo-800 mt-2 inline-block">Zaboravili ste lozinku?</a>
+                                </div>
+                                <button type="submit" class="w-full py-4 bg-gradient-to-r from-indigo-600 to-purple-600 text-white rounded-xl font-bold text-lg hover:from-indigo-700 hover:to-purple-700 transition shadow-lg hover:shadow-xl">
+                                    Prijavi se
+                                </button>
+                                <div class="text-center pt-4 border-t">
+                                    <p class="text-gray-600">Nemate nalog? <a href="#" class="text-indigo-600 font-semibold hover:text-indigo-800">Registrujte se</a></p>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- CUSTOMER DASHBOARD TAB -->
+        <div id="customer" class="tab-content">
+            <div class="space-y-6">
+                <!-- Top Navigation -->
+                <div class="bg-white rounded-2xl shadow-lg p-6">
+                    <div class="flex justify-between items-center">
+                        <div class="flex items-center gap-4">
+                            <div class="w-14 h-14 bg-gradient-to-br from-indigo-500 to-purple-500 rounded-2xl flex items-center justify-center text-white text-2xl shadow-lg">
+                                <i class="fas fa-cut"></i>
+                            </div>
+                            <div>
+                                <h2 class="text-2xl font-bold text-gray-800">HairStudio</h2>
+                                <p class="text-sm text-gray-500">Premium Salon</p>
+                            </div>
+                        </div>
+                        <div class="flex items-center gap-4">
+                            <button class="px-6 py-2 bg-indigo-100 text-indigo-700 rounded-xl font-semibold hover:bg-indigo-200 transition">
+                                <i class="fas fa-home mr-2"></i>Početna
+                            </button>
+                            <button class="px-6 py-2 text-gray-600 rounded-xl font-semibold hover:bg-gray-100 transition">
+                                <i class="fas fa-calendar mr-2"></i>Rezervacije
+                            </button>
+                            <button class="px-6 py-2 text-gray-600 rounded-xl font-semibold hover:bg-gray-100 transition">
+                                <i class="fas fa-user-circle mr-2"></i>Profil
+                            </button>
+                            <button class="px-6 py-2 bg-red-500 text-white rounded-xl font-semibold hover:bg-red-600 transition">
+                                <i class="fas fa-sign-out-alt mr-2"></i>Odjavi se
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Welcome Banner -->
+                <div class="bg-gradient-to-r from-indigo-600 via-purple-600 to-pink-500 rounded-3xl p-8 text-white shadow-2xl">
+                    <div class="flex items-center justify-between">
+                        <div>
+                            <h3 class="text-3xl font-display font-bold mb-2">Dobrodošli, Ana! 👋</h3>
+                            <p class="text-xl opacity-90">Imate <span class="font-bold">2 predstojeća zakazivanja</span> ovog meseca</p>
+                        </div>
+                        <button class="px-8 py-4 bg-white text-indigo-600 rounded-2xl font-bold text-lg hover:bg-gray-100 transition shadow-lg">
+                            <i class="fas fa-plus mr-2"></i>Nova Rezervacija
+                        </button>
+                    </div>
+                </div>
+
+                <div class="grid lg:grid-cols-3 gap-6">
+                    <!-- Left: Appointments -->
+                    <div class="lg:col-span-2 space-y-6">
+                        <div class="bg-white rounded-2xl shadow-lg p-8">
+                            <div class="flex items-center justify-between mb-6">
+                                <h3 class="text-2xl font-bold text-gray-800 flex items-center gap-3">
+                                    <span class="w-10 h-10 bg-indigo-100 rounded-xl flex items-center justify-center">
+                                        <i class="fas fa-calendar text-indigo-600"></i>
+                                    </span>
+                                    Predstojeća Zakazivanja
+                                </h3>
+                            </div>
+                            
+                            <div class="space-y-4">
+                                <div class="appointment-card rounded-2xl p-6 shadow-md">
+                                    <div class="flex justify-between items-start mb-4">
+                                        <div>
+                                            <h4 class="text-xl font-bold text-gray-800 mb-1">Šišanje + Styling</h4>
+                                            <p class="text-gray-600 flex items-center gap-2">
+                                                <i class="fas fa-clock text-indigo-500"></i>
+                                                15. Januar 2025, 14:00 - 15:30
+                                            </p>
+                                        </div>
+                                        <span class="px-4 py-2 bg-green-100 text-green-700 rounded-full font-semibold text-sm">
+                                            <i class="fas fa-check-circle mr-1"></i>Potvrđeno
+                                        </span>
+                                    </div>
+                                    <div class="flex items-center gap-4 mb-4">
+                                        <div class="w-16 h-16 bg-gradient-to-br from-purple-400 to-pink-400 rounded-2xl flex items-center justify-center text-white text-2xl font-bold shadow-lg">
+                                            MJ
+                                        </div>
+                                        <div>
+                                            <p class="font-bold text-gray-800">Marija Jovanović</p>
+                                            <p class="text-sm text-gray-600 flex items-center gap-1">
+                                                <i class="fas fa-star text-yellow-400"></i>
+                                                4.9 (127 ocena) • Frizerski Stilista
+                                            </p>
+                                        </div>
+                                    </div>
+                                    <div class="flex gap-3">
+                                        <button class="flex-1 px-4 py-3 bg-indigo-600 text-white rounded-xl font-semibold hover:bg-indigo-700 transition">
+                                            <i class="fas fa-eye mr-2"></i>Detalji
+                                        </button>
+                                        <button class="flex-1 px-4 py-3 bg-red-100 text-red-700 rounded-xl font-semibold hover:bg-red-200 transition">
+                                            <i class="fas fa-times mr-2"></i>Otkaži
+                                        </button>
+                                    </div>
+                                </div>
+
+                                <div class="appointment-card rounded-2xl p-6 shadow-md">
+                                    <div class="flex justify-between items-start mb-4">
+                                        <div>
+                                            <h4 class="text-xl font-bold text-gray-800 mb-1">Bojenje + Nega</h4>
+                                            <p class="text-gray-600 flex items-center gap-2">
+                                                <i class="fas fa-clock text-indigo-500"></i>
+                                                22. Januar 2025, 10:00 - 13:00
+                                            </p>
+                                        </div>
+                                        <span class="px-4 py-2 bg-yellow-100 text-yellow-700 rounded-full font-semibold text-sm">
+                                            <i class="fas fa-hourglass-half mr-1"></i>Čeka potvrdu
+                                        </span>
+                                    </div>
+                                    <div class="flex items-center gap-4">
+                                        <div class="w-16 h-16 bg-gradient-to-br from-blue-400 to-indigo-400 rounded-2xl flex items-center justify-center text-white text-2xl font-bold shadow-lg">
+                                            SP
+                                        </div>
+                                        <div>
+                                            <p class="font-bold text-gray-800">Stefan Petrović</p>
+                                            <p class="text-sm text-gray-600 flex items-center gap-1">
+                                                <i class="fas fa-star text-yellow-400"></i>
+                                                4.7 (89 ocena) • Kolorista
+                                            </p>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Right: Quick Actions & Stats -->
+                    <div class="space-y-6">
+                        <div class="bg-gradient-to-br from-indigo-50 to-purple-50 rounded-2xl shadow-lg p-6 border-2 border-indigo-100">
+                            <h3 class="text-xl font-bold mb-4 text-gray-800">Brze Akcije</h3>
+                            <button class="w-full px-6 py-4 bg-gradient-to-r from-indigo-600 to-purple-600 text-white rounded-xl font-bold text-lg hover:from-indigo-700 hover:to-purple-700 transition shadow-lg mb-3">
+                                <i class="fas fa-calendar-plus mr-2"></i>Zakaži Termin
+                            </button>
+                            <button class="w-full px-6 py-4 bg-white text-indigo-600 border-2 border-indigo-200 rounded-xl font-semibold hover:bg-indigo-50 transition">
+                                <i class="fas fa-history mr-2"></i>Istorija
+                            </button>
+                        </div>
+
+                        <div class="bg-white rounded-2xl shadow-lg p-6">
+                            <h3 class="text-xl font-bold mb-4 text-gray-800">Statistika</h3>
+                            <div class="space-y-4">
+                                <div class="flex justify-between items-center p-4 bg-indigo-50 rounded-xl">
+                                    <div>
+                                        <p class="text-sm text-gray-600">Ukupno rezervacija</p>
+                                        <p class="text-2xl font-bold text-indigo-600">24</p>
+                                    </div>
+                                    <div class="w-12 h-12 bg-indigo-100 rounded-xl flex items-center justify-center">
+                                        <i class="fas fa-calendar-check text-indigo-600"></i>
+                                    </div>
+                                </div>
+                                <div class="flex justify-between items-center p-4 bg-purple-50 rounded-xl">
+                                    <div>
+                                        <p class="text-sm text-gray-600">Ovaj mesec</p>
+                                        <p class="text-2xl font-bold text-purple-600">5</p>
+                                    </div>
+                                    <div class="w-12 h-12 bg-purple-100 rounded-xl flex items-center justify-center">
+                                        <i class="fas fa-star text-purple-600"></i>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- BOOKING TAB -->
+        <div id="booking" class="tab-content">
+            <div class="bg-white rounded-3xl shadow-2xl p-8">
+                <div class="mb-8">
+                    <h2 class="text-3xl font-display font-bold mb-2 text-gray-800">Zakaži Novi Termin</h2>
+                    <p class="text-gray-500">Izaberite uslugu, frizera i vreme</p>
+                </div>
+
+                <div class="grid lg:grid-cols-3 gap-8">
+                    <!-- Step 1: Service -->
+                    <div class="space-y-4">
+                        <div class="flex items-center gap-3 mb-4">
+                            <div class="w-10 h-10 bg-gradient-to-r from-indigo-600 to-purple-600 rounded-xl flex items-center justify-center text-white font-bold">1</div>
+                            <h3 class="text-xl font-bold text-gray-800">Izaberi Uslugu</h3>
+                        </div>
+                        <div class="space-y-4">
+                            <div class="service-card bg-white p-6 rounded-2xl border-2 border-indigo-500 shadow-lg cursor-pointer">
+                                <div class="flex justify-between items-start mb-2">
+                                    <div>
+                                        <h4 class="font-bold text-lg text-gray-800">Šišanje</h4>
+                                        <p class="text-sm text-gray-500 flex items-center gap-1 mt-1">
+                                            <i class="fas fa-clock"></i>45 min
+                                        </p>
+                                    </div>
+                                    <span class="font-bold text-indigo-600 text-xl">1,500 RSD</span>
+                                </div>
+                            </div>
+                            <div class="service-card bg-white p-6 rounded-2xl border-2 border-gray-200 cursor-pointer">
+                                <div class="flex justify-between items-start mb-2">
+                                    <div>
+                                        <h4 class="font-bold text-lg text-gray-800">Bojenje + Šišanje</h4>
+                                        <p class="text-sm text-gray-500 flex items-center gap-1 mt-1">
+                                            <i class="fas fa-clock"></i>2h 30min
+                                        </p>
+                                    </div>
+                                    <span class="font-bold text-gray-700 text-xl">5,500 RSD</span>
+                                </div>
+                            </div>
+                            <div class="service-card bg-white p-6 rounded-2xl border-2 border-gray-200 cursor-pointer">
+                                <div class="flex justify-between items-start mb-2">
+                                    <div>
+                                        <h4 class="font-bold text-lg text-gray-800">Nega Kose</h4>
+                                        <p class="text-sm text-gray-500 flex items-center gap-1 mt-1">
+                                            <i class="fas fa-clock"></i>1h
+                                        </p>
+                                    </div>
+                                    <span class="font-bold text-gray-700 text-xl">2,000 RSD</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Step 2: Stylist -->
+                    <div class="space-y-4">
+                        <div class="flex items-center gap-3 mb-4">
+                            <div class="w-10 h-10 bg-gradient-to-r from-purple-600 to-pink-600 rounded-xl flex items-center justify-center text-white font-bold">2</div>
+                            <h3 class="text-xl font-bold text-gray-800">Izaberi Frizera</h3>
+                        </div>
+                        <div class="space-y-4">
+                            <div class="stylist-card p-6 rounded-2xl border-2 border-indigo-500 shadow-lg cursor-pointer">
+                                <div class="flex items-center gap-4">
+                                    <div class="w-16 h-16 bg-gradient-to-br from-purple-400 to-pink-400 rounded-2xl flex items-center justify-center text-white text-xl font-bold shadow-lg">
+                                        MJ
+                                    </div>
+                                    <div class="flex-1">
+                                        <h4 class="font-bold text-gray-800">Marija Jovanović</h4>
+                                        <p class="text-sm text-gray-600 flex items-center gap-1">
+                                            <i class="fas fa-star text-yellow-400"></i>
+                                            4.9 (127 ocena)
+                                        </p>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="stylist-card p-6 rounded-2xl border-2 border-gray-200 cursor-pointer">
+                                <div class="flex items-center gap-4">
+                                    <div class="w-16 h-16 bg-gradient-to-br from-blue-400 to-indigo-400 rounded-2xl flex items-center justify-center text-white text-xl font-bold">
+                                        SP
+                                    </div>
+                                    <div class="flex-1">
+                                        <h4 class="font-bold text-gray-800">Stefan Petrović</h4>
+                                        <p class="text-sm text-gray-600 flex items-center gap-1">
+                                            <i class="fas fa-star text-yellow-400"></i>
+                                            4.7 (89 ocena)
+                                        </p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Step 3: Date & Time -->
+                    <div class="space-y-4">
+                        <div class="flex items-center gap-3 mb-4">
+                            <div class="w-10 h-10 bg-gradient-to-r from-pink-600 to-red-600 rounded-xl flex items-center justify-center text-white font-bold">3</div>
+                            <h3 class="text-xl font-bold text-gray-800">Datum i Vreme</h3>
+                        </div>
+                        <div class="bg-gray-50 rounded-2xl p-4 mb-4">
+                            <p class="font-bold text-gray-800 mb-3">15. Januar 2025</p>
+                            <div class="grid grid-cols-2 gap-3">
+                                <button class="p-4 bg-green-100 border-2 border-green-500 rounded-xl text-sm font-bold text-green-700 hover:bg-green-200 transition">
+                                    09:00
+                                </button>
+                                <button class="p-4 bg-red-100 border-2 border-red-300 rounded-xl text-sm text-gray-500 cursor-not-allowed">
+                                    10:00
+                                </button>
+                                <button class="p-4 bg-green-100 border-2 border-green-500 rounded-xl text-sm font-bold text-green-700 hover:bg-green-200 transition">
+                                    14:00
+                                </button>
+                                <button class="p-4 bg-green-100 border-2 border-green-500 rounded-xl text-sm font-bold text-green-700 hover:bg-green-200 transition">
+                                    15:00
+                                </button>
+                            </div>
+                        </div>
+                        <button class="w-full px-6 py-4 bg-gradient-to-r from-indigo-600 to-purple-600 text-white rounded-xl font-bold text-lg hover:from-indigo-700 hover:to-purple-700 transition shadow-lg">
+                            <i class="fas fa-check-circle mr-2"></i>Potvrdi Rezervaciju
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- STYLIST TAB -->
+        <div id="stylist" class="tab-content">
+            <div class="space-y-6">
+                <div class="bg-white rounded-2xl shadow-lg p-6">
+                    <div class="flex justify-between items-center">
+                        <h2 class="text-2xl font-bold text-gray-800">Panel Frizera</h2>
+                        <div class="flex gap-3">
+                            <button class="px-6 py-2 bg-indigo-600 text-white rounded-xl font-semibold">
+                                <i class="fas fa-home mr-2"></i>Dashboard
+                            </button>
+                            <button class="px-6 py-2 bg-gray-100 text-gray-700 rounded-xl font-semibold">
+                                <i class="fas fa-calendar mr-2"></i>Kalendar
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="grid lg:grid-cols-3 gap-6">
+                    <div class="lg:col-span-2 space-y-4">
+                        <div class="bg-white rounded-2xl shadow-lg p-6">
+                            <h3 class="text-xl font-bold mb-4 flex items-center gap-3">
+                                <span class="w-10 h-10 bg-indigo-100 rounded-xl flex items-center justify-center">
+                                    <i class="fas fa-calendar-day text-indigo-600"></i>
+                                </span>
+                                Današnji Termini - 15. Januar 2025
+                            </h3>
+                            
+                            <div class="space-y-4">
+                                <div class="bg-gradient-to-r from-indigo-50 to-purple-50 rounded-2xl p-6 border-l-4 border-indigo-500">
+                                    <div class="flex justify-between items-start mb-4">
+                                        <div>
+                                            <p class="font-bold text-lg text-gray-800">09:00 - 10:00</p>
+                                            <p class="text-indigo-600 font-semibold">Šišanje</p>
+                                        </div>
+                                        <span class="px-4 py-2 bg-green-100 text-green-700 rounded-full text-sm font-semibold">
+                                            Potvrđeno
+                                        </span>
+                                    </div>
+                                    <div class="flex items-center gap-4 mb-4">
+                                        <div class="w-14 h-14 bg-gradient-to-br from-blue-400 to-indigo-400 rounded-2xl flex items-center justify-center text-white text-lg font-bold">
+                                            PN
+                                        </div>
+                                        <div>
+                                            <p class="font-bold text-gray-800">Petar Nikolić</p>
+                                            <p class="text-sm text-gray-600">
+                                                <i class="fas fa-phone mr-1"></i>+381 64 123 4567
+                                            </p>
+                                        </div>
+                                    </div>
+                                    <button class="w-full px-4 py-3 bg-indigo-600 text-white rounded-xl font-semibold hover:bg-indigo-700 transition">
+                                        <i class="fas fa-check mr-2"></i>Označi kao Završeno
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="space-y-6">
+                        <div class="bg-gradient-to-br from-indigo-50 to-purple-50 rounded-2xl shadow-lg p-6 border-2 border-indigo-100">
+                            <h3 class="text-xl font-bold mb-4 text-gray-800">Statistika</h3>
+                            <div class="space-y-4">
+                                <div class="bg-white p-4 rounded-xl">
+                                    <p class="text-sm text-gray-600">Današnji termini</p>
+                                    <p class="text-3xl font-bold text-indigo-600">5</p>
+                                </div>
+                                <div class="bg-white p-4 rounded-xl">
+                                    <p class="text-sm text-gray-600">Prosečna ocena</p>
+                                    <p class="text-3xl font-bold text-purple-600">4.9 <i class="fas fa-star text-yellow-400"></i></p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- ADMIN TAB -->
+        <div id="admin" class="tab-content">
+            <div class="space-y-6">
+                <div class="bg-white rounded-2xl shadow-lg p-6">
+                    <h2 class="text-2xl font-bold text-gray-800">Admin Panel</h2>
+                </div>
+
+                <div class="grid grid-cols-4 gap-6">
+                    <div class="bg-gradient-to-br from-indigo-500 to-purple-600 rounded-2xl p-6 text-white shadow-lg">
+                        <p class="text-sm opacity-90 mb-2">Ukupno Klijenata</p>
+                        <p class="text-4xl font-bold">324</p>
+                    </div>
+                    <div class="bg-gradient-to-br from-green-500 to-emerald-600 rounded-2xl p-6 text-white shadow-lg">
+                        <p class="text-sm opacity-90 mb-2">Aktivni Frizeri</p>
+                        <p class="text-4xl font-bold">8</p>
+                    </div>
+                    <div class="bg-gradient-to-br from-blue-500 to-cyan-600 rounded-2xl p-6 text-white shadow-lg">
+                        <p class="text-sm opacity-90 mb-2">Rezervacije Danas</p>
+                        <p class="text-4xl font-bold">24</p>
+                    </div>
+                    <div class="bg-gradient-to-br from-pink-500 to-rose-600 rounded-2xl p-6 text-white shadow-lg">
+                        <p class="text-sm opacity-90 mb-2">Prihod Mesec</p>
+                        <p class="text-4xl font-bold">245K</p>
+                    </div>
+                </div>
+
+                <div class="grid lg:grid-cols-2 gap-6">
+                    <div class="bg-white rounded-2xl shadow-lg p-6">
+                        <div class="flex justify-between items-center mb-4">
+                            <h3 class="text-xl font-bold">Korisnici</h3>
+                            <button class="px-4 py-2 bg-green-600 text-white rounded-xl font-semibold">
+                                <i class="fas fa-plus mr-2"></i>Dodaj
+                            </button>
+                        </div>
+                        <div class="space-y-3">
+                            <div class="flex items-center justify-between p-4 bg-gray-50 rounded-xl">
+                                <div class="flex items-center gap-4">
+                                    <div class="w-12 h-12 bg-gradient-to-br from-purple-400 to-pink-400 rounded-xl"></div>
+                                    <div>
+                                        <p class="font-bold text-gray-800">Ana Marković</p>
+                                        <p class="text-sm text-gray-600">Klijent</p>
+                                    </div>
+                                </div>
+                                <button class="px-4 py-2 bg-indigo-600 text-white rounded-lg text-sm font-semibold">
+                                    Uredi
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="bg-white rounded-2xl shadow-lg p-6">
+                        <h3 class="text-xl font-bold mb-4">Statistika Rezervacija</h3>
+                        <div class="bg-gradient-to-br from-indigo-50 to-purple-50 rounded-xl p-12 text-center">
+                            <i class="fas fa-chart-line text-5xl text-indigo-400 mb-4"></i>
+                            <p class="text-gray-600">Grafikon rezervacija po nedeljama</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        function showTab(tabName) {
+            document.querySelectorAll('.tab-content').forEach(tab => {
+                tab.classList.remove('active');
+            });
+            document.querySelectorAll('.tab-button').forEach(btn => {
+                btn.classList.remove('active');
+            });
+            
+            document.getElementById(tabName).classList.add('active');
+            event.target.classList.add('active');
+        }
+    </script>
+</body>
+</html>
+
