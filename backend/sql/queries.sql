@@ -94,3 +94,6 @@ WHERE u.role = 'STYLIST'
 GROUP BY u.id, u.name, s.rating, s."totalReviews"
 ORDER BY s.rating DESC;
 
+
+
+

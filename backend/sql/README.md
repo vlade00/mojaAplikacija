@@ -44,3 +44,6 @@ Get-Content sql/queries.sql | docker exec -i hairstudio-db psql -U postgres -d h
 - Uvek koristi **navodnike** oko imena tabela: `"User"`, `"Service"`, itd.
 - PostgreSQL je case-sensitive za imena sa navodnicima!
 
+
+
+

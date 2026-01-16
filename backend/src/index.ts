@@ -3,6 +3,8 @@ import cors from 'cors';
 import dotenv from 'dotenv';
 import servicesRouter from './routes/services';
 import stylistsRouter from './routes/stylists';
+import appointmentsRouter from './routes/appointments';
+import authRouter from './routes/auth';
 
 dotenv.config();
 
@@ -19,8 +21,10 @@ app.get('/', (req, res) => {
     message: 'Welcome to HairStudio API',
     endpoints: {
       health: '/api/health',
+      auth: '/api/auth',
       services: '/api/services',
-      stylists: '/api/stylists'
+      stylists: '/api/stylists',
+      appointments: '/api/appointments'
     }
   });
 });
@@ -34,8 +38,10 @@ app.get('/api/health', (req, res) => {
 });
 
 // API Routes
+app.use('/api/auth', authRouter);
 app.use('/api/services', servicesRouter);
 app.use('/api/stylists', stylistsRouter);
+app.use('/api/appointments', appointmentsRouter);
 
 // Start server
 app.listen(PORT, () => {

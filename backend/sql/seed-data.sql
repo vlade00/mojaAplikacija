@@ -101,3 +101,6 @@ WHERE s."userId" = (SELECT id FROM "User" WHERE email = 'marko@salon.com')
 AND se.name IN ('Klasično šišanje', 'Trim brada', 'Oblikovanje brade')
 ON CONFLICT ("stylistId", "serviceId") DO NOTHING;
 
+
+
+

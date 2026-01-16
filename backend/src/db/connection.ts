@@ -3,13 +3,9 @@ import dotenv from 'dotenv';
 
 dotenv.config();
 
-// Kreiraj connection pool za bazu
+// Kreiraj connection pool za bazu koristeći DATABASE_URL iz .env fajla
 export const pool = new Pool({
-  host: 'localhost',
-  port: 5432,
-  database: 'hairstudio',
-  user: 'postgres',
-  password: 'postgres',
+  connectionString: process.env.DATABASE_URL,
   max: 20, // maksimalan broj konekcija
   idleTimeoutMillis: 30000,
   connectionTimeoutMillis: 2000,
@@ -37,4 +33,7 @@ export const query = async (text: string, params?: any[]) => {
     throw error;
   }
 };
+
+
+
 

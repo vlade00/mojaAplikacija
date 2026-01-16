@@ -40,3 +40,6 @@ JOIN "ServiceStylist" ss ON st.id = ss."stylistId"
 JOIN "Service" s ON ss."serviceId" = s.id
 ORDER BY u.name, s.category, s.name;
 
+
+
+
