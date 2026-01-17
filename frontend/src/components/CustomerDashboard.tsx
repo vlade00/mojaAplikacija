@@ -2,14 +2,27 @@
 
 import React, { useState, useEffect } from 'react';
 import { useAuth } from '../context/AuthContext';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useSearchParams } from 'react-router-dom';
 import { getAppointments, deleteAppointment, Appointment } from '../services/appointmentService';
 
 const CustomerDashboard: React.FC = () => {
   const { user, logout } = useAuth();
   const navigate = useNavigate();
+  const [searchParams] = useSearchParams();
   const [appointments, setAppointments] = useState<Appointment[]>([]);
   const [loading, setLoading] = useState(true);
+  const [successMessage, setSuccessMessage] = useState<string>('');
+
+  // Proveri da li je došao sa uspešnom rezervacijom
+  useEffect(() => {
+    if (searchParams.get('booking') === 'success') {
+      setSuccessMessage('Uspešno ste kreirali rezervaciju!');
+      // Obriši query parametar iz URL-a
+      navigate('/dashboard', { replace: true });
+      // Skriči poruku nakon 5 sekundi
+      setTimeout(() => setSuccessMessage(''), 5000);
+    }
+  }, [searchParams, navigate]);
 
   useEffect(() => {
     loadAppointments();
@@ -129,6 +142,16 @@ const CustomerDashboard: React.FC = () => {
       </div>
 
       <div className="px-6 pb-6">
+        {/* Success Message */}
+        {successMessage && (
+          <div className="bg-green-100 border border-green-400 text-green-700 px-4 py-3 rounded-xl mb-6">
+            <div className="flex items-center gap-2">
+              <i className="fas fa-check-circle"></i>
+              <span>{successMessage}</span>
+            </div>
+          </div>
+        )}
+
         {/* Welcome Banner */}
         <div className="bg-gradient-to-r from-indigo-600 via-purple-600 to-pink-500 rounded-3xl p-8 text-white shadow-2xl mb-6">
           <div className="flex items-center justify-between flex-wrap gap-4">

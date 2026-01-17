@@ -62,6 +62,7 @@ router.get('/:id', async (req, res) => {
 });
 
 // GET /api/stylists/:id/services - Vrati usluge koje radi frizer
+// id može biti User.id ili Stylist.id - proveravamo oba
 router.get('/:id/services', async (req, res) => {
   try {
     const { id } = req.params;
@@ -71,12 +72,12 @@ router.get('/:id/services', async (req, res) => {
         s.name,
         s.description,
         s.duration,
-        COALESCE(ss."customPrice", s.price) as price,
+        s.price,
         s.category
       FROM "Stylist" st
       JOIN "ServiceStylist" ss ON st.id = ss."stylistId"
       JOIN "Service" s ON ss."serviceId" = s.id
-      WHERE st.id = $1 AND s."isActive" = true
+      WHERE (st.id = $1 OR st."userId" = $1) AND s."isActive" = true
       ORDER BY s.category, s.name
     `, [id]);
     

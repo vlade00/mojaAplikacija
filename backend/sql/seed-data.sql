@@ -74,31 +74,24 @@ INSERT INTO "Service" (name, description, duration, price, category, "isActive",
 ON CONFLICT DO NOTHING;
 
 -- 4. Poveži frizere sa uslugama
--- Marija (id=1) - fade šišanje, brada
+-- Marija - ŽENSKE usluge (žensko šišanje, farbanje, nega)
 INSERT INTO "ServiceStylist" ("stylistId", "serviceId")
 SELECT s.id, se.id
 FROM "Stylist" s
 CROSS JOIN "Service" se
 WHERE s."userId" = (SELECT id FROM "User" WHERE email = 'marija@salon.com')
-AND se.name IN ('Fade šišanje', 'Fade šišanje sa pranjem', 'Trim brada', 'Fade brada')
+AND se.category IN ('WOMENS_HAIRCUT', 'COLORING', 'CARE')
 ON CONFLICT ("stylistId", "serviceId") DO NOTHING;
 
--- Stefan (id=2) - farbanje, žensko šišanje
+-- Stefan i Marko - MUŠKE usluge (muško šišanje i brada)
 INSERT INTO "ServiceStylist" ("stylistId", "serviceId")
 SELECT s.id, se.id
 FROM "Stylist" s
 CROSS JOIN "Service" se
-WHERE s."userId" = (SELECT id FROM "User" WHERE email = 'stefan@salon.com')
-AND se.name IN ('Šišanje (kratko)', 'Šišanje (srednje)', 'Farbanje (puna boja)', 'Meliranje')
-ON CONFLICT ("stylistId", "serviceId") DO NOTHING;
-
--- Marko (id=3) - brada, klasično šišanje
-INSERT INTO "ServiceStylist" ("stylistId", "serviceId")
-SELECT s.id, se.id
-FROM "Stylist" s
-CROSS JOIN "Service" se
-WHERE s."userId" = (SELECT id FROM "User" WHERE email = 'marko@salon.com')
-AND se.name IN ('Klasično šišanje', 'Trim brada', 'Oblikovanje brade')
+WHERE s."userId" IN (
+  SELECT id FROM "User" WHERE email IN ('stefan@salon.com', 'marko@salon.com')
+)
+AND se.category IN ('MENS_HAIRCUT', 'BEARD')
 ON CONFLICT ("stylistId", "serviceId") DO NOTHING;
 
 

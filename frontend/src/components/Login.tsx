@@ -43,7 +43,14 @@ const Login: React.FC = () => {
         }
       }, 100);
     } catch (err: any) {
-      setError(err.response?.data?.error || 'Greška pri prijavi');
+      console.error('Login error:', err);
+      const errorMessage = err.response?.data?.error || err.message || 'Greška pri prijavi';
+      setError(errorMessage);
+      console.error('Error details:', {
+        response: err.response,
+        message: err.message,
+        stack: err.stack
+      });
     } finally {
       setLoading(false);
     }
