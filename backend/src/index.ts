@@ -5,6 +5,8 @@ import servicesRouter from './routes/services';
 import stylistsRouter from './routes/stylists';
 import appointmentsRouter from './routes/appointments';
 import authRouter from './routes/auth';
+import adminRouter from './routes/admin';
+import stylistRouter from './routes/stylist';
 
 dotenv.config();
 
@@ -24,7 +26,9 @@ app.get('/', (req, res) => {
       auth: '/api/auth',
       services: '/api/services',
       stylists: '/api/stylists',
-      appointments: '/api/appointments'
+      appointments: '/api/appointments',
+      admin: '/api/admin',
+      stylist: '/api/stylist'
     }
   });
 });
@@ -42,6 +46,8 @@ app.use('/api/auth', authRouter);
 app.use('/api/services', servicesRouter);
 app.use('/api/stylists', stylistsRouter);
 app.use('/api/appointments', appointmentsRouter);
+app.use('/api/admin', adminRouter);
+app.use('/api/stylist', stylistRouter);
 
 // Start server
 app.listen(PORT, () => {

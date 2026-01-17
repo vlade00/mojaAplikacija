@@ -22,13 +22,25 @@ router.post('/register', async (req, res) => {
     }
     
     // Proveri da li email već postoji
-    const existingUser = await query(
+    const existingUserByEmail = await query(
       'SELECT id FROM "User" WHERE email = $1',
       [email]
     );
     
-    if (existingUser.rows.length > 0) {
+    if (existingUserByEmail.rows.length > 0) {
       return res.status(400).json({ error: 'Email already exists' });
+    }
+    
+    // Proveri da li telefon već postoji (ako je poslat i nije prazan)
+    if (phone && phone.trim() !== '') {
+      const existingUserByPhone = await query(
+        'SELECT id FROM "User" WHERE phone = $1 AND phone IS NOT NULL',
+        [phone.trim()]
+      );
+      
+      if (existingUserByPhone.rows.length > 0) {
+        return res.status(400).json({ error: 'Phone number already exists' });
+      }
     }
     
     // Hash-uj lozinku (bcrypt - sigurno čuvanje lozinki)

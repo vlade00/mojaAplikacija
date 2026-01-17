@@ -30,7 +30,8 @@ router.get('/', async (req, res) => {
           'id', st.id,
           'name', u_stylist.name,
           'email', u_stylist.email,
-          'rating', st.rating
+          'rating', st.rating,
+          'totalReviews', st."totalReviews"
         ) as stylist,
         -- Informacije o usluzi
         json_build_object(
@@ -81,7 +82,8 @@ router.get('/:id', async (req, res) => {
           'id', st.id,
           'name', u_stylist.name,
           'email', u_stylist.email,
-          'rating', st.rating
+          'rating', st.rating,
+          'totalReviews', st."totalReviews"
         ) as stylist,
         -- Informacije o usluzi
         json_build_object(
