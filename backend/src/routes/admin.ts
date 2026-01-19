@@ -61,6 +61,96 @@ router.get('/users/:id', async (req: AuthRequest, res) => {
   }
 });
 
+// PUT /api/admin/users/:id - Ažuriraj korisnika
+router.put('/users/:id', async (req: AuthRequest, res) => {
+  try {
+    const idParam = Array.isArray(req.params.id) ? req.params.id[0] : req.params.id;
+    const userId = parseInt(idParam, 10);
+    if (isNaN(userId)) {
+      return res.status(400).json({ error: 'Invalid user ID' });
+    }
+    
+    const { name, email, phone, role } = req.body;
+    
+    // Proveri da li korisnik postoji
+    const existingUser = await query('SELECT id FROM "User" WHERE id = $1', [userId]);
+    if (existingUser.rows.length === 0) {
+      return res.status(404).json({ error: 'User not found' });
+    }
+    
+    // Proveri da li email već postoji (ako se menja)
+    if (email) {
+      const emailCheck = await query('SELECT id FROM "User" WHERE email = $1 AND id != $2', [email, userId]);
+      if (emailCheck.rows.length > 0) {
+        return res.status(400).json({ error: 'Email already exists' });
+      }
+    }
+    
+    // Ažuriraj korisnika
+    const updates: string[] = [];
+    const values: any[] = [];
+    let paramIndex = 1;
+    
+    if (name !== undefined && name !== null) {
+      updates.push(`name = $${paramIndex++}`);
+      values.push(name);
+    }
+    if (email !== undefined && email !== null) {
+      updates.push(`email = $${paramIndex++}`);
+      values.push(email);
+    }
+    if (phone !== undefined) {
+      updates.push(`phone = $${paramIndex++}`);
+      values.push(phone && phone.trim() !== '' ? phone.trim() : null);
+    }
+    if (role !== undefined && role !== null) {
+      updates.push(`role = $${paramIndex++}`);
+      values.push(role);
+    }
+    
+    if (updates.length > 0) {
+      updates.push(`"updatedAt" = NOW()`);
+      values.push(userId);
+      await query(`UPDATE "User" SET ${updates.join(', ')} WHERE id = $${paramIndex}`, values);
+    }
+    
+    res.json({ message: 'User updated successfully' });
+  } catch (error) {
+    console.error('Error updating user:', error);
+    res.status(500).json({ error: 'Failed to update user' });
+  }
+});
+
+// DELETE /api/admin/users/:id - Obriši korisnika
+router.delete('/users/:id', async (req: AuthRequest, res) => {
+  try {
+    const idParam = Array.isArray(req.params.id) ? req.params.id[0] : req.params.id;
+    const userId = parseInt(idParam, 10);
+    if (isNaN(userId)) {
+      return res.status(400).json({ error: 'Invalid user ID' });
+    }
+    
+    // Proveri da li korisnik postoji
+    const existingUser = await query('SELECT id, role FROM "User" WHERE id = $1', [userId]);
+    if (existingUser.rows.length === 0) {
+      return res.status(404).json({ error: 'User not found' });
+    }
+    
+    // Ne dozvoli brisanje admin korisnika
+    if (existingUser.rows[0].role === 'ADMIN') {
+      return res.status(400).json({ error: 'Cannot delete admin user' });
+    }
+    
+    // Obriši korisnika (CASCADE će obrisati i Stylist profil ako postoji)
+    await query('DELETE FROM "User" WHERE id = $1', [userId]);
+    
+    res.json({ message: 'User deleted successfully' });
+  } catch (error) {
+    console.error('Error deleting user:', error);
+    res.status(500).json({ error: 'Failed to delete user' });
+  }
+});
+
 // POST /api/admin/stylists - Kreiraj novog frizera
 router.post('/stylists', async (req: AuthRequest, res) => {
   try {

@@ -5,11 +5,28 @@ import Login from './components/Login';
 import Register from './components/Register';
 import CustomerDashboard from './components/CustomerDashboard';
 import Booking from './components/Booking';
+import AdminDashboard from './components/AdminDashboard';
 
 // Protected Route - samo ulogovani korisnici mogu pristupiti
 const ProtectedRoute: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   const { isAuthenticated } = useAuth();
   return isAuthenticated ? <>{children}</> : <Navigate to="/login" />;
+};
+
+// Admin Route - samo ADMIN može pristupiti
+const AdminRoute: React.FC<{ children: React.ReactNode }> = ({ children }) => {
+  const { isAuthenticated, user } = useAuth();
+  
+  if (!isAuthenticated) {
+    return <Navigate to="/login" />;
+  }
+  
+  if (user?.role !== 'ADMIN') {
+    // Ako nije ADMIN, redirect na dashboard
+    return <Navigate to="/dashboard" />;
+  }
+  
+  return <>{children}</>;
 };
 
 // Dashboard komponenta - redirect prema ulozi
@@ -27,26 +44,6 @@ const Dashboard: React.FC = () => {
   return <CustomerDashboard />;
 };
 
-// Privremene komponente za admin i stylist (biće dodate u Fazama 4 i 5)
-const AdminDashboard: React.FC = () => {
-  const { user, logout } = useAuth();
-  return (
-    <div className="min-h-screen bg-gray-50 py-12 px-4">
-      <div className="max-w-7xl mx-auto">
-        <div className="bg-white rounded-lg shadow p-6">
-          <h1 className="text-3xl font-bold mb-4">Admin Dashboard</h1>
-          <p className="text-gray-600 mb-4">Dobrodošli, {user?.name}!</p>
-          <button
-            onClick={logout}
-            className="px-4 py-2 bg-red-600 text-white rounded hover:bg-red-700"
-          >
-            Odjavi se
-          </button>
-        </div>
-      </div>
-    </div>
-  );
-};
 
 const StylistPanel: React.FC = () => {
   const { user, logout } = useAuth();
@@ -97,9 +94,9 @@ function App() {
           <Route
             path="/admin/dashboard"
             element={
-              <ProtectedRoute>
+              <AdminRoute>
                 <AdminDashboard />
-              </ProtectedRoute>
+              </AdminRoute>
             }
           />
           <Route
