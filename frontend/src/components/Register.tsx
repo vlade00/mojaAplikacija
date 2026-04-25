@@ -4,12 +4,22 @@ import React, { useState } from 'react';
 import { useAuth } from '../context/AuthContext';
 import { useNavigate, Link } from 'react-router-dom';
 
+/** Osnovna provera: lokalni@domen.tld (bar 2 znaka u TLD), bez razmaka. */
+const isValidEmailFormat = (value: string): boolean => {
+  const v = value.trim();
+  if (!v || /\s/.test(v)) return false;
+  return /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/i.test(v);
+};
+
 const Register: React.FC = () => {
   const [name, setName] = useState('');
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [phone, setPhone] = useState('');
   const [error, setError] = useState('');
+  const [nameError, setNameError] = useState('');
+  const [emailFormatError, setEmailFormatError] = useState('');
+  const [passwordError, setPasswordError] = useState('');
   const [loading, setLoading] = useState(false);
 
   const { register } = useAuth();
@@ -18,13 +28,51 @@ const Register: React.FC = () => {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setError('');
+    setNameError('');
+    setEmailFormatError('');
+    setPasswordError('');
+
+    const trimmedName = name.trim();
+    if (!trimmedName) {
+      setNameError('Ime i prezime je obavezno.');
+      return;
+    }
+    // Minimalno: 2 reči (ime + prezime), bez cifara.
+    const parts = trimmedName.split(/\s+/).filter(Boolean);
+    if (parts.length < 2) {
+      setNameError('Unesite ime i prezime (npr. "Marko Marković").');
+      return;
+    }
+    if (/\d/.test(trimmedName)) {
+      setNameError('Ime i prezime ne može sadržati brojeve.');
+      return;
+    }
+
+    const trimmedEmail = email.trim();
+    if (!isValidEmailFormat(trimmedEmail)) {
+      setEmailFormatError(
+        'Unesite ispravnu email adresu (npr. ime.prezime@gmail.com ili klijent@domen.rs).'
+      );
+      return;
+    }
+
+    const trimmedPassword = password;
+    if (!trimmedPassword) {
+      setPasswordError('Lozinka je obavezna.');
+      return;
+    }
+    if (trimmedPassword.length < 6) {
+      setPasswordError('Lozinka mora imati najmanje 6 karaktera.');
+      return;
+    }
+
     setLoading(true);
 
     try {
       await register({
-        name,
-        email,
-        password,
+        name: trimmedName,
+        email: trimmedEmail,
+        password: trimmedPassword,
         phone: phone || undefined,
         role: 'CUSTOMER',
       });
@@ -51,7 +99,7 @@ const Register: React.FC = () => {
             Napravite novi nalog
           </p>
         </div>
-        <form className="mt-8 space-y-6" onSubmit={handleSubmit}>
+        <form className="mt-8 space-y-6" onSubmit={handleSubmit} noValidate>
           {error && (
             <div className="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded">
               {error}
@@ -66,12 +114,37 @@ const Register: React.FC = () => {
                 id="name"
                 name="name"
                 type="text"
+                autoComplete="name"
                 required
-                className="mt-1 appearance-none relative block w-full px-3 py-2 border border-gray-300 placeholder-gray-500 text-gray-900 rounded-md focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
+                aria-invalid={nameError ? true : undefined}
+                aria-describedby={nameError ? 'name-error' : undefined}
+                className={`mt-1 appearance-none relative block w-full px-3 py-2 border placeholder-gray-500 text-gray-900 rounded-md focus:outline-none focus:ring-indigo-500 sm:text-sm ${
+                  nameError
+                    ? 'border-red-500 focus:border-red-500 ring-1 ring-red-200'
+                    : 'border-gray-300 focus:border-indigo-500'
+                }`}
                 placeholder="Ime i prezime"
                 value={name}
-                onChange={(e) => setName(e.target.value)}
+                onChange={(e) => {
+                  setName(e.target.value);
+                  setNameError('');
+                }}
+                onBlur={() => {
+                  const t = name.trim();
+                  if (!t) return;
+                  const parts = t.split(/\s+/).filter(Boolean);
+                  if (parts.length < 2) {
+                    setNameError('Unesite ime i prezime (npr. "Marko Marković").');
+                  } else if (/\d/.test(t)) {
+                    setNameError('Ime i prezime ne može sadržati brojeve.');
+                  }
+                }}
               />
+              {nameError && (
+                <p id="name-error" className="mt-1 text-sm text-red-600" role="alert">
+                  {nameError}
+                </p>
+              )}
             </div>
             <div>
               <label htmlFor="email" className="block text-sm font-medium text-gray-700">
@@ -81,12 +154,35 @@ const Register: React.FC = () => {
                 id="email"
                 name="email"
                 type="email"
+                autoComplete="email"
                 required
-                className="mt-1 appearance-none relative block w-full px-3 py-2 border border-gray-300 placeholder-gray-500 text-gray-900 rounded-md focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
+                aria-invalid={emailFormatError ? true : undefined}
+                aria-describedby={emailFormatError ? 'email-error' : undefined}
+                className={`mt-1 appearance-none relative block w-full px-3 py-2 border placeholder-gray-500 text-gray-900 rounded-md focus:outline-none focus:ring-indigo-500 sm:text-sm ${
+                  emailFormatError
+                    ? 'border-red-500 focus:border-red-500 ring-1 ring-red-200'
+                    : 'border-gray-300 focus:border-indigo-500'
+                }`}
                 placeholder="Email adresa"
                 value={email}
-                onChange={(e) => setEmail(e.target.value)}
+                onChange={(e) => {
+                  setEmail(e.target.value);
+                  setEmailFormatError('');
+                }}
+                onBlur={() => {
+                  const t = email.trim();
+                  if (t && !isValidEmailFormat(t)) {
+                    setEmailFormatError(
+                      'Email mora da sadrži znak @ i domen (npr. nesto@example.com).'
+                    );
+                  }
+                }}
               />
+              {emailFormatError && (
+                <p id="email-error" className="mt-1 text-sm text-red-600" role="alert">
+                  {emailFormatError}
+                </p>
+              )}
             </div>
             <div>
               <label htmlFor="password" className="block text-sm font-medium text-gray-700">
@@ -96,12 +192,33 @@ const Register: React.FC = () => {
                 id="password"
                 name="password"
                 type="password"
+                autoComplete="new-password"
                 required
-                className="mt-1 appearance-none relative block w-full px-3 py-2 border border-gray-300 placeholder-gray-500 text-gray-900 rounded-md focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
+                aria-invalid={passwordError ? true : undefined}
+                aria-describedby={passwordError ? 'password-error' : undefined}
+                className={`mt-1 appearance-none relative block w-full px-3 py-2 border placeholder-gray-500 text-gray-900 rounded-md focus:outline-none focus:ring-indigo-500 sm:text-sm ${
+                  passwordError
+                    ? 'border-red-500 focus:border-red-500 ring-1 ring-red-200'
+                    : 'border-gray-300 focus:border-indigo-500'
+                }`}
                 placeholder="Lozinka"
                 value={password}
-                onChange={(e) => setPassword(e.target.value)}
+                onChange={(e) => {
+                  setPassword(e.target.value);
+                  setPasswordError('');
+                }}
+                onBlur={() => {
+                  if (!password) return;
+                  if (password.length < 6) {
+                    setPasswordError('Lozinka mora imati najmanje 6 karaktera.');
+                  }
+                }}
               />
+              {passwordError && (
+                <p id="password-error" className="mt-1 text-sm text-red-600" role="alert">
+                  {passwordError}
+                </p>
+              )}
             </div>
             <div>
               <label htmlFor="phone" className="block text-sm font-medium text-gray-700">

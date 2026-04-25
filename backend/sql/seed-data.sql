@@ -74,7 +74,7 @@ INSERT INTO "Service" (name, description, duration, price, category, "isActive",
 ON CONFLICT DO NOTHING;
 
 -- 4. Poveži frizere sa uslugama
--- Marija - ŽENSKE usluge (žensko šišanje, farbanje, nega)
+-- Marija - ŽENSKE usluge (žensko šišanje, farbanje i nega) - BEZ muškog šišanja i brade
 INSERT INTO "ServiceStylist" ("stylistId", "serviceId")
 SELECT s.id, se.id
 FROM "Stylist" s
@@ -83,7 +83,7 @@ WHERE s."userId" = (SELECT id FROM "User" WHERE email = 'marija@salon.com')
 AND se.category IN ('WOMENS_HAIRCUT', 'COLORING', 'CARE')
 ON CONFLICT ("stylistId", "serviceId") DO NOTHING;
 
--- Stefan i Marko - MUŠKE usluge (muško šišanje i brada)
+-- Stefan i Marko - SAMO MUŠKE usluge (muško šišanje i brada)
 INSERT INTO "ServiceStylist" ("stylistId", "serviceId")
 SELECT s.id, se.id
 FROM "Stylist" s

@@ -6,6 +6,8 @@ export interface User {
   email: string;
   phone?: string;
   role: 'CUSTOMER' | 'STYLIST' | 'ADMIN';
+  avatarUrl?: string;
+  createdAt?: string;
 }
 
 export interface AuthResponse {

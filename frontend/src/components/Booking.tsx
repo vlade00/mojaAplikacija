@@ -5,10 +5,19 @@ import { useNavigate } from 'react-router-dom';
 import { getServices, Service } from '../services/serviceService';
 import { getStylists, Stylist } from '../services/stylistService';
 import { getStylistServices } from '../services/stylistService';
-import { createAppointment, CreateAppointmentRequest } from '../services/appointmentService';
+import {
+  createAppointment,
+  CreateAppointmentRequest,
+  getAvailableTimes,
+  getAppointments,
+  Appointment,
+} from '../services/appointmentService';
 import { useAuth } from '../context/AuthContext';
 
 type BookingStep = 1 | 2 | 3 | 4;
+
+const DAILY_BOOKING_ERROR =
+  'Već ste rezervisali termin danas. Možete imati samo jednu rezervaciju po danu.';
 
 const Booking: React.FC = () => {
   const { user } = useAuth();
@@ -27,7 +36,11 @@ const Booking: React.FC = () => {
   
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string>('');
+  const [successMessage, setSuccessMessage] = useState<string>('');
   const [submitting, setSubmitting] = useState(false);
+  const [bookedTimes, setBookedTimes] = useState<Set<string>>(new Set());
+  const [availableTimes, setAvailableTimes] = useState<Set<string>>(new Set());
+  const [loadingAvailableTimes, setLoadingAvailableTimes] = useState(false);
 
   // Učitaj usluge i frizere
   useEffect(() => {
@@ -107,15 +120,89 @@ const Booking: React.FC = () => {
     // loadStylistsForService će se pozvati automatski u useEffect kada se promeni selectedService
   };
 
-  const handleStylistSelect = (stylist: Stylist) => {
+  const handleStylistSelect = async (stylist: Stylist) => {
     setSelectedStylist(stylist);
     setCurrentStep(3);
+    // Ako je datum već izabran, učitaj dostupna vremena
+    if (selectedDate) {
+      await handleDateSelect(selectedDate);
+    }
   };
 
-  const handleDateSelect = (date: string) => {
+  const handleDateSelect = async (date: string) => {
+    // Proveri da li je radni dan (ponedeljak-petak)
+    const selectedDateObj = new Date(date);
+    const dayOfWeek = selectedDateObj.getDay(); // 0 = nedelja, 1 = ponedeljak, ..., 6 = subota
+    
+    if (dayOfWeek === 0 || dayOfWeek === 6) {
+      setError('Rezervacije su moguće samo radnim danima (ponedeljak-petak)');
+      setSelectedDate('');
+      setSelectedTime('');
+      setBookedTimes(new Set());
+      setAvailableTimes(new Set());
+      return;
+    }
+
+    if (user?.id) {
+      try {
+        const allAppointments: Appointment[] = await getAppointments(true);
+        const alreadyThatDay = allAppointments.some(
+          (a) =>
+            a.customer?.id === user.id &&
+            a.status !== 'CANCELLED' &&
+            a.date === date
+        );
+        if (alreadyThatDay) {
+          setError(DAILY_BOOKING_ERROR);
+          setSelectedDate('');
+          setSelectedTime('');
+          setBookedTimes(new Set());
+          setAvailableTimes(new Set());
+          return;
+        }
+      } catch (err) {
+        console.error('Error checking daily booking:', err);
+      }
+    }
+
     setSelectedDate(date);
     // Resetuj vreme kada se promeni datum
     setSelectedTime('');
+    setError('');
+    
+    // Učitaj dostupna vremena za izabranog frizera i datum
+    // VAŽNO: Proveri da li je frizer izabran pre poziva API-ja
+    if (!selectedStylist) {
+      console.warn('Stylist not selected yet, cannot load available times');
+      setBookedTimes(new Set());
+      setAvailableTimes(new Set());
+      return;
+    }
+    
+    try {
+      setLoadingAvailableTimes(true);
+      setError(''); // Obriši prethodne greške
+      const result = await getAvailableTimes(selectedStylist.id, date);
+      setBookedTimes(new Set(result.bookedTimes));
+      setAvailableTimes(new Set(result.availableTimes));
+    } catch (err: any) {
+      console.error('Error loading available times:', err);
+      const errorMessage = err.response?.data?.error || err.message || 'Greška pri učitavanju dostupnih termina';
+      console.error('Error details:', {
+        status: err.response?.status,
+        message: errorMessage,
+        stylistId: selectedStylist?.id,
+        date: date
+      });
+      // Ne postavljaj error ako je 400 (možda je nedelja/subota koja je već proverena)
+      if (err.response?.status !== 400) {
+        setError(errorMessage);
+      }
+      setBookedTimes(new Set()); // Resetuj zauzeta vremena u slučaju greške
+      setAvailableTimes(new Set());
+    } finally {
+      setLoadingAvailableTimes(false);
+    }
   };
 
   const handleTimeSelect = (time: string) => {
@@ -129,11 +216,27 @@ const Booking: React.FC = () => {
       setError('Molimo popunite sva obavezna polja');
       return;
     }
+    if (!user?.id) {
+      setError('Morate biti prijavljeni da biste rezervisali termin');
+      return;
+    }
 
     setSubmitting(true);
     setError('');
 
     try {
+      const allAppointments: Appointment[] = await getAppointments(true);
+      const alreadyBookedThatDay = allAppointments.some(
+        (a) =>
+          a.customer?.id === user.id &&
+          a.status !== 'CANCELLED' &&
+          a.date === selectedDate
+      );
+      if (alreadyBookedThatDay) {
+        setError(DAILY_BOOKING_ERROR);
+        return;
+      }
+
       const appointmentData: CreateAppointmentRequest = {
         stylistId: selectedStylist.id,
         serviceId: selectedService.id,
@@ -144,10 +247,29 @@ const Booking: React.FC = () => {
 
       await createAppointment(appointmentData);
       
-      // Redirect na dashboard sa porukom o uspehu
-      navigate('/dashboard?booking=success');
+      // Prikaži uspešnu poruku
+      setSuccessMessage('Uspešno ste kreirali rezervaciju!');
+      setError('');
+      
+      // Redirect na dashboard nakon 2 sekunde
+      setTimeout(() => {
+        navigate('/dashboard?booking=success');
+      }, 2000);
     } catch (err: any) {
-      setError(err.response?.data?.error || 'Greška pri kreiranju rezervacije');
+      const data = err.response?.data;
+      let apiMessage = '';
+      if (data && typeof data === 'object') {
+        apiMessage = String(data.error ?? data.message ?? '');
+      } else if (typeof data === 'string') {
+        apiMessage = data;
+      }
+      // Stari `dist` backend često vraća engleski "Failed to create appointment" za DB/trigger greške
+      if (/failed to create appointment/i.test(apiMessage)) {
+        setError(DAILY_BOOKING_ERROR);
+      } else {
+        setError(apiMessage || 'Greška pri kreiranju rezervacije');
+      }
+      setSuccessMessage(''); // Obriši success poruku ako dođe do greške
     } finally {
       setSubmitting(false);
     }
@@ -155,9 +277,9 @@ const Booking: React.FC = () => {
 
   const getCategoryLabel = (category: string) => {
     const labels: { [key: string]: string } = {
-      MENS_HAIRCUT: 'Muško šišanje',
+      MENS_HAIRCUT: 'Mu\u0161ko \u0161i\u0161anje',
       BEARD: 'Brada',
-      WOMENS_HAIRCUT: 'Žensko šišanje',
+      WOMENS_HAIRCUT: '\u017Densko \u0161i\u0161anje',
       COLORING: 'Farbanje',
       CARE: 'Nega',
     };
@@ -173,20 +295,63 @@ const Booking: React.FC = () => {
       .substring(0, 2);
   };
 
-  // Generiši dostupna vremena (8:00 - 18:00, svakih 30 minuta)
+  // Generiši dostupna vremena (08:00 - 16:00, svakih 30 minuta)
   const generateTimeSlots = () => {
     const slots: string[] = [];
-    for (let hour = 8; hour < 18; hour++) {
+    for (let hour = 8; hour < 16; hour++) {
       slots.push(`${hour.toString().padStart(2, '0')}:00`);
       slots.push(`${hour.toString().padStart(2, '0')}:30`);
     }
     return slots;
+  };
+  
+  const isTimeInPastForSelectedDate = (time: string): boolean => {
+    if (!selectedDate) return false;
+    const [h, m] = time.split(':').map(Number);
+    if (!Number.isFinite(h) || !Number.isFinite(m)) return true;
+
+    const selected = new Date(selectedDate);
+    const now = new Date();
+
+    const isSameDay =
+      selected.getFullYear() === now.getFullYear() &&
+      selected.getMonth() === now.getMonth() &&
+      selected.getDate() === now.getDate();
+
+    if (!isSameDay) return false;
+
+    const slotMinutes = h * 60 + m;
+    const nowMinutes = now.getHours() * 60 + now.getMinutes();
+    return slotMinutes <= nowMinutes;
+  };
+
+  // Proveri da li je vreme dostupno
+  const isTimeAvailable = (time: string): boolean => {
+    // Backend već filtrira zauzete i (za danas) prošle slotove, ali dodatno zaključavamo i na UI.
+    if (isTimeInPastForSelectedDate(time)) return false;
+    if (availableTimes.size > 0) return availableTimes.has(time);
+    return !bookedTimes.has(time);
   };
 
   // Minimalna datum - danas
   const getMinDate = () => {
     const today = new Date();
     return today.toISOString().split('T')[0];
+  };
+  
+  // Funkcija za proveru da li je datum radni dan
+  const isWeekday = (dateString: string): boolean => {
+    const date = new Date(dateString);
+    const dayOfWeek = date.getDay();
+    return dayOfWeek !== 0 && dayOfWeek !== 6; // 0 = nedelja, 6 = subota
+  };
+  
+  // Funkcija za oninvalid event handler - spreči izbor vikenda
+  const handleDateInvalid = (e: React.FormEvent<HTMLInputElement>) => {
+    const input = e.currentTarget;
+    if (input.validity.patternMismatch) {
+      setError('Rezervacije su moguće samo radnim danima (ponedeljak-petak)');
+    }
   };
 
   // Grupiši usluge po kategorijama
@@ -247,7 +412,7 @@ const Booking: React.FC = () => {
                   >
                     {step === 1 && 'Usluga'}
                     {step === 2 && 'Frizer'}
-                    {step === 3 && 'Datum & Vreme'}
+                    {step === 3 && 'Datum i Vreme'}
                     {step === 4 && 'Pregled'}
                   </span>
                 </div>
@@ -262,6 +427,21 @@ const Booking: React.FC = () => {
             ))}
           </div>
         </div>
+
+        {/* Success Message - Fiksno na vrhu ekrana */}
+        {successMessage && (
+          <div className="fixed top-4 left-1/2 transform -translate-x-1/2 z-50 w-full max-w-md mx-4 animate-slide-down">
+            <div className="bg-gradient-to-r from-green-500 to-emerald-500 text-white px-6 py-4 rounded-2xl shadow-2xl border-4 border-white flex items-center gap-4">
+              <div className="w-12 h-12 bg-white bg-opacity-20 rounded-full flex items-center justify-center flex-shrink-0">
+                <i className="fas fa-check-circle text-2xl"></i>
+              </div>
+              <div className="flex-1">
+                <p className="font-bold text-lg">{successMessage}</p>
+                <p className="text-sm text-green-50 mt-1">Preusmeravanje na dashboard...</p>
+              </div>
+            </div>
+          </div>
+        )}
 
         {/* Error Message */}
         {error && (
@@ -389,39 +569,65 @@ const Booking: React.FC = () => {
               <div className="space-y-6">
                 <div>
                   <label className="block text-sm font-semibold text-gray-700 mb-2">
-                    <i className="fas fa-calendar mr-2 text-indigo-500"></i>Datum
+                    <i className="fas fa-calendar mr-2 text-indigo-500"></i>Datum (samo radni dani)
                   </label>
                   <input
                     type="date"
                     min={getMinDate()}
                     value={selectedDate}
                     onChange={(e) => handleDateSelect(e.target.value)}
+                    onInvalid={handleDateInvalid}
                     className="w-full p-4 border-2 border-gray-200 rounded-xl focus:border-indigo-500 focus:ring-2 focus:ring-indigo-200 transition"
                     required
                   />
+                  <p className="text-xs text-gray-500 mt-1">
+                    <i className="fas fa-info-circle mr-1"></i>
+                    Rezervacije su moguće samo radnim danima (ponedeljak-petak)
+                  </p>
                 </div>
 
                 {selectedDate && (
                   <div>
                     <label className="block text-sm font-semibold text-gray-700 mb-2">
-                      <i className="fas fa-clock mr-2 text-indigo-500"></i>Vreme
+                      <i className="fas fa-clock mr-2 text-indigo-500"></i>Vreme (08:00 - 16:00)
+                      {loadingAvailableTimes && (
+                        <span className="ml-2 text-sm text-gray-500">
+                          <i className="fas fa-spinner fa-spin"></i> Proveravam dostupnost...
+                        </span>
+                      )}
                     </label>
                     <div className="grid grid-cols-4 gap-3">
-                      {generateTimeSlots().map((time) => (
-                        <button
-                          key={time}
-                          type="button"
-                          onClick={() => handleTimeSelect(time)}
-                          className={`p-3 rounded-xl font-semibold transition ${
-                            selectedTime === time
-                              ? 'bg-indigo-600 text-white'
-                              : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
-                          }`}
-                        >
-                          {time}
-                        </button>
-                      ))}
+                      {generateTimeSlots().map((time) => {
+                        const available = isTimeAvailable(time);
+                        return (
+                          <button
+                            key={time}
+                            type="button"
+                            onClick={() => available && handleTimeSelect(time)}
+                            disabled={!available}
+                            className={`p-3 rounded-xl font-semibold transition ${
+                              !available
+                                ? 'bg-red-100 text-red-400 cursor-not-allowed opacity-50'
+                                : selectedTime === time
+                                ? 'bg-indigo-600 text-white'
+                                : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
+                            }`}
+                            title={!available ? 'Termin nije dostupan' : ''}
+                          >
+                            {time}
+                            {!available && (
+                              <i className="fas fa-lock ml-1 text-xs"></i>
+                            )}
+                          </button>
+                        );
+                      })}
                     </div>
+                    {bookedTimes.size > 0 && (
+                      <p className="text-xs text-gray-500 mt-2">
+                        <i className="fas fa-info-circle mr-1"></i>
+                        Crveno označeni termini su zauzeti
+                      </p>
+                    )}
                   </div>
                 )}
               </div>

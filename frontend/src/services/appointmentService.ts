@@ -41,8 +41,10 @@ export interface CreateAppointmentRequest {
 }
 
 // GET /api/appointments - Vrati sve rezervacije
-export const getAppointments = async (): Promise<Appointment[]> => {
-  const response = await api.get<Appointment[]>('/appointments');
+export const getAppointments = async (forceRefresh = false): Promise<Appointment[]> => {
+  // Dodaj cache-busting parametar ako je potrebno forsirano osvežavanje
+  const url = forceRefresh ? `/appointments?_t=${Date.now()}` : '/appointments';
+  const response = await api.get<Appointment[]>(url);
   return response.data;
 };
 
@@ -67,5 +69,21 @@ export const updateAppointment = async (id: number, data: Partial<CreateAppointm
 // DELETE /api/appointments/:id - Obriši rezervaciju
 export const deleteAppointment = async (id: number): Promise<void> => {
   await api.delete(`/appointments/${id}`);
+};
+
+// GET /api/appointments/available/:stylistId - Vrati dostupna vremena za frizera
+export const getAvailableTimes = async (stylistId: number, date: string): Promise<{ availableTimes: string[]; bookedTimes: string[] }> => {
+  console.log('[getAvailableTimes] Calling API:', { stylistId, date });
+  try {
+    const response = await api.get<{ availableTimes: string[]; bookedTimes: string[] }>(`/appointments/available/${stylistId}`, {
+      params: { date }
+    });
+    console.log('[getAvailableTimes] API Response:', response.data);
+    return response.data;
+  } catch (error: any) {
+    console.error('[getAvailableTimes] API Error:', error);
+    console.error('[getAvailableTimes] Error response:', error.response?.data);
+    throw error;
+  }
 };
 

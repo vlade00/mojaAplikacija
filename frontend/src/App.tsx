@@ -6,6 +6,7 @@ import Register from './components/Register';
 import CustomerDashboard from './components/CustomerDashboard';
 import Booking from './components/Booking';
 import AdminDashboard from './components/AdminDashboard';
+import StylistPanel from './components/StylistPanel';
 
 // Protected Route - samo ulogovani korisnici mogu pristupiti
 const ProtectedRoute: React.FC<{ children: React.ReactNode }> = ({ children }) => {
@@ -29,6 +30,22 @@ const AdminRoute: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   return <>{children}</>;
 };
 
+// Stylist Route - samo STYLIST može pristupiti
+const StylistRoute: React.FC<{ children: React.ReactNode }> = ({ children }) => {
+  const { isAuthenticated, user } = useAuth();
+  
+  if (!isAuthenticated) {
+    return <Navigate to="/login" />;
+  }
+  
+  if (user?.role !== 'STYLIST') {
+    // Ako nije STYLIST, redirect na dashboard
+    return <Navigate to="/dashboard" />;
+  }
+  
+  return <>{children}</>;
+};
+
 // Dashboard komponenta - redirect prema ulozi
 const Dashboard: React.FC = () => {
   const { user } = useAuth();
@@ -45,25 +62,6 @@ const Dashboard: React.FC = () => {
 };
 
 
-const StylistPanel: React.FC = () => {
-  const { user, logout } = useAuth();
-  return (
-    <div className="min-h-screen bg-gray-50 py-12 px-4">
-      <div className="max-w-7xl mx-auto">
-        <div className="bg-white rounded-lg shadow p-6">
-          <h1 className="text-3xl font-bold mb-4">Stylist Panel</h1>
-          <p className="text-gray-600 mb-4">Dobrodošli, {user?.name}!</p>
-          <button
-            onClick={logout}
-            className="px-4 py-2 bg-red-600 text-white rounded hover:bg-red-700"
-          >
-            Odjavi se
-          </button>
-        </div>
-      </div>
-    </div>
-  );
-};
 
 function App() {
   return (
@@ -102,9 +100,9 @@ function App() {
           <Route
             path="/stylist/panel"
             element={
-              <ProtectedRoute>
+              <StylistRoute>
                 <StylistPanel />
-              </ProtectedRoute>
+              </StylistRoute>
             }
           />
           

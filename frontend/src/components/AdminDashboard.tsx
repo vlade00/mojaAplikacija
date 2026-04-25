@@ -1,12 +1,13 @@
 // Admin Dashboard - Glavna stranica za administratore
 
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { useAuth } from '../context/AuthContext';
 import { useNavigate } from 'react-router-dom';
 import { 
   getStats, 
   AdminStats, 
-  getUsers, 
+  getUsers,
+  createUser,
   AdminUser,
   getStylists as getAdminStylists,
   AdminStylist,
@@ -15,9 +16,14 @@ import {
   updateStylist,
   updateUser,
   deleteUser,
-  deleteStylist
+  deleteStylist,
+  getAppointments,
+  AdminAppointment,
+  deleteAppointment,
+  assignServicesToStylist
 } from '../services/adminService';
 import { getServices, Service } from '../services/serviceService';
+import { updateAppointment } from '../services/appointmentService';
 
 const AdminDashboard: React.FC = () => {
   const { user, logout } = useAuth();
@@ -26,14 +32,18 @@ const AdminDashboard: React.FC = () => {
   const [stats, setStats] = useState<AdminStats | null>(null);
   const [users, setUsers] = useState<AdminUser[]>([]);
   const [stylists, setStylists] = useState<AdminStylist[]>([]);
+  const [appointments, setAppointments] = useState<AdminAppointment[]>([]);
   const [services, setServices] = useState<Service[]>([]);
   const [loading, setLoading] = useState(true);
   const [usersLoading, setUsersLoading] = useState(false);
   const [stylistsLoading, setStylistsLoading] = useState(false);
+  const [appointmentsLoading, setAppointmentsLoading] = useState(false);
   const [activeTab, setActiveTab] = useState<'overview' | 'users' | 'stylists' | 'appointments'>('overview');
   const [searchTerm, setSearchTerm] = useState('');
   const [roleFilter, setRoleFilter] = useState<'ALL' | 'CUSTOMER' | 'STYLIST' | 'ADMIN'>('ALL');
   const [stylistSearchTerm, setStylistSearchTerm] = useState('');
+  const [appointmentSearchTerm, setAppointmentSearchTerm] = useState('');
+  const [appointmentStatusFilter, setAppointmentStatusFilter] = useState<'ALL' | 'PENDING' | 'CONFIRMED' | 'COMPLETED' | 'CANCELLED'>('ALL');
   const [showCreateStylistModal, setShowCreateStylistModal] = useState(false);
   const [showCreateUserModal, setShowCreateUserModal] = useState(false);
   const [showEditUserModal, setShowEditUserModal] = useState(false);
@@ -41,6 +51,11 @@ const AdminDashboard: React.FC = () => {
   const [showAssignServicesModal, setShowAssignServicesModal] = useState(false);
   const [selectedUser, setSelectedUser] = useState<AdminUser | null>(null);
   const [selectedStylist, setSelectedStylist] = useState<AdminStylist | null>(null);
+  const [showAllAppointments, setShowAllAppointments] = useState(false);
+  const [showAllUsers, setShowAllUsers] = useState(false);
+  const APPOINTMENTS_LIMIT = 5; // Prikaži prvih 5, ostale na "Prikaži više"
+  const USERS_LIMIT = 5; // Prikaži prvih 5, ostale na "Prikaži više"
+  const statsLoadId = useRef(0);
 
   useEffect(() => {
     if (activeTab === 'overview') {
@@ -50,18 +65,22 @@ const AdminDashboard: React.FC = () => {
     } else if (activeTab === 'stylists') {
       loadStylists();
       loadServices();
+    } else if (activeTab === 'appointments') {
+      loadAppointments();
     }
   }, [activeTab]);
 
   const loadStats = async () => {
+    const id = ++statsLoadId.current;
     try {
       setLoading(true);
       const data = await getStats();
+      if (id !== statsLoadId.current) return;
       setStats(data);
     } catch (error) {
       console.error('Error loading stats:', error);
     } finally {
-      setLoading(false);
+      if (id === statsLoadId.current) setLoading(false);
     }
   };
 
@@ -95,6 +114,18 @@ const AdminDashboard: React.FC = () => {
       setServices(data.filter(s => s.isActive));
     } catch (error) {
       console.error('Error loading services:', error);
+    }
+  };
+
+  const loadAppointments = async () => {
+    try {
+      setAppointmentsLoading(true);
+      const data = await getAppointments();
+      setAppointments(data);
+    } catch (error) {
+      console.error('Error loading appointments:', error);
+    } finally {
+      setAppointmentsLoading(false);
     }
   };
 
@@ -141,12 +172,13 @@ const AdminDashboard: React.FC = () => {
     setShowAssignServicesModal(true);
   };
 
-  const formatCurrency = (amount: number) => {
+  const formatCurrency = (amount: number | string) => {
+    const n = typeof amount === 'string' ? parseFloat(amount) : amount;
     return new Intl.NumberFormat('sr-RS', {
       style: 'currency',
       currency: 'RSD',
       minimumFractionDigits: 0,
-    }).format(amount);
+    }).format(Number.isFinite(n) ? n : 0);
   };
 
   const formatDate = (dateString: string) => {
@@ -173,6 +205,61 @@ const AdminDashboard: React.FC = () => {
       ADMIN: 'bg-red-100 text-red-700',
     };
     return styles[role] || 'bg-gray-100 text-gray-700';
+  };
+
+  const getStatusLabel = (status: string) => {
+    const labels: { [key: string]: string } = {
+      PENDING: 'Čeka potvrdu',
+      CONFIRMED: 'Potvrđeno',
+      COMPLETED: 'Završeno',
+      CANCELLED: 'Otkazano',
+    };
+    return labels[status] || status;
+  };
+
+  const getStatusBadge = (status: string) => {
+    const styles: { [key: string]: string } = {
+      PENDING: 'bg-yellow-100 text-yellow-700',
+      CONFIRMED: 'bg-green-100 text-green-700',
+      COMPLETED: 'bg-blue-100 text-blue-700',
+      CANCELLED: 'bg-red-100 text-red-700',
+    };
+    return styles[status] || 'bg-gray-100 text-gray-700';
+  };
+
+  const filteredAppointments = appointments.filter((appointment) => {
+    const matchesSearch = 
+      appointment.customer.name.toLowerCase().includes(appointmentSearchTerm.toLowerCase()) ||
+      appointment.stylist.name.toLowerCase().includes(appointmentSearchTerm.toLowerCase()) ||
+      appointment.service.name.toLowerCase().includes(appointmentSearchTerm.toLowerCase()) ||
+      (appointment.customer.email && appointment.customer.email.toLowerCase().includes(appointmentSearchTerm.toLowerCase()));
+    
+    const matchesStatus = appointmentStatusFilter === 'ALL' || appointment.status === appointmentStatusFilter;
+    
+    return matchesSearch && matchesStatus;
+  });
+
+  const handleUpdateAppointmentStatus = async (appointmentId: number, newStatus: string) => {
+    try {
+      await updateAppointment(appointmentId, { status: newStatus });
+      await loadAppointments();
+      alert('Status rezervacije je uspešno ažuriran');
+    } catch (error: any) {
+      alert(error.response?.data?.error || 'Greška pri ažuriranju statusa rezervacije');
+    }
+  };
+
+  const handleDeleteAppointment = async (appointmentId: number) => {
+    if (!window.confirm('Da li ste sigurni da želite da obrišete ovu rezervaciju?')) {
+      return;
+    }
+    try {
+      await deleteAppointment(appointmentId);
+      await loadAppointments();
+      alert('Rezervacija je uspešno obrisana');
+    } catch (error: any) {
+      alert(error.response?.data?.error || 'Greška pri brisanju rezervacije');
+    }
   };
 
   // Filtrirane korisnike
@@ -328,6 +415,10 @@ const AdminDashboard: React.FC = () => {
                     <div className="flex justify-between items-center">
                       <div>
                         <p className="text-sm text-gray-600 mb-1">Ukupan prihod</p>
+                        <p className="text-xs text-gray-500 mb-1">
+                          Zbir cena svih rezervacija sa statusom <span className="font-semibold">Završeno</span> (ceo salon).
+                        </p>
+                        
                         <p className="text-3xl font-bold text-gray-900">
                           {formatCurrency(stats.revenue.total)}
                         </p>
@@ -357,9 +448,13 @@ const AdminDashboard: React.FC = () => {
                   </div>
                 </div>
 
-                {/* Popular Services */}
+                {/* Popular Services — samo završeni termini (COMPLETED), kao i „Ukupan prihod“ */}
                 <div className="bg-white rounded-2xl shadow-lg p-6">
-                  <h3 className="text-xl font-bold text-gray-900 mb-4">Najpopularnije usluge</h3>
+                  <h3 className="text-xl font-bold text-gray-900 mb-1">Najpopularnije usluge</h3>
+                  <p className="text-sm text-gray-500 mb-4">
+                    Za svaku uslugu: koliko puta je termin <span className="font-semibold text-gray-700">označen kao završen</span>,
+                    i koliki je <span className="font-semibold text-gray-700">zbir cena</span> tih završenih termina (RSD).
+                  </p>
                   <div className="space-y-3">
                     {stats.popularServices.map((service, index) => (
                       <div
@@ -371,9 +466,12 @@ const AdminDashboard: React.FC = () => {
                           <p className="text-sm text-gray-600">{service.category}</p>
                         </div>
                         <div className="text-right">
-                          <p className="font-bold text-indigo-600">{service.count} rezervacija</p>
+                          <p className="text-sm text-gray-700">
+                            Broj završenih:{' '}
+                            <span className="font-bold text-indigo-600">{service.count}</span>
+                          </p>
                           <p className="text-sm text-gray-600">
-                            {formatCurrency(parseFloat(service.revenue || '0'))}
+                            Prihod (zbir cena): {formatCurrency(parseFloat(service.revenue || '0'))}
                           </p>
                         </div>
                       </div>
@@ -394,7 +492,11 @@ const AdminDashboard: React.FC = () => {
           <div>
             <div className="flex justify-between items-center mb-6">
               <h2 className="text-3xl font-bold text-gray-900">Upravljanje korisnicima</h2>
-              <button className="px-6 py-3 bg-indigo-600 text-white rounded-xl font-semibold hover:bg-indigo-700 transition">
+              <button
+                type="button"
+                onClick={() => setShowCreateUserModal(true)}
+                className="px-6 py-3 bg-indigo-600 text-white rounded-xl font-semibold hover:bg-indigo-700 transition"
+              >
                 <i className="fas fa-plus mr-2"></i>Novi korisnik
               </button>
             </div>
@@ -445,20 +547,21 @@ const AdminDashboard: React.FC = () => {
                   <p className="text-gray-600">Nema korisnika</p>
                 </div>
               ) : (
-                <div className="overflow-x-auto">
-                  <table className="w-full">
-                    <thead>
-                      <tr className="border-b-2 border-gray-200">
-                        <th className="text-left py-4 px-4 font-semibold text-gray-700">Ime</th>
-                        <th className="text-left py-4 px-4 font-semibold text-gray-700">Email</th>
-                        <th className="text-left py-4 px-4 font-semibold text-gray-700">Telefon</th>
-                        <th className="text-left py-4 px-4 font-semibold text-gray-700">Uloga</th>
-                        <th className="text-left py-4 px-4 font-semibold text-gray-700">Datum registracije</th>
-                        <th className="text-left py-4 px-4 font-semibold text-gray-700">Akcije</th>
-                      </tr>
-                    </thead>
-                    <tbody>
-                      {filteredUsers.map((user) => (
+                <>
+                  <div className="overflow-x-auto">
+                    <table className="w-full">
+                      <thead>
+                        <tr className="border-b-2 border-gray-200">
+                          <th className="text-left py-4 px-4 font-semibold text-gray-700">Ime</th>
+                          <th className="text-left py-4 px-4 font-semibold text-gray-700">Email</th>
+                          <th className="text-left py-4 px-4 font-semibold text-gray-700">Telefon</th>
+                          <th className="text-left py-4 px-4 font-semibold text-gray-700">Uloga</th>
+                          <th className="text-left py-4 px-4 font-semibold text-gray-700">Datum registracije</th>
+                          <th className="text-left py-4 px-4 font-semibold text-gray-700">Akcije</th>
+                        </tr>
+                      </thead>
+                      <tbody>
+                        {(showAllUsers ? filteredUsers : filteredUsers.slice(0, USERS_LIMIT)).map((user) => (
                         <tr key={user.id} className="border-b border-gray-100 hover:bg-gray-50 transition">
                           <td className="py-4 px-4">
                             <div className="flex items-center gap-3">
@@ -500,16 +603,32 @@ const AdminDashboard: React.FC = () => {
                             </div>
                           </td>
                         </tr>
-                      ))}
-                    </tbody>
-                  </table>
-                </div>
+                        ))}
+                      </tbody>
+                    </table>
+                  </div>
+                  
+                  {/* Show More/Less Button */}
+                  {filteredUsers.length > USERS_LIMIT && (
+                    <div className="mt-6 text-center">
+                      <button
+                        onClick={() => setShowAllUsers(!showAllUsers)}
+                        className="px-6 py-3 bg-indigo-100 text-indigo-700 rounded-xl font-semibold hover:bg-indigo-200 transition flex items-center gap-2 mx-auto"
+                      >
+                        <i className={`fas fa-${showAllUsers ? 'chevron-up' : 'chevron-down'}`}></i>
+                        {showAllUsers 
+                          ? `Prikaži manje (prikaži prvih ${USERS_LIMIT})` 
+                          : `Prikaži sve (${filteredUsers.length - USERS_LIMIT} više)`}
+                      </button>
+                    </div>
+                  )}
+                </>
               )}
             </div>
           </div>
         )}
 
-        {/* Stylists Tab */}
+            {/* Stylists Tab */}
         {activeTab === 'stylists' && (
           <div>
             <div className="flex justify-between items-center mb-6">
@@ -639,11 +758,176 @@ const AdminDashboard: React.FC = () => {
           </div>
         )}
 
-        {/* Appointments Tab - Privremeno */}
+        {/* Appointments Tab */}
         {activeTab === 'appointments' && (
-          <div className="bg-white rounded-2xl shadow-lg p-8">
+          <div>
             <h2 className="text-3xl font-bold text-gray-900 mb-6">Upravljanje rezervacijama</h2>
-            <p className="text-gray-600">Ova sekcija će biti dodata u sledećem koraku...</p>
+
+            {/* Search and Filter */}
+            <div className="bg-white rounded-2xl shadow-lg p-6 mb-6">
+              <div className="grid md:grid-cols-2 gap-4">
+                <div>
+                  <label className="block text-sm font-semibold text-gray-700 mb-2">
+                    <i className="fas fa-search mr-2 text-indigo-500"></i>Pretraga
+                  </label>
+                  <input
+                    type="text"
+                    placeholder="Pretraži po klijentu, frizeru ili usluzi..."
+                    value={appointmentSearchTerm}
+                    onChange={(e) => setAppointmentSearchTerm(e.target.value)}
+                    className="w-full p-3 border-2 border-gray-200 rounded-xl focus:border-indigo-500 focus:ring-2 focus:ring-indigo-200 transition"
+                  />
+                </div>
+                <div>
+                  <label className="block text-sm font-semibold text-gray-700 mb-2">
+                    <i className="fas fa-filter mr-2 text-indigo-500"></i>Filtriraj po statusu
+                  </label>
+                  <select
+                    value={appointmentStatusFilter}
+                    onChange={(e) => setAppointmentStatusFilter(e.target.value as any)}
+                    className="w-full p-3 border-2 border-gray-200 rounded-xl focus:border-indigo-500 focus:ring-2 focus:ring-indigo-200 transition"
+                  >
+                    <option value="ALL">Svi statusi</option>
+                    <option value="PENDING">Čeka potvrdu</option>
+                    <option value="CONFIRMED">Potvrđeno</option>
+                    <option value="COMPLETED">Završeno</option>
+                    <option value="CANCELLED">Otkazano</option>
+                  </select>
+                </div>
+              </div>
+            </div>
+
+            {/* Appointments List */}
+            <div className="bg-white rounded-2xl shadow-lg p-6">
+              {appointmentsLoading ? (
+                <div className="text-center py-12">
+                  <i className="fas fa-spinner fa-spin text-4xl text-indigo-600 mb-4"></i>
+                  <p className="text-gray-600">Učitavanje rezervacija...</p>
+                </div>
+              ) : filteredAppointments.length === 0 ? (
+                <div className="text-center py-12">
+                  <i className="fas fa-calendar-times text-6xl text-gray-300 mb-4"></i>
+                  <p className="text-gray-600">Nema rezervacija</p>
+                </div>
+              ) : (
+                <>
+                  <div className="overflow-x-auto">
+                    <table className="w-full">
+                      <thead>
+                        <tr className="border-b-2 border-gray-200">
+                          <th className="text-left py-4 px-4 font-semibold text-gray-700">Datum i vreme</th>
+                          <th className="text-left py-4 px-4 font-semibold text-gray-700">Klijent</th>
+                          <th className="text-left py-4 px-4 font-semibold text-gray-700">Frizer</th>
+                          <th className="text-left py-4 px-4 font-semibold text-gray-700">Usluga</th>
+                          <th className="text-left py-4 px-4 font-semibold text-gray-700 min-w-[10rem] max-w-xs">
+                            Napomena
+                          </th>
+                          <th className="text-left py-4 px-4 font-semibold text-gray-700">Status</th>
+                          <th className="text-left py-4 px-4 font-semibold text-gray-700">Cena</th>
+                          <th className="text-left py-4 px-4 font-semibold text-gray-700">Akcije</th>
+                        </tr>
+                      </thead>
+                      <tbody>
+                        {(showAllAppointments ? filteredAppointments : filteredAppointments.slice(0, APPOINTMENTS_LIMIT)).map((appointment) => (
+                          <tr key={appointment.id} className="border-b border-gray-100 hover:bg-gray-50 transition">
+                          <td className="py-4 px-4">
+                            <div>
+                              <p className="font-semibold text-gray-900">
+                                {new Date(appointment.date).toLocaleDateString('sr-RS', {
+                                  day: 'numeric',
+                                  month: 'short',
+                                  year: 'numeric',
+                                })}
+                              </p>
+                              <p className="text-sm text-gray-600">{appointment.time}</p>
+                            </div>
+                          </td>
+                          <td className="py-4 px-4">
+                            <div>
+                              <p className="font-semibold text-gray-900">{appointment.customer.name}</p>
+                              <p className="text-sm text-gray-600">{appointment.customer.email}</p>
+                              {appointment.customer.phone && (
+                                <p className="text-sm text-gray-600">{appointment.customer.phone}</p>
+                              )}
+                            </div>
+                          </td>
+                          <td className="py-4 px-4">
+                            <div>
+                              <p className="font-semibold text-gray-900">{appointment.stylist.name}</p>
+                              <p className="text-sm text-gray-600 flex items-center gap-1">
+                                <i className="fas fa-star text-yellow-400"></i>
+                                {appointment.stylist.rating}
+                              </p>
+                            </div>
+                          </td>
+                          <td className="py-4 px-4">
+                            <div>
+                              <p className="font-semibold text-gray-900">{appointment.service.name}</p>
+                              <p className="text-sm text-gray-600">{appointment.service.category}</p>
+                              <p className="text-xs text-gray-500">{appointment.service.duration} min</p>
+                            </div>
+                          </td>
+                          <td className="py-4 px-4 max-w-xs align-top">
+                            {appointment.notes?.trim() ? (
+                              <p
+                                className="text-sm text-gray-700 whitespace-pre-wrap break-words"
+                                title={appointment.notes}
+                              >
+                                {appointment.notes}
+                              </p>
+                            ) : (
+                              <span className="text-sm text-gray-400">—</span>
+                            )}
+                          </td>
+                          <td className="py-4 px-4">
+                            <select
+                              value={appointment.status}
+                              onChange={(e) => handleUpdateAppointmentStatus(appointment.id, e.target.value)}
+                              className={`px-3 py-1 rounded-full text-sm font-semibold border-2 ${getStatusBadge(appointment.status)} border-transparent hover:border-gray-300 transition cursor-pointer`}
+                            >
+                              <option value="PENDING">Čeka potvrdu</option>
+                              <option value="CONFIRMED">Potvrđeno</option>
+                              <option value="COMPLETED">Završeno</option>
+                              <option value="CANCELLED">Otkazano</option>
+                            </select>
+                          </td>
+                          <td className="py-4 px-4">
+                            <p className="font-semibold text-gray-900">
+                              {formatCurrency(parseFloat(appointment.price))}
+                            </p>
+                          </td>
+                          <td className="py-4 px-4">
+                            <button
+                              type="button"
+                              onClick={() => handleDeleteAppointment(appointment.id)}
+                              className="px-3 py-1 bg-red-100 text-red-700 rounded-lg text-sm font-semibold hover:bg-red-200 transition"
+                            >
+                              <i className="fas fa-trash mr-1"></i>Obriši
+                            </button>
+                          </td>
+                        </tr>
+                        ))}
+                      </tbody>
+                    </table>
+                  </div>
+                  
+                  {/* Show More/Less Button */}
+                  {filteredAppointments.length > APPOINTMENTS_LIMIT && (
+                    <div className="mt-6 text-center">
+                      <button
+                        onClick={() => setShowAllAppointments(!showAllAppointments)}
+                        className="px-6 py-3 bg-indigo-100 text-indigo-700 rounded-xl font-semibold hover:bg-indigo-200 transition flex items-center gap-2 mx-auto"
+                      >
+                        <i className={`fas fa-${showAllAppointments ? 'chevron-up' : 'chevron-down'}`}></i>
+                        {showAllAppointments 
+                          ? `Prikaži manje (prikaži prvih ${APPOINTMENTS_LIMIT})` 
+                          : `Prikaži sve (${filteredAppointments.length - APPOINTMENTS_LIMIT} više)`}
+                      </button>
+                    </div>
+                  )}
+                </>
+              )}
+            </div>
           </div>
         )}
       </div>
@@ -946,8 +1230,7 @@ const CreateUserModal: React.FC<CreateUserModalProps> = ({ onClose, onSuccess })
     setLoading(true);
 
     try {
-      const { register } = await import('../services/authService');
-      await register({
+      await createUser({
         name: formData.name,
         email: formData.email,
         password: formData.password,
@@ -955,7 +1238,18 @@ const CreateUserModal: React.FC<CreateUserModalProps> = ({ onClose, onSuccess })
       });
       onSuccess();
     } catch (err: any) {
-      setError(err.response?.data?.error || 'Greška pri kreiranju korisnika');
+      const d = err.response?.data;
+      const status = err.response?.status;
+      if (status === 404) {
+        setError(
+          'Backend nema rutu za kreiranje korisnika. Zaustavi pa ponovo pokreni backend (npr. npm run dev u folderu backend).'
+        );
+      } else if (typeof d === 'string') {
+        setError('Greška servera. Proveri da li backend radi na portu 3000.');
+      } else {
+        const parts = [d?.error, d?.details].filter(Boolean);
+        setError(parts.length ? parts.join(' — ') : err.message || 'Greška pri kreiranju korisnika');
+      }
     } finally {
       setLoading(false);
     }
@@ -1402,8 +1696,7 @@ const AssignServicesModal: React.FC<AssignServicesModalProps> = ({ stylist, serv
     setLoading(true);
 
     try {
-      // TODO: Implement backend endpoint for assigning services
-      alert('Funkcionalnost dodele usluga će biti implementirana u sledećem koraku. Trenutno se koristi backend endpoint za ažuriranje frizera.');
+      await assignServicesToStylist(stylist.stylistId, selectedServices);
       onSuccess();
     } catch (err: any) {
       setError(err.response?.data?.error || 'Greška pri dodeli usluga');

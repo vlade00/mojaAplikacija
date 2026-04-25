@@ -10,6 +10,7 @@ interface AuthContextType {
   login: (data: LoginRequest) => Promise<void>;
   register: (data: RegisterRequest) => Promise<void>;
   logout: () => void;
+  updateUser: (userData: User) => void;
   isAuthenticated: boolean;
 }
 
@@ -67,12 +68,19 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
     logoutApi();
   };
 
+  // Update user funkcija - za ažuriranje user-a bez reload-a
+  const updateUser = (userData: User) => {
+    setUser(userData);
+    localStorage.setItem('user', JSON.stringify(userData));
+  };
+
   const value: AuthContextType = {
     user,
     token,
     login,
     register,
     logout,
+    updateUser,
     isAuthenticated: !!user && !!token,
   };
 

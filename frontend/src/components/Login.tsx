@@ -10,6 +10,7 @@ const Login: React.FC = () => {
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
   const [successMessage, setSuccessMessage] = useState('');
+  const [showForgotPasswordModal, setShowForgotPasswordModal] = useState(false);
   const [searchParams] = useSearchParams();
 
   const { login } = useAuth();
@@ -148,7 +149,13 @@ const Login: React.FC = () => {
                       value={password}
                       onChange={(e) => setPassword(e.target.value)}
                     />
-                    <a href="#" className="text-sm text-indigo-600 hover:text-indigo-800 mt-2 inline-block">Zaboravili ste lozinku?</a>
+                    <button
+                      type="button"
+                      onClick={() => setShowForgotPasswordModal(true)}
+                      className="text-sm text-indigo-600 hover:text-indigo-800 mt-2 inline-block underline-offset-2 hover:underline text-left bg-transparent border-0 cursor-pointer p-0 font-inherit"
+                    >
+                      Zaboravili ste lozinku?
+                    </button>
                   </div>
                   <button
                     type="submit"
@@ -171,6 +178,49 @@ const Login: React.FC = () => {
           </div>
         </div>
       </div>
+
+      {showForgotPasswordModal && (
+        <div
+          className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/50"
+          role="dialog"
+          aria-modal="true"
+          aria-labelledby="forgot-password-title"
+          onClick={() => setShowForgotPasswordModal(false)}
+        >
+          <div
+            className="bg-white rounded-2xl shadow-2xl max-w-md w-full p-6 relative"
+            onClick={(e) => e.stopPropagation()}
+          >
+            <button
+              type="button"
+              onClick={() => setShowForgotPasswordModal(false)}
+              className="absolute top-4 right-4 text-gray-500 hover:text-gray-800 text-xl leading-none"
+              aria-label="Zatvori"
+            >
+              <i className="fas fa-times"></i>
+            </button>
+            <h3 id="forgot-password-title" className="text-xl font-bold text-gray-900 pr-8 mb-3">
+              Zaboravljena lozinka
+            </h3>
+            <p className="text-gray-600 text-sm leading-relaxed mb-4">
+              Reset lozinke putem e-pošte trenutno nije uključen u aplikaciju. Ako ste klijent ili frizer,
+              obratite se <span className="font-semibold text-gray-800">administratoru salona</span> da vam
+              ponovo podesi nalog.
+            </p>
+            <p className="text-gray-600 text-sm leading-relaxed mb-6">
+              Ako znate staru lozinku, ulogujte se i u delu <span className="font-semibold text-gray-800">Profil</span>{' '}
+              možete promeniti lozinku (opcija za promenu lozinke).
+            </p>
+            <button
+              type="button"
+              onClick={() => setShowForgotPasswordModal(false)}
+              className="w-full py-3 bg-indigo-600 text-white rounded-xl font-semibold hover:bg-indigo-700 transition"
+            >
+              Razumem
+            </button>
+          </div>
+        </div>
+      )}
     </div>
   );
 };

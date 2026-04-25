@@ -88,5 +88,10 @@ CREATE INDEX idx_service_category ON "Service"(category);
 CREATE INDEX idx_appointment_date ON "Appointment"(date);
 CREATE INDEX idx_appointment_customer ON "Appointment"("customerId");
 CREATE INDEX idx_appointment_stylist ON "Appointment"("stylistId");
+
+-- Klijent ne može imati 2 rezervacije u isto vreme (osim ako je prethodna otkazana)
+CREATE UNIQUE INDEX uq_appointment_customer_date_time_active
+  ON "Appointment" ("customerId", date, time)
+  WHERE status != 'CANCELLED';
 CREATE INDEX idx_review_stylist ON "Review"("stylistId");
 

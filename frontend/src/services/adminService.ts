@@ -71,6 +71,7 @@ export interface AdminStats {
   };
   revenue: {
     total: number;
+    completedAppointmentsForRevenue?: number;
   };
   popularServices: Array<{
     name: string;
@@ -89,6 +90,13 @@ export interface CreateStylistRequest {
   yearsOfExperience?: number;
 }
 
+export interface CreateAdminUserRequest {
+  name: string;
+  email: string;
+  password: string;
+  phone?: string;
+}
+
 // ========== API FUNKCIJE ==========
 
 // GET /api/admin/users - Vrati sve korisnike
@@ -100,6 +108,14 @@ export const getUsers = async (): Promise<AdminUser[]> => {
 // GET /api/admin/users/:id - Vrati jednog korisnika
 export const getUser = async (id: number): Promise<AdminUser> => {
   const response = await api.get<AdminUser>(`/admin/users/${id}`);
+  return response.data;
+};
+
+// POST /api/admin/users - Kreiraj korisnika (klijent)
+export const createUser = async (
+  data: CreateAdminUserRequest
+): Promise<{ message: string; user: AdminUser }> => {
+  const response = await api.post<{ message: string; user: AdminUser }>('/admin/users', data);
   return response.data;
 };
 
@@ -127,9 +143,9 @@ export const getAppointments = async (): Promise<AdminAppointment[]> => {
   return response.data;
 };
 
-// GET /api/admin/stats - Vrati statistike
+// GET /api/admin/stats - Vrati statistike (cache-bust da overview uvek dobije sveže brojeve)
 export const getStats = async (): Promise<AdminStats> => {
-  const response = await api.get<AdminStats>('/admin/stats');
+  const response = await api.get<AdminStats>(`/admin/stats?_t=${Date.now()}`);
   return response.data;
 };
 
@@ -148,6 +164,18 @@ export const deleteUser = async (id: number): Promise<{ message: string }> => {
 // DELETE /api/admin/stylists/:id - Obriši frizera
 export const deleteStylist = async (id: number): Promise<{ message: string }> => {
   const response = await api.delete(`/admin/stylists/${id}`);
+  return response.data;
+};
+
+// DELETE /api/admin/appointments/:id - Obriši rezervaciju
+export const deleteAppointment = async (id: number): Promise<{ message: string }> => {
+  const response = await api.delete(`/admin/appointments/${id}`);
+  return response.data;
+};
+
+// PUT /api/admin/stylists/:id/services - Dodeli usluge frizeru
+export const assignServicesToStylist = async (stylistId: number, serviceIds: number[]): Promise<{ message: string }> => {
+  const response = await api.put(`/admin/stylists/${stylistId}/services`, { serviceIds });
   return response.data;
 };
 

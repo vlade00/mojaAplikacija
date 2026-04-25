@@ -5,19 +5,41 @@ Full-stack web aplikacija za upravljanje frizerskim salonom.
 ## Tech Stack
 
 - **Backend**: Node.js + Express + TypeScript
-- **Frontend**: React + TailwindCSS (u izradi)
-- **Database**: PostgreSQL + Prisma ORM
-- **Deployment**: Render/Railway (backend), Vercel (frontend)
+- **Frontend**: React + TypeScript + TailwindCSS
+- **Database**: PostgreSQL 15 (Docker) + `pg` driver (direktni SQL)
+- **Authentication**: JWT (JSON Web Tokens)
 
 ## Funkcionalnosti
 
 - ✅ Zakazivanje termina
-- ✅ Upravljanje klijentima
+- ✅ Upravljanje klijentima, frizerima, adminima
 - ✅ Panel za frizere
-- ✅ Admin panel
-- ✅ Rezervacije i kalendar
+- ✅ Admin panel (CRUD operacije)
+- ✅ Sistem ocenjivanja frizera
+- ✅ Customer dashboard sa profilom
 
-## Setup
+## Quick Start
 
-Vidi `README-SETUP.md` za detaljne instrukcije.
+### 1. Pokreni Docker bazu
+```bash
+docker-compose up -d
+```
+
+### 2. Pokreni Backend
+```bash
+cd backend
+npm install
+npm run dev
+```
+
+### 3. Pokreni Frontend
+```bash
+cd frontend
+npm install
+npm start
+```
+
+## 📖 Detaljne Informacije
+
+Vidi `PROJEKT-INFO.md` za sve informacije o projektu, bazi podataka, API endpoint-ima i arhitekturi.
 

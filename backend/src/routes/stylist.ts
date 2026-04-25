@@ -85,7 +85,7 @@ router.get('/me/appointments', async (req: AuthRequest, res) => {
       JOIN "User" u_customer ON a."customerId" = u_customer.id
       JOIN "Service" s ON a."serviceId" = s.id
       WHERE a."stylistId" = $1
-      ORDER BY a.date DESC, a.time DESC
+      ORDER BY a."createdAt" DESC, a.date DESC, a.time DESC
     `, [stylistId]);
     
     res.json(result.rows);

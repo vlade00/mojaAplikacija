@@ -1,6 +1,6 @@
 import express from 'express';
 import bcrypt from 'bcrypt';
-import { query } from '../db/connection';
+import { query, pool } from '../db/connection';
 import { authenticate, requireRole, AuthRequest } from '../middleware/auth';
 
 const router = express.Router();
@@ -29,6 +29,71 @@ router.get('/users', async (req: AuthRequest, res) => {
   } catch (error) {
     console.error('Error fetching users:', error);
     res.status(500).json({ error: 'Failed to fetch users' });
+  }
+});
+
+// POST /api/admin/users - Kreiraj korisnika (klijent; ne vraća JWT — admin ostaje ulogovan)
+router.post('/users', async (req: AuthRequest, res) => {
+  try {
+    const { name, email, password, phone } = req.body;
+
+    if (!name || typeof name !== 'string' || !name.trim()) {
+      return res.status(400).json({ error: 'Ime je obavezno' });
+    }
+    if (!email || typeof email !== 'string' || !email.trim()) {
+      return res.status(400).json({ error: 'Email je obavezan' });
+    }
+    if (!password || typeof password !== 'string') {
+      return res.status(400).json({ error: 'Lozinka je obavezna' });
+    }
+    if (password.length < 6) {
+      return res.status(400).json({ error: 'Lozinka mora imati najmanje 6 karaktera' });
+    }
+
+    const emailTrim = email.trim();
+    const nameTrim = name.trim();
+
+    const existingUser = await query('SELECT id FROM "User" WHERE email = $1', [emailTrim]);
+    if (existingUser.rows.length > 0) {
+      return res.status(400).json({ error: 'Email već postoji' });
+    }
+
+    if (phone && String(phone).trim() !== '') {
+      const existingPhone = await query(
+        'SELECT id FROM "User" WHERE phone = $1 AND phone IS NOT NULL',
+        [String(phone).trim()]
+      );
+      if (existingPhone.rows.length > 0) {
+        return res.status(400).json({ error: 'Broj telefona već postoji' });
+      }
+    }
+
+    const hashedPassword = await bcrypt.hash(password, 10);
+    const phoneVal = phone && String(phone).trim() !== '' ? String(phone).trim() : null;
+
+    const result = await query(
+      `
+      INSERT INTO "User" (name, email, password, phone, role, "createdAt", "updatedAt")
+      VALUES ($1, $2, $3, $4, 'CUSTOMER', NOW(), NOW())
+      RETURNING id, name, email, phone, role, "avatarUrl", "createdAt", "updatedAt"
+    `,
+      [nameTrim, emailTrim, hashedPassword, phoneVal]
+    );
+
+    res.status(201).json({
+      message: 'Korisnik je kreiran',
+      user: result.rows[0],
+    });
+  } catch (error: any) {
+    console.error('Error creating user:', error);
+    if (error?.code === '23505') {
+      return res.status(400).json({ error: 'Email ili telefon već postoji' });
+    }
+    const isDev = process.env.NODE_ENV !== 'production';
+    res.status(500).json({
+      error: 'Greška pri kreiranju korisnika',
+      ...(isDev && error?.message ? { details: error.message } : {}),
+    });
   }
 });
 
@@ -70,7 +135,7 @@ router.put('/users/:id', async (req: AuthRequest, res) => {
       return res.status(400).json({ error: 'Invalid user ID' });
     }
     
-    const { name, email, phone, role } = req.body;
+    const { name, email, phone, role, password } = req.body;
     
     // Proveri da li korisnik postoji
     const existingUser = await query('SELECT id FROM "User" WHERE id = $1', [userId]);
@@ -107,13 +172,31 @@ router.put('/users/:id', async (req: AuthRequest, res) => {
       updates.push(`role = $${paramIndex++}`);
       values.push(role);
     }
+    if (password !== undefined && password !== null && password !== '') {
+      // Hash-uj novu lozinku
+      const hashedPassword = await bcrypt.hash(password, 10);
+      updates.push(`password = $${paramIndex++}`);
+      values.push(hashedPassword);
+    }
     
     if (updates.length > 0) {
       updates.push(`"updatedAt" = NOW()`);
       values.push(userId);
       await query(`UPDATE "User" SET ${updates.join(', ')} WHERE id = $${paramIndex}`, values);
     }
-    
+
+    // Ako je uloga STYLIST, mora postojati red u "Stylist" (inače panel frizera ne radi)
+    if (role === 'STYLIST') {
+      const stylistRow = await query('SELECT id FROM "Stylist" WHERE "userId" = $1', [userId]);
+      if (stylistRow.rows.length === 0) {
+        await query(
+          `INSERT INTO "Stylist" ("userId", rating, "totalReviews", "isActive", "createdAt", "updatedAt")
+           VALUES ($1, 0, 0, true, NOW(), NOW())`,
+          [userId]
+        );
+      }
+    }
+
     res.json({ message: 'User updated successfully' });
   } catch (error) {
     console.error('Error updating user:', error);
@@ -232,6 +315,43 @@ router.get('/stylists', async (req: AuthRequest, res) => {
   }
 });
 
+// DELETE /api/admin/stylists/:id — obriši frizera (id = "Stylist".id; CASCADE briše nalog i povezane podatke)
+router.delete('/stylists/:id', async (req: AuthRequest, res) => {
+  try {
+    const idParam = Array.isArray(req.params.id) ? req.params.id[0] : req.params.id;
+    const stylistId = parseInt(idParam, 10);
+    if (isNaN(stylistId)) {
+      return res.status(400).json({ error: 'Invalid stylist ID' });
+    }
+
+    const existingResult = await query(
+      `SELECT s.id, s."userId", u.role
+       FROM "Stylist" s
+       JOIN "User" u ON s."userId" = u.id
+       WHERE s.id = $1`,
+      [stylistId]
+    );
+
+    if (existingResult.rows.length === 0) {
+      return res.status(404).json({ error: 'Stylist not found' });
+    }
+
+    const { userId, role } = existingResult.rows[0];
+    if (role === 'ADMIN') {
+      return res.status(400).json({ error: 'Cannot delete admin user' });
+    }
+    if (role !== 'STYLIST') {
+      return res.status(400).json({ error: 'Not a stylist account' });
+    }
+
+    await query('DELETE FROM "User" WHERE id = $1', [userId]);
+    res.json({ message: 'Stylist deleted successfully' });
+  } catch (error) {
+    console.error('Error deleting stylist:', error);
+    res.status(500).json({ error: 'Failed to delete stylist' });
+  }
+});
+
 // PUT /api/admin/stylists/:id - Ažuriraj frizera
 router.put('/stylists/:id', async (req: AuthRequest, res) => {
   try {
@@ -315,6 +435,65 @@ router.put('/stylists/:id', async (req: AuthRequest, res) => {
   }
 });
 
+// PUT /api/admin/stylists/:id/services - Dodeli usluge frizeru
+router.put('/stylists/:id/services', async (req: AuthRequest, res) => {
+  try {
+    const idParam = Array.isArray(req.params.id) ? req.params.id[0] : req.params.id;
+    const stylistId = parseInt(idParam, 10);
+    if (isNaN(stylistId)) {
+      return res.status(400).json({ error: 'Invalid stylist ID' });
+    }
+    
+    const { serviceIds } = req.body;
+    
+    if (!Array.isArray(serviceIds)) {
+      return res.status(400).json({ error: 'serviceIds must be an array' });
+    }
+    
+    // Proveri da li frizer postoji
+    const existingResult = await query(`
+      SELECT s.id
+      FROM "Stylist" s
+      JOIN "User" u ON s."userId" = u.id
+      WHERE s.id = $1 AND u.role = 'STYLIST'
+    `, [stylistId]);
+    
+    if (existingResult.rows.length === 0) {
+      return res.status(404).json({ error: 'Stylist not found' });
+    }
+    
+    // Obriši sve postojeće veze
+    await query('DELETE FROM "ServiceStylist" WHERE "stylistId" = $1', [stylistId]);
+    
+    // Kreiraj nove veze ako su poslate usluge
+    if (serviceIds.length > 0) {
+      // Proveri da li sve usluge postoje
+      const placeholders = serviceIds.map((_, i) => `$${i + 1}`).join(', ');
+      const servicesCheck = await query(
+        `SELECT id FROM "Service" WHERE id IN (${placeholders}) AND "isActive" = true`,
+        serviceIds
+      );
+      
+      if (servicesCheck.rows.length !== serviceIds.length) {
+        return res.status(400).json({ error: 'One or more services not found or inactive' });
+      }
+      
+      // Kreiraj nove veze
+      for (const serviceId of serviceIds) {
+        await query(
+          'INSERT INTO "ServiceStylist" ("stylistId", "serviceId", "createdAt") VALUES ($1, $2, NOW()) ON CONFLICT DO NOTHING',
+          [stylistId, serviceId]
+        );
+      }
+    }
+    
+    res.json({ message: 'Services assigned successfully' });
+  } catch (error) {
+    console.error('Error assigning services:', error);
+    res.status(500).json({ error: 'Failed to assign services' });
+  }
+});
+
 // GET /api/admin/appointments - Vrati sve rezervacije
 router.get('/appointments', async (req: AuthRequest, res) => {
   try {
@@ -361,6 +540,35 @@ router.get('/appointments', async (req: AuthRequest, res) => {
   }
 });
 
+// DELETE /api/admin/appointments/:id - Obriši rezervaciju (samo admin)
+router.delete('/appointments/:id', async (req: AuthRequest, res) => {
+  try {
+    const idParam = Array.isArray(req.params.id) ? req.params.id[0] : req.params.id;
+    const appointmentId = parseInt(idParam, 10);
+    if (isNaN(appointmentId)) {
+      return res.status(400).json({ error: 'Invalid appointment ID' });
+    }
+    
+    // Proveri da li rezervacija postoji
+    const existingResult = await query(
+      'SELECT id FROM "Appointment" WHERE id = $1',
+      [appointmentId]
+    );
+    
+    if (existingResult.rows.length === 0) {
+      return res.status(404).json({ error: 'Appointment not found' });
+    }
+    
+    // Obriši rezervaciju
+    await query('DELETE FROM "Appointment" WHERE id = $1', [appointmentId]);
+    
+    res.json({ message: 'Appointment deleted successfully' });
+  } catch (error) {
+    console.error('Error deleting appointment:', error);
+    res.status(500).json({ error: 'Failed to delete appointment' });
+  }
+});
+
 // GET /api/admin/stats - Statistike
 router.get('/stats', async (req: AuthRequest, res) => {
   try {
@@ -373,34 +581,80 @@ router.get('/stats', async (req: AuthRequest, res) => {
     // Ukupan broj rezervacija
     const appointmentsCount = await query('SELECT COUNT(*) as count FROM "Appointment"');
     
-    // Ukupan prihod
-    const revenue = await query(`
-      SELECT COALESCE(SUM(price), 0) as total 
-      FROM "Appointment" 
-      WHERE status = 'COMPLETED'
-    `);
-    
     // Rezervacije po statusu
     const appointmentsByStatus = await query(`
       SELECT status, COUNT(*) as count 
       FROM "Appointment" 
       GROUP BY status
     `);
-    
-    // Najpopularnije usluge
-    const popularServices = await query(`
-      SELECT 
-        s.name,
-        s.category,
-        COUNT(a.id) as count,
-        SUM(a.price) as revenue
-      FROM "Service" s
-      LEFT JOIN "Appointment" a ON s.id = a."serviceId"
-      GROUP BY s.id, s.name, s.category
-      ORDER BY count DESC
-      LIMIT 5
-    `);
-    
+
+    // Prihod + top usluge u jednoj RR transakciji (obični redovi, bez json_agg).
+    res.set('Cache-Control', 'no-store, no-cache, must-revalidate, proxy-revalidate');
+    res.set('Pragma', 'no-cache');
+
+    let revenueTotal = 0;
+    let completedForRevenueCount = 0;
+    let popularServices: Array<{ name: string; category: string; count: number; revenue: number }> = [];
+
+    const client = await pool.connect();
+    try {
+      await client.query('BEGIN ISOLATION LEVEL REPEATABLE READ READ ONLY');
+      const sumRes = await client.query(`
+        SELECT
+          COALESCE(SUM(price), 0)::numeric AS revenue_total,
+          COUNT(*)::int AS completed_count
+        FROM "Appointment"
+        WHERE status = 'COMPLETED'
+      `);
+      revenueTotal = parseFloat(String(sumRes.rows[0]?.revenue_total ?? 0));
+      completedForRevenueCount = parseInt(String(sumRes.rows[0]?.completed_count ?? 0), 10);
+
+      const popRes = await client.query(`
+        SELECT
+          s.name,
+          s.category,
+          COUNT(a.id)::int AS "appointmentCount",
+          COALESCE(SUM(a.price), 0)::numeric AS "serviceRevenueSum"
+        FROM "Appointment" a
+        INNER JOIN "Service" s ON s.id = a."serviceId"
+        WHERE a.status = 'COMPLETED'
+        GROUP BY s.id, s.name, s.category
+        ORDER BY COUNT(a.id) DESC
+        LIMIT 5
+      `);
+
+      popularServices = popRes.rows.map((row) => ({
+        name: String(row.name),
+        category: String(row.category),
+        count: parseInt(String(row.appointmentCount ?? 0), 10),
+        revenue: parseFloat(String(row.serviceRevenueSum ?? 0)),
+      }));
+
+      const maxPopularCount = popularServices.reduce((m, s) => Math.max(m, s.count), 0);
+      const maxPopularRev = popularServices.reduce((m, s) => Math.max(m, s.revenue), 0);
+      if (
+        maxPopularCount > completedForRevenueCount ||
+        maxPopularRev > revenueTotal + 0.01
+      ) {
+        console.error('Stats invariant broken (RR row-based)', {
+          completedForRevenueCount,
+          revenueTotal,
+          popularServices,
+        });
+      }
+
+      await client.query('COMMIT');
+    } catch (e) {
+      try {
+        await client.query('ROLLBACK');
+      } catch {
+        /* ignore */
+      }
+      throw e;
+    } finally {
+      client.release();
+    }
+
     res.json({
       users: {
         total: parseInt(usersCount.rows[0].count)
@@ -413,9 +667,10 @@ router.get('/stats', async (req: AuthRequest, res) => {
         byStatus: appointmentsByStatus.rows
       },
       revenue: {
-        total: parseFloat(revenue.rows[0].total)
+        total: revenueTotal,
+        completedAppointmentsForRevenue: completedForRevenueCount,
       },
-      popularServices: popularServices.rows
+      popularServices,
     });
   } catch (error) {
     console.error('Error fetching stats:', error);
