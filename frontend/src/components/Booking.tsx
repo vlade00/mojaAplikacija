@@ -387,22 +387,53 @@ const Booking: React.FC = () => {
         </div>
 
         {/* Progress Steps */}
-        <div className="bg-white rounded-2xl shadow-lg p-4 sm:p-6 mb-6 overflow-x-auto">
-          <div className="min-w-[520px] flex items-center justify-between">
+        <div className="bg-white rounded-2xl shadow-lg p-4 sm:p-6 mb-6">
+          {/* Mobile (2x2 grid) */}
+          <div className="grid grid-cols-2 gap-3 sm:hidden">
+            {[1, 2, 3, 4].map((step) => (
+              <div
+                key={step}
+                className={`flex items-center gap-3 rounded-2xl border-2 p-3 transition ${
+                  currentStep >= step ? 'border-indigo-200 bg-indigo-50' : 'border-gray-200 bg-white'
+                }`}
+              >
+                <div
+                  className={`w-10 h-10 rounded-xl flex items-center justify-center font-bold text-base transition ${
+                    currentStep >= step ? 'bg-indigo-600 text-white' : 'bg-gray-200 text-gray-500'
+                  }`}
+                >
+                  {currentStep > step ? <i className="fas fa-check"></i> : step}
+                </div>
+                <div className="min-w-0">
+                  <p
+                    className={`text-sm font-semibold leading-tight ${
+                      currentStep >= step ? 'text-indigo-700' : 'text-gray-600'
+                    }`}
+                  >
+                    {step === 1 && 'Usluga'}
+                    {step === 2 && 'Frizer'}
+                    {step === 3 && 'Datum i vreme'}
+                    {step === 4 && 'Pregled'}
+                  </p>
+                </div>
+              </div>
+            ))}
+          </div>
+
+          {/* Desktop/tablet (linear with connectors) */}
+          <div className="hidden sm:flex items-center justify-between">
             {[1, 2, 3, 4].map((step) => (
               <div key={step} className="flex items-center flex-1">
                 <div className="flex flex-col items-center flex-1 min-w-0">
                   <div
                     className={`w-12 h-12 rounded-full flex items-center justify-center font-bold text-lg transition ${
-                      currentStep >= step
-                        ? 'bg-indigo-600 text-white'
-                        : 'bg-gray-200 text-gray-500'
+                      currentStep >= step ? 'bg-indigo-600 text-white' : 'bg-gray-200 text-gray-500'
                     }`}
                   >
                     {currentStep > step ? <i className="fas fa-check"></i> : step}
                   </div>
                   <span
-                    className={`mt-2 text-xs sm:text-sm font-semibold text-center leading-tight ${
+                    className={`mt-2 text-sm font-semibold text-center leading-tight ${
                       currentStep >= step ? 'text-indigo-600' : 'text-gray-500'
                     }`}
                   >
@@ -413,11 +444,7 @@ const Booking: React.FC = () => {
                   </span>
                 </div>
                 {step < 4 && (
-                  <div
-                    className={`h-1 flex-1 mx-2 ${
-                      currentStep > step ? 'bg-indigo-600' : 'bg-gray-200'
-                    }`}
-                  />
+                  <div className={`h-1 flex-1 mx-2 ${currentStep > step ? 'bg-indigo-600' : 'bg-gray-200'}`} />
                 )}
               </div>
             ))}
