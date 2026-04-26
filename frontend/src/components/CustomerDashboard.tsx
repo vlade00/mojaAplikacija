@@ -446,10 +446,13 @@ const CustomerDashboard: React.FC = () => {
     'https://images.unsplash.com/photo-1527799820374-dcf8d9d4a0df?auto=format&fit=crop&w=1200&q=70',
     'https://images.unsplash.com/photo-1560066984-138dadb4c035?auto=format&fit=crop&w=1200&q=70',
   ];
-  // Lokacija salona (embed koristi query; "Otvori u Maps" može direktno na skraćeni link)
-  // Koristimo bez dijakritike zbog Google embed-a (stabilnije pretrage)
-  const mapsQuery = encodeURIComponent('Brace Jerkovic 72, Beograd');
-  const mapsEmbedUrl = `https://www.google.com/maps?q=${mapsQuery}&output=embed`;
+  // Lokacija: Google Maps u iframe-u često prikaže grešku bez Embed API ključa; OSM embed radi pouzdano.
+  const SALON_LAT = 44.7585;
+  const SALON_LON = 20.486;
+  const osmBbox = [SALON_LON - 0.006, SALON_LAT - 0.006, SALON_LON + 0.006, SALON_LAT + 0.006].join(',');
+  const mapsEmbedUrl = `https://www.openstreetmap.org/export/embed.html?bbox=${encodeURIComponent(
+    osmBbox
+  )}&layer=mapnik&marker=${encodeURIComponent(`${SALON_LAT},${SALON_LON}`)}`;
   const mapsOpenUrl = 'https://maps.app.goo.gl/W2bK49uJ7vexeYXf7';
   const instagramUrl = 'https://www.instagram.com/vladee00/';
   const phoneDisplay = '069 794 079';
