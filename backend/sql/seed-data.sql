@@ -2,10 +2,11 @@
 -- Pokreni ovaj fajl da popuniš bazu podacima
 
 -- 1. Kreiraj 3 frizera (User)
+-- Lozinke (bcrypt): marija@salon.com → marija123 | stefan@salon.com → stefan123 | marko@salon.com → marko123
 INSERT INTO "User" (name, email, password, phone, role, "createdAt", "updatedAt") VALUES
-('Marija Jovanović', 'marija@salon.com', '$2a$10$rOzJqZqZqZqZqZqZqZqZqO', '+381 64 123 4567', 'STYLIST', NOW(), NOW()),
-('Stefan Petrović', 'stefan@salon.com', '$2a$10$rOzJqZqZqZqZqZqZqZqZqO', '+381 64 234 5678', 'STYLIST', NOW(), NOW()),
-('Marko Nikolić', 'marko@salon.com', '$2a$10$rOzJqZqZqZqZqZqZqZqZqO', '+381 64 345 6789', 'STYLIST', NOW(), NOW())
+('Marija Jovanović', 'marija@salon.com', '$2b$10$hthKUevCQibWY0n9v4W/Y.WbZqGz0Rtm4o7h6vvokhYmbU70z/Ine', '+381 64 123 4567', 'STYLIST', NOW(), NOW()),
+('Stefan Petrović', 'stefan@salon.com', '$2b$10$P43ZyU7w2vmoPDa90ZVA/OQO20v3e5aw80qF/0oS9iyCeEOB0TGAq', '+381 64 234 5678', 'STYLIST', NOW(), NOW()),
+('Marko Nikolić', 'marko@salon.com', '$2b$10$XpTDf/9F6ASr4N2Vx.oXiODjLpFprIqovDtdlkQbxaj7oxXDQv.Sm', '+381 64 345 6789', 'STYLIST', NOW(), NOW())
 ON CONFLICT DO NOTHING;
 
 -- 2. Kreiraj Stylist profile
