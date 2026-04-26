@@ -955,10 +955,10 @@ const CustomerDashboard: React.FC = () => {
               </button>
             </div>
             
-            <div className="p-6 space-y-6">
+            <div className="p-4 sm:p-6 space-y-6">
               {/* Profile Header */}
-              <div className="bg-gradient-to-r from-indigo-600 via-purple-600 to-pink-500 rounded-3xl p-8 text-white shadow-xl">
-                <div className="flex items-center gap-6">
+              <div className="bg-gradient-to-r from-indigo-600 via-purple-600 to-pink-500 rounded-3xl p-5 sm:p-8 text-white shadow-xl">
+                <div className="flex flex-col sm:flex-row sm:items-center gap-5 sm:gap-6">
                   <div className="relative">
                     {getAvatarSrc(user) ? (
                       <img 
@@ -984,11 +984,11 @@ const CustomerDashboard: React.FC = () => {
                       </div>
                     )}
                   </div>
-                  <div>
-                    <h3 className="text-3xl font-bold mb-2">{user?.name}</h3>
-                    <p className="text-xl opacity-90">{user?.email}</p>
+                  <div className="min-w-0">
+                    <h3 className="text-2xl sm:text-3xl font-bold mb-1 sm:mb-2 break-words">{user?.name}</h3>
+                    <p className="text-base sm:text-xl opacity-90 break-words">{user?.email}</p>
                     {user?.phone && (
-                      <p className="text-lg opacity-80 mt-1">
+                      <p className="text-sm sm:text-lg opacity-80 mt-2">
                         <i className="fas fa-phone mr-2"></i>{user.phone}
                       </p>
                     )}
@@ -1051,13 +1051,13 @@ const CustomerDashboard: React.FC = () => {
                     <i className="fas fa-user text-indigo-600"></i>
                     Lični podaci
                   </h3>
-                  <div className="flex gap-3">
+                  <div className="flex flex-col sm:flex-row gap-3 w-full sm:w-auto">
                     <button
                       onClick={() => {
                         setShowProfileModal(false);
                         setShowEditProfileModal(true);
                       }}
-                      className="px-6 py-2 bg-indigo-600 text-white rounded-xl font-semibold hover:bg-indigo-700 transition"
+                      className="w-full sm:w-auto px-5 py-2.5 bg-indigo-600 text-white rounded-xl font-semibold hover:bg-indigo-700 transition whitespace-nowrap"
                     >
                       <i className="fas fa-edit mr-2"></i>Izmeni profil
                     </button>
@@ -1066,7 +1066,7 @@ const CustomerDashboard: React.FC = () => {
                         setShowProfileModal(false);
                         setShowChangePasswordModal(true);
                       }}
-                      className="px-6 py-2 bg-purple-600 text-white rounded-xl font-semibold hover:bg-purple-700 transition"
+                      className="w-full sm:w-auto px-5 py-2.5 bg-purple-600 text-white rounded-xl font-semibold hover:bg-purple-700 transition whitespace-nowrap"
                     >
                       <i className="fas fa-key mr-2"></i>Promeni lozinku
                     </button>
