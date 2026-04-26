@@ -58,7 +58,7 @@ const Login: React.FC = () => {
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gray-50 py-12 px-4 sm:px-6 lg:px-8">
+    <div className="h-[100dvh] overflow-hidden flex items-center justify-center bg-gray-50 px-4 sm:px-6 lg:px-8">
       <div className="max-w-5xl w-full">
         <div className="bg-white rounded-3xl shadow-2xl overflow-hidden">
           <div className="grid md:grid-cols-2 min-h-[600px]">
@@ -103,7 +103,7 @@ const Login: React.FC = () => {
             </div>
 
             {/* Right: Login Form */}
-            <div className="p-12 flex flex-col justify-center">
+            <div className="p-6 sm:p-12 flex flex-col justify-center">
               <div className="max-w-md mx-auto w-full space-y-8">
                 <div>
                   <h3 className="text-3xl font-bold mb-2 text-gray-800">Prijavite se</h3>
