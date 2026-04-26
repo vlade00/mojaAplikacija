@@ -459,9 +459,9 @@ const CustomerDashboard: React.FC = () => {
   return (
     <div className="min-h-screen bg-gray-50">
       {/* Top Navigation */}
-      <div className="bg-white rounded-2xl shadow-lg p-6 mb-6 mx-6 mt-6">
-        <div className="flex justify-between items-center">
-          <div className="flex items-center gap-4">
+      <div className="bg-white rounded-2xl shadow-lg p-4 sm:p-6 mb-6 mx-4 sm:mx-6 mt-4 sm:mt-6">
+        <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center gap-4">
+          <div className="flex items-center gap-4 min-w-0">
             <div className="w-14 h-14 bg-gradient-to-br from-indigo-500 to-purple-500 rounded-2xl flex items-center justify-center text-white text-2xl shadow-lg">
               <i className="fas fa-cut"></i>
             </div>
@@ -472,10 +472,10 @@ const CustomerDashboard: React.FC = () => {
               </div>
             </div>
           </div>
-          <div className="flex items-center gap-4">
+          <div className="flex items-center gap-3 sm:gap-4 sm:justify-end">
             <button 
               onClick={() => setShowProfileModal(true)}
-              className="px-6 py-2 text-gray-600 rounded-xl font-semibold hover:bg-gray-100 transition flex items-center gap-2"
+              className="flex-1 sm:flex-none px-4 sm:px-6 py-2 text-gray-600 rounded-xl font-semibold hover:bg-gray-100 transition flex items-center justify-center gap-2"
             >
               {getAvatarSrc(user) ? (
                 <img 
@@ -490,7 +490,7 @@ const CustomerDashboard: React.FC = () => {
             </button>
             <button
               onClick={logout}
-              className="px-6 py-2 bg-red-500 text-white rounded-xl font-semibold hover:bg-red-600 transition"
+              className="flex-1 sm:flex-none px-4 sm:px-6 py-2 bg-red-500 text-white rounded-xl font-semibold hover:bg-red-600 transition whitespace-nowrap"
             >
               <i className="fas fa-sign-out-alt mr-2"></i>Odjavi se
             </button>
@@ -498,7 +498,7 @@ const CustomerDashboard: React.FC = () => {
         </div>
       </div>
 
-      <div className="px-6 pb-6">
+      <div className="px-4 sm:px-6 pb-6">
         {/* Success Message */}
         {successMessage && (
           <div className="bg-green-100 border border-green-400 text-green-700 px-4 py-3 rounded-xl mb-6">
