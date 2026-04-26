@@ -967,11 +967,11 @@ const CustomerDashboard: React.FC = () => {
                     )}
                     <button
                       onClick={() => setShowAvatarPickerModal(true)}
-                      className="absolute bottom-2 right-2 bg-white/25 hover:bg-white/35 backdrop-blur text-white rounded-xl w-9 h-9 cursor-pointer shadow-lg transition flex items-center justify-center border border-white/20"
+                      className="absolute bottom-1.5 right-1.5 bg-white/25 hover:bg-white/35 backdrop-blur text-white rounded-xl w-8 h-8 cursor-pointer shadow-lg transition flex items-center justify-center border border-white/20"
                       disabled={uploadingAvatar}
                       title="Promeni avatar"
                     >
-                      <i className="fas fa-camera text-sm"></i>
+                      <i className="fas fa-camera text-xs"></i>
                     </button>
                     {uploadingAvatar && (
                       <div className="absolute inset-0 bg-black bg-opacity-50 rounded-2xl flex items-center justify-center">
