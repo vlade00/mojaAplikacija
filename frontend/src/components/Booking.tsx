@@ -492,9 +492,11 @@ const Booking: React.FC = () => {
                           onClick={() => handleServiceSelect(service)}
                           className="text-left p-6 border-2 border-gray-200 rounded-xl hover:border-indigo-500 hover:shadow-lg transition text-left"
                         >
-                          <div className="flex justify-between items-start mb-2">
-                            <h4 className="text-lg font-bold text-gray-900">{service.name}</h4>
-                            <span className="text-indigo-600 font-bold">
+                          <div className="flex items-center justify-between gap-3 mb-2">
+                            <h4 className="text-lg font-bold text-gray-900 flex-1 min-w-0">
+                              {service.name}
+                            </h4>
+                            <span className="text-indigo-600 font-bold whitespace-nowrap tabular-nums">
                               {parseInt(service.price).toLocaleString()} RSD
                             </span>
                           </div>
