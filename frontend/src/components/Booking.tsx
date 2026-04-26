@@ -387,11 +387,11 @@ const Booking: React.FC = () => {
         </div>
 
         {/* Progress Steps */}
-        <div className="bg-white rounded-2xl shadow-lg p-6 mb-6">
-          <div className="flex items-center justify-between">
+        <div className="bg-white rounded-2xl shadow-lg p-4 sm:p-6 mb-6 overflow-x-auto">
+          <div className="min-w-[520px] flex items-center justify-between">
             {[1, 2, 3, 4].map((step) => (
               <div key={step} className="flex items-center flex-1">
-                <div className="flex flex-col items-center flex-1">
+                <div className="flex flex-col items-center flex-1 min-w-0">
                   <div
                     className={`w-12 h-12 rounded-full flex items-center justify-center font-bold text-lg transition ${
                       currentStep >= step
@@ -402,13 +402,13 @@ const Booking: React.FC = () => {
                     {currentStep > step ? <i className="fas fa-check"></i> : step}
                   </div>
                   <span
-                    className={`mt-2 text-sm font-semibold ${
+                    className={`mt-2 text-xs sm:text-sm font-semibold text-center leading-tight ${
                       currentStep >= step ? 'text-indigo-600' : 'text-gray-500'
                     }`}
                   >
                     {step === 1 && 'Usluga'}
                     {step === 2 && 'Frizer'}
-                    {step === 3 && 'Datum i Vreme'}
+                    {step === 3 && 'Datum i vreme'}
                     {step === 4 && 'Pregled'}
                   </span>
                 </div>

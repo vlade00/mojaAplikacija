@@ -561,7 +561,7 @@ const CustomerDashboard: React.FC = () => {
                   <span className="w-10 h-10 bg-indigo-100 rounded-xl flex items-center justify-center">
                     <i className="fas fa-calendar text-indigo-600"></i>
                   </span>
-                  Predstojeća Zakazivanja
+                  Predstojeća zakazivanja
                 </h3>
               </div>
 
@@ -574,12 +574,6 @@ const CustomerDashboard: React.FC = () => {
                 <div className="text-center py-12">
                   <i className="fas fa-calendar-times text-6xl text-gray-300 mb-4"></i>
                   <p className="text-gray-600 text-lg mb-2">Nemate predstojećih rezervacija</p>
-                  <button
-                    onClick={() => navigate('/booking')}
-                    className="mt-4 px-6 py-3 bg-indigo-600 text-white rounded-xl font-semibold hover:bg-indigo-700 transition"
-                  >
-                    <i className="fas fa-plus mr-2"></i>Zakaži Termin
-                  </button>
                 </div>
               ) : (
                 <div className="space-y-4">
