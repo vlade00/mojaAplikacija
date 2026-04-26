@@ -3,9 +3,9 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { useAuth } from '../context/AuthContext';
 import { useNavigate, useSearchParams } from 'react-router-dom';
-import { getAppointments, deleteAppointment, updateAppointment, Appointment } from '../services/appointmentService';
+import { getAppointments, updateAppointment, Appointment } from '../services/appointmentService';
 import { checkAppointmentReview, createReview, ReviewCheck } from '../services/reviewService';
-import { updateProfile, UpdateProfileRequest, changePassword, ChangePasswordRequest, uploadAvatar } from '../services/authService';
+import { updateProfile, UpdateProfileRequest, changePassword, ChangePasswordRequest } from '../services/authService';
 import { STATIC_BASE_URL } from '../services/api';
 
 const CustomerDashboard: React.FC = () => {
@@ -308,27 +308,6 @@ const CustomerDashboard: React.FC = () => {
       .substring(0, 2);
   };
 
-  const handleAvatarUpload = async (file: File) => {
-    setUploadingAvatar(true);
-    try {
-      const result = await uploadAvatar(file);
-      
-      // Ažuriraj user u localStorage
-      if (user) {
-        const updatedUser = { ...user, avatarUrl: result.avatarUrl };
-        localStorage.setItem('user', JSON.stringify(updatedUser));
-        window.location.reload(); // Osveži da se prikaže novi avatar
-      }
-      
-      setSuccessMessage('Avatar je uspešno uploadovan!');
-      setTimeout(() => setSuccessMessage(''), 5000);
-    } catch (error: any) {
-      alert(error.response?.data?.error || 'Greška pri upload-u avatara');
-    } finally {
-      setUploadingAvatar(false);
-    }
-  };
-
   const handleSelectAvatar = async (avatarUrl: string) => {
     setUploadingAvatar(true);
     try {
@@ -474,7 +453,6 @@ const CustomerDashboard: React.FC = () => {
   const mapsOpenUrl = 'https://maps.app.goo.gl/W2bK49uJ7vexeYXf7';
   const instagramUrl = 'https://www.instagram.com/vladee00/';
   const phoneDisplay = '069 794 079';
-  const phoneDial = '+38169794079';
 
   const scrollToTop = () => window.scrollTo({ top: 0, behavior: 'smooth' });
 

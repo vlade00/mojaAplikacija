@@ -2,7 +2,6 @@
 
 import React, { useState, useEffect, useRef } from 'react';
 import { useAuth } from '../context/AuthContext';
-import { useNavigate } from 'react-router-dom';
 import { 
   getStats, 
   AdminStats, 
@@ -27,7 +26,6 @@ import { updateAppointment } from '../services/appointmentService';
 
 const AdminDashboard: React.FC = () => {
   const { user, logout } = useAuth();
-  const navigate = useNavigate();
   
   const [stats, setStats] = useState<AdminStats | null>(null);
   const [users, setUsers] = useState<AdminUser[]>([]);
@@ -205,16 +203,6 @@ const AdminDashboard: React.FC = () => {
       ADMIN: 'bg-red-100 text-red-700',
     };
     return styles[role] || 'bg-gray-100 text-gray-700';
-  };
-
-  const getStatusLabel = (status: string) => {
-    const labels: { [key: string]: string } = {
-      PENDING: 'Čeka potvrdu',
-      CONFIRMED: 'Potvrđeno',
-      COMPLETED: 'Završeno',
-      CANCELLED: 'Otkazano',
-    };
-    return labels[status] || status;
   };
 
   const getStatusBadge = (status: string) => {

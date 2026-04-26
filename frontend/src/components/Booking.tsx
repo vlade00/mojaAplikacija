@@ -1,6 +1,6 @@
 // Booking komponenta - Forma za kreiranje rezervacije
 
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { getServices, Service } from '../services/serviceService';
 import { getStylists, Stylist } from '../services/stylistService';
@@ -47,6 +47,42 @@ const Booking: React.FC = () => {
     loadData();
   }, []);
 
+  const loadStylistsForService = useCallback(
+    async (serviceId: number) => {
+      try {
+        console.log('Loading stylists for service:', serviceId);
+        console.log('Available stylists:', stylists);
+
+        const stylistServicePromises = stylists.map(async (stylist) => {
+          try {
+            console.log(`Checking stylist ${stylist.id} (${stylist.name})`);
+            const stylistServices = await getStylistServices(stylist.id);
+            console.log(`Stylist ${stylist.id} services:`, stylistServices);
+
+            const hasService = stylistServices.some((ss) => ss.id === serviceId);
+            console.log(`Stylist ${stylist.id} has service ${serviceId}:`, hasService);
+
+            return hasService ? stylist : null;
+          } catch (error) {
+            console.error(`Error loading services for stylist ${stylist.id}:`, error);
+            return null;
+          }
+        });
+
+        const stylistsWithService = (await Promise.all(stylistServicePromises)).filter(
+          (s): s is Stylist => s !== null
+        );
+
+        console.log('Available stylists for service:', stylistsWithService);
+        setAvailableStylists(stylistsWithService);
+      } catch (error) {
+        console.error('Error loading stylists for service:', error);
+        setAvailableStylists([]);
+      }
+    },
+    [stylists]
+  );
+
   // Kada se promeni usluga, učitaj frizere koji rade tu uslugu
   useEffect(() => {
     console.log('useEffect triggered:', { selectedService: selectedService?.id, stylistsLength: stylists.length });
@@ -56,7 +92,7 @@ const Booking: React.FC = () => {
     } else if (selectedService && stylists.length === 0) {
       console.warn('Stylists not loaded yet, waiting...');
     }
-  }, [selectedService, stylists]);
+  }, [selectedService, stylists, loadStylistsForService]);
 
   const loadData = async () => {
     try {
@@ -77,40 +113,7 @@ const Booking: React.FC = () => {
     }
   };
 
-  const loadStylistsForService = async (serviceId: number) => {
-    try {
-      console.log('Loading stylists for service:', serviceId);
-      console.log('Available stylists:', stylists);
-      
-      // Učitaj sve frizere koji rade tu uslugu
-      const stylistServicePromises = stylists.map(async (stylist) => {
-        try {
-          console.log(`Checking stylist ${stylist.id} (${stylist.name})`);
-          const stylistServices = await getStylistServices(stylist.id);
-          console.log(`Stylist ${stylist.id} services:`, stylistServices);
-          
-          // stylistServices je array sa {id, name, price}
-          const hasService = stylistServices.some(ss => ss.id === serviceId);
-          console.log(`Stylist ${stylist.id} has service ${serviceId}:`, hasService);
-          
-          return hasService ? stylist : null;
-        } catch (error) {
-          console.error(`Error loading services for stylist ${stylist.id}:`, error);
-          return null;
-        }
-      });
-      
-      const stylistsWithService = (await Promise.all(stylistServicePromises)).filter(
-        (s): s is Stylist => s !== null
-      );
-      
-      console.log('Available stylists for service:', stylistsWithService);
-      setAvailableStylists(stylistsWithService);
-    } catch (error) {
-      console.error('Error loading stylists for service:', error);
-      setAvailableStylists([]);
-    }
-  };
+  // loadStylistsForService is memoized with useCallback above
 
   const handleServiceSelect = (service: Service) => {
     setSelectedService(service);
@@ -337,13 +340,6 @@ const Booking: React.FC = () => {
   const getMinDate = () => {
     const today = new Date();
     return today.toISOString().split('T')[0];
-  };
-  
-  // Funkcija za proveru da li je datum radni dan
-  const isWeekday = (dateString: string): boolean => {
-    const date = new Date(dateString);
-    const dayOfWeek = date.getDay();
-    return dayOfWeek !== 0 && dayOfWeek !== 6; // 0 = nedelja, 6 = subota
   };
   
   // Funkcija za oninvalid event handler - spreči izbor vikenda

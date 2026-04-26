@@ -2,7 +2,6 @@
 
 import React, { useState, useEffect, useMemo } from 'react';
 import { useAuth } from '../context/AuthContext';
-import { useNavigate } from 'react-router-dom';
 import {
   getStylistProfile,
   getStylistAppointments,
@@ -14,7 +13,6 @@ import { getStylistReviews, Review } from '../services/reviewService';
 
 const StylistPanel: React.FC = () => {
   const { user, logout } = useAuth();
-  const navigate = useNavigate();
 
   const [profile, setProfile] = useState<StylistProfile | null>(null);
   const [appointments, setAppointments] = useState<StylistAppointment[]>([]);
@@ -70,14 +68,6 @@ const StylistPanel: React.FC = () => {
     }
   };
 
-  const loadReviews = async () => {
-    if (!profile?.stylistId) {
-      console.warn('[StylistPanel] Cannot load reviews: no stylistId in profile');
-      return;
-    }
-    await loadReviewsForStylist(profile.stylistId);
-  };
-
   const loadReviewsForStylist = async (stylistId: number) => {
     try {
       setReviewsLoading(true);
@@ -108,24 +98,6 @@ const StylistPanel: React.FC = () => {
       currency: 'RSD',
       minimumFractionDigits: 0,
     }).format(amount);
-  };
-
-  const formatDate = (dateString: string) => {
-    return new Date(dateString).toLocaleDateString('sr-RS', {
-      day: 'numeric',
-      month: 'long',
-      year: 'numeric',
-    });
-  };
-
-  const getStatusLabel = (status: string) => {
-    const labels: { [key: string]: string } = {
-      PENDING: 'Čeka potvrdu',
-      CONFIRMED: 'Potvrđeno',
-      COMPLETED: 'Završeno',
-      CANCELLED: 'Otkazano',
-    };
-    return labels[status] || status;
   };
 
   const getStatusBadge = (status: string) => {
