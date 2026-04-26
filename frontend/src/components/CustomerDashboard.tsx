@@ -645,76 +645,102 @@ const CustomerDashboard: React.FC = () => {
             </div>
 
             {/* Completed Appointments Section */}
-            {completedAppointments.length > 0 && (
-              <div
-                ref={historySectionRef}
-                id="istorija-zavrsenih"
-                className="bg-white rounded-2xl shadow-lg p-8 scroll-mt-24"
-              >
-                <div className="flex items-center justify-between mb-6">
-                  <h3 className="text-2xl font-bold text-gray-800 flex items-center gap-3">
-                    <span className="w-10 h-10 bg-blue-100 rounded-xl flex items-center justify-center">
-                      <i className="fas fa-check-double text-blue-600"></i>
-                    </span>
-                    Završene Rezervacije
-                    <span className="text-lg font-normal text-gray-500 ml-2">
-                      ({completedAppointments.length})
-                    </span>
-                  </h3>
+            <div
+              ref={historySectionRef}
+              id="istorija-zavrsenih"
+              className="bg-white rounded-2xl shadow-lg p-8 scroll-mt-24"
+            >
+              <div className="flex items-center justify-between mb-6">
+                <h3 className="text-2xl font-bold text-gray-800 flex items-center gap-3">
+                  <span className="w-10 h-10 bg-blue-100 rounded-xl flex items-center justify-center">
+                    <i className="fas fa-check-double text-blue-600"></i>
+                  </span>
+                  Završene Rezervacije
+                  <span className="text-lg font-normal text-gray-500 ml-2">
+                    ({completedAppointments.length})
+                  </span>
+                </h3>
+              </div>
+
+              {completedAppointments.length === 0 ? (
+                <div className="border-2 border-dashed border-gray-200 rounded-2xl p-8 text-center">
+                  <div className="w-16 h-16 mx-auto mb-4 bg-blue-50 rounded-2xl flex items-center justify-center text-blue-600">
+                    <i className="fas fa-history text-2xl"></i>
+                  </div>
+                  <p className="text-lg font-bold text-gray-800 mb-1">Još nema završenih rezervacija</p>
+                  <p className="text-gray-600 mb-6">
+                    Kada završite prvi termin, ovde će se pojaviti istorija i mogućnost ocenjivanja frizera.
+                  </p>
+                  <button
+                    type="button"
+                    onClick={() => navigate('/booking')}
+                    className="px-6 py-3 bg-indigo-600 text-white rounded-xl font-semibold hover:bg-indigo-700 transition"
+                  >
+                    <i className="fas fa-plus mr-2"></i>Zakaži termin
+                  </button>
                 </div>
+              ) : (
+                <>
+                  <div className="space-y-4">
+                    {(showAllCompleted ? completedAppointments : completedAppointments.slice(0, COMPLETED_APPOINTMENTS_LIMIT)).map((appointment) => {
+                      const startTime = formatTime(appointment.time);
+                      const endDate = new Date(`${appointment.date}T${appointment.time}`);
+                      endDate.setMinutes(endDate.getMinutes() + appointment.service.duration);
+                      const endTime = formatTime(endDate.toTimeString());
 
-                <div className="space-y-4">
-                  {(showAllCompleted ? completedAppointments : completedAppointments.slice(0, COMPLETED_APPOINTMENTS_LIMIT)).map((appointment) => {
-                    const startTime = formatTime(appointment.time);
-                    const endDate = new Date(`${appointment.date}T${appointment.time}`);
-                    endDate.setMinutes(endDate.getMinutes() + appointment.service.duration);
-                    const endTime = formatTime(endDate.toTimeString());
-
-                    return (
-                      <div
-                        key={appointment.id}
-                        className="border-2 border-gray-100 rounded-2xl p-6 shadow-md hover:shadow-lg transition"
-                      >
-                        <div className="flex justify-between items-start mb-4">
-                          <div>
-                            <h4 className="text-xl font-bold text-gray-800 mb-1">
-                              {appointment.service.name}
-                            </h4>
-                            <p className="text-gray-600 flex items-center gap-2">
-                              <i className="fas fa-clock text-indigo-500"></i>
-                              {formatDate(appointment.date)}, {startTime} - {endTime}
-                            </p>
+                      return (
+                        <div
+                          key={appointment.id}
+                          className="border-2 border-gray-100 rounded-2xl p-6 shadow-md hover:shadow-lg transition"
+                        >
+                          <div className="flex justify-between items-start mb-4">
+                            <div>
+                              <h4 className="text-xl font-bold text-gray-800 mb-1">
+                                {appointment.service.name}
+                              </h4>
+                              <p className="text-gray-600 flex items-center gap-2">
+                                <i className="fas fa-clock text-indigo-500"></i>
+                                {formatDate(appointment.date)}, {startTime} - {endTime}
+                              </p>
+                            </div>
+                            {getStatusBadge(appointment.status)}
                           </div>
-                          {getStatusBadge(appointment.status)}
-                        </div>
-                        <div className="flex items-center gap-4 mb-4">
-                          <div className="w-16 h-16 bg-gradient-to-br from-purple-400 to-pink-400 rounded-2xl flex items-center justify-center text-white text-2xl font-bold shadow-lg">
-                            {getInitials(appointment.stylist.name)}
+                          <div className="flex items-center gap-4 mb-4">
+                            <div className="w-16 h-16 bg-gradient-to-br from-purple-400 to-pink-400 rounded-2xl flex items-center justify-center text-white text-2xl font-bold shadow-lg">
+                              {getInitials(appointment.stylist.name)}
+                            </div>
+                            <div>
+                              <p className="font-bold text-gray-800">{appointment.stylist.name}</p>
+                              <p className="text-sm text-gray-600 flex items-center gap-1">
+                                <i className="fas fa-star text-yellow-400"></i>
+                                {appointment.stylist.rating ? parseFloat(appointment.stylist.rating).toFixed(1) : '0.0'} ({appointment.stylist.totalReviews} ocena)
+                              </p>
+                            </div>
                           </div>
-                          <div>
-                            <p className="font-bold text-gray-800">{appointment.stylist.name}</p>
-                            <p className="text-sm text-gray-600 flex items-center gap-1">
-                              <i className="fas fa-star text-yellow-400"></i>
-                              {appointment.stylist.rating ? parseFloat(appointment.stylist.rating).toFixed(1) : '0.0'} ({appointment.stylist.totalReviews} ocena)
-                            </p>
-                          </div>
-                        </div>
-                        <div className="flex gap-3">
-                          {reviewChecks[appointment.id] ? (
-                            reviewChecks[appointment.id].hasReview ? (
-                              <div className="flex-1 px-4 py-3 bg-green-50 border-2 border-green-200 rounded-xl">
-                                <div className="flex items-center gap-2 text-green-700">
-                                  <i className="fas fa-star text-yellow-400"></i>
-                                  <span className="font-semibold">
-                                    Ocenjeno: {reviewChecks[appointment.id].review?.rating}/5
-                                  </span>
+                          <div className="flex gap-3">
+                            {reviewChecks[appointment.id] ? (
+                              reviewChecks[appointment.id].hasReview ? (
+                                <div className="flex-1 px-4 py-3 bg-green-50 border-2 border-green-200 rounded-xl">
+                                  <div className="flex items-center gap-2 text-green-700">
+                                    <i className="fas fa-star text-yellow-400"></i>
+                                    <span className="font-semibold">
+                                      Ocenjeno: {reviewChecks[appointment.id].review?.rating}/5
+                                    </span>
+                                  </div>
+                                  {reviewChecks[appointment.id].review?.comment && (
+                                    <p className="text-sm text-gray-600 mt-1">
+                                      "{reviewChecks[appointment.id].review?.comment}"
+                                    </p>
+                                  )}
                                 </div>
-                                {reviewChecks[appointment.id].review?.comment && (
-                                  <p className="text-sm text-gray-600 mt-1">
-                                    "{reviewChecks[appointment.id].review?.comment}"
-                                  </p>
-                                )}
-                              </div>
+                              ) : (
+                                <button
+                                  onClick={() => handleOpenReviewModal(appointment)}
+                                  className="flex-1 px-4 py-3 bg-yellow-100 text-yellow-700 rounded-xl font-semibold hover:bg-yellow-200 transition"
+                                >
+                                  <i className="fas fa-star mr-2"></i>Oceni Frizera
+                                </button>
+                              )
                             ) : (
                               <button
                                 onClick={() => handleOpenReviewModal(appointment)}
@@ -722,37 +748,30 @@ const CustomerDashboard: React.FC = () => {
                               >
                                 <i className="fas fa-star mr-2"></i>Oceni Frizera
                               </button>
-                            )
-                          ) : (
-                            <button
-                              onClick={() => handleOpenReviewModal(appointment)}
-                              className="flex-1 px-4 py-3 bg-yellow-100 text-yellow-700 rounded-xl font-semibold hover:bg-yellow-200 transition"
-                            >
-                              <i className="fas fa-star mr-2"></i>Oceni Frizera
-                            </button>
-                          )}
+                            )}
+                          </div>
                         </div>
-                      </div>
-                    );
-                  })}
-                </div>
-
-                {/* Show More/Less Button */}
-                {completedAppointments.length > COMPLETED_APPOINTMENTS_LIMIT && (
-                  <div className="mt-6 text-center">
-                    <button
-                      onClick={() => setShowAllCompleted(!showAllCompleted)}
-                      className="px-6 py-3 bg-indigo-100 text-indigo-700 rounded-xl font-semibold hover:bg-indigo-200 transition flex items-center gap-2 mx-auto"
-                    >
-                      <i className={`fas fa-${showAllCompleted ? 'chevron-up' : 'chevron-down'}`}></i>
-                      {showAllCompleted 
-                        ? `Prikaži manje (prikaži prvih ${COMPLETED_APPOINTMENTS_LIMIT})` 
-                        : `Prikaži sve (${completedAppointments.length - COMPLETED_APPOINTMENTS_LIMIT} više)`}
-                    </button>
+                      );
+                    })}
                   </div>
-                )}
-              </div>
-            )}
+
+                  {/* Show More/Less Button */}
+                  {completedAppointments.length > COMPLETED_APPOINTMENTS_LIMIT && (
+                    <div className="mt-6 text-center">
+                      <button
+                        onClick={() => setShowAllCompleted(!showAllCompleted)}
+                        className="px-6 py-3 bg-indigo-100 text-indigo-700 rounded-xl font-semibold hover:bg-indigo-200 transition flex items-center gap-2 mx-auto"
+                      >
+                        <i className={`fas fa-${showAllCompleted ? 'chevron-up' : 'chevron-down'}`}></i>
+                        {showAllCompleted
+                          ? `Prikaži manje (prikaži prvih ${COMPLETED_APPOINTMENTS_LIMIT})`
+                          : `Prikaži sve (${completedAppointments.length - COMPLETED_APPOINTMENTS_LIMIT} više)`}
+                      </button>
+                    </div>
+                  )}
+                </>
+              )}
+            </div>
           </div>
 
           {/* Right: Quick Actions & Stats */}
