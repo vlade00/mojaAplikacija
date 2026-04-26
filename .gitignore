@@ -26,6 +26,9 @@ npm-debug.log*
 .DS_Store
 Thumbs.db
 
+# Embedded/old repo folder (not part of deploy)
+hairStudio/
+
 # Prisma
 backend/prisma/migrations/
 
