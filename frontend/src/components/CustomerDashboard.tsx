@@ -959,7 +959,7 @@ const CustomerDashboard: React.FC = () => {
               {/* Profile Header */}
               <div className="bg-gradient-to-r from-indigo-600 via-purple-600 to-pink-500 rounded-3xl p-5 sm:p-8 text-white shadow-xl">
                 <div className="flex flex-col sm:flex-row sm:items-center gap-5 sm:gap-6">
-                  <div className="relative">
+                  <div className="relative w-24 h-24">
                     {getAvatarSrc(user) ? (
                       <img 
                         src={getAvatarSrc(user)!} 
@@ -973,8 +973,9 @@ const CustomerDashboard: React.FC = () => {
                     )}
                     <button
                       onClick={() => setShowAvatarPickerModal(true)}
-                      className="absolute bottom-0 right-0 bg-indigo-600 hover:bg-indigo-700 text-white rounded-full p-2 cursor-pointer shadow-lg transition"
+                      className="absolute bottom-2 right-2 bg-white/25 hover:bg-white/35 backdrop-blur text-white rounded-xl w-9 h-9 cursor-pointer shadow-lg transition flex items-center justify-center border border-white/20"
                       disabled={uploadingAvatar}
+                      title="Promeni avatar"
                     >
                       <i className="fas fa-camera text-sm"></i>
                     </button>
@@ -986,7 +987,7 @@ const CustomerDashboard: React.FC = () => {
                   </div>
                   <div className="min-w-0">
                     <h3 className="text-2xl sm:text-3xl font-bold mb-1 sm:mb-2 break-words">{user?.name}</h3>
-                    <p className="text-base sm:text-xl opacity-90 break-words">{user?.email}</p>
+                    <p className="text-base sm:text-xl opacity-90 break-all">{user?.email}</p>
                     {user?.phone && (
                       <p className="text-sm sm:text-lg opacity-80 mt-2">
                         <i className="fas fa-phone mr-2"></i>{user.phone}
@@ -1045,8 +1046,8 @@ const CustomerDashboard: React.FC = () => {
               </div>
 
               {/* Profile Info Card */}
-              <div className="bg-white rounded-2xl shadow-lg p-8">
-                <div className="flex items-center justify-between mb-6">
+              <div className="bg-white rounded-2xl shadow-lg p-5 sm:p-8">
+                <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 mb-6 min-w-0">
                   <h3 className="text-2xl font-bold text-gray-900 flex items-center gap-3">
                     <i className="fas fa-user text-indigo-600"></i>
                     Lični podaci
@@ -1077,18 +1078,18 @@ const CustomerDashboard: React.FC = () => {
                     <div className="w-12 h-12 bg-indigo-100 rounded-xl flex items-center justify-center">
                       <i className="fas fa-user text-indigo-600"></i>
                     </div>
-                    <div>
+                    <div className="min-w-0">
                       <p className="text-sm text-gray-600">Ime i prezime</p>
-                      <p className="text-lg font-semibold text-gray-900">{user?.name}</p>
+                      <p className="text-lg font-semibold text-gray-900 break-words">{user?.name}</p>
                     </div>
                   </div>
                   <div className="flex items-center gap-4 p-4 bg-gray-50 rounded-xl">
                     <div className="w-12 h-12 bg-indigo-100 rounded-xl flex items-center justify-center">
                       <i className="fas fa-envelope text-indigo-600"></i>
                     </div>
-                    <div>
+                    <div className="min-w-0">
                       <p className="text-sm text-gray-600">Email</p>
-                      <p className="text-lg font-semibold text-gray-900">{user?.email}</p>
+                      <p className="text-lg font-semibold text-gray-900 break-all">{user?.email}</p>
                     </div>
                   </div>
                   {user?.phone ? (
@@ -1096,9 +1097,9 @@ const CustomerDashboard: React.FC = () => {
                       <div className="w-12 h-12 bg-indigo-100 rounded-xl flex items-center justify-center">
                         <i className="fas fa-phone text-indigo-600"></i>
                       </div>
-                      <div>
+                      <div className="min-w-0">
                         <p className="text-sm text-gray-600">Telefon</p>
-                        <p className="text-lg font-semibold text-gray-900">{user.phone}</p>
+                        <p className="text-lg font-semibold text-gray-900 break-words">{user.phone}</p>
                       </div>
                     </div>
                   ) : (
