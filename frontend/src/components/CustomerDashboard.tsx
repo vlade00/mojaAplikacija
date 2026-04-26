@@ -7,6 +7,7 @@ import { getAppointments, updateAppointment, Appointment } from '../services/app
 import { checkAppointmentReview, createReview, ReviewCheck } from '../services/reviewService';
 import { updateProfile, UpdateProfileRequest, changePassword, ChangePasswordRequest } from '../services/authService';
 import { STATIC_BASE_URL } from '../services/api';
+import SalonMapPreview from './SalonMapPreview';
 
 const CustomerDashboard: React.FC = () => {
   const { user, logout, updateUser } = useAuth();
@@ -446,13 +447,6 @@ const CustomerDashboard: React.FC = () => {
     'https://images.unsplash.com/photo-1527799820374-dcf8d9d4a0df?auto=format&fit=crop&w=1200&q=70',
     'https://images.unsplash.com/photo-1560066984-138dadb4c035?auto=format&fit=crop&w=1200&q=70',
   ];
-  // Lokacija: Google Maps u iframe-u često prikaže grešku bez Embed API ključa; OSM embed radi pouzdano.
-  const SALON_LAT = 44.7585;
-  const SALON_LON = 20.486;
-  const osmBbox = [SALON_LON - 0.006, SALON_LAT - 0.006, SALON_LON + 0.006, SALON_LAT + 0.006].join(',');
-  const mapsEmbedUrl = `https://www.openstreetmap.org/export/embed.html?bbox=${encodeURIComponent(
-    osmBbox
-  )}&layer=mapnik&marker=${encodeURIComponent(`${SALON_LAT},${SALON_LON}`)}`;
   const mapsOpenUrl = 'https://maps.app.goo.gl/W2bK49uJ7vexeYXf7';
   const instagramUrl = 'https://www.instagram.com/vladee00/';
   const phoneDisplay = '069 794 079';
@@ -824,14 +818,10 @@ const CustomerDashboard: React.FC = () => {
                 </a>
               </div>
               <div className="rounded-xl overflow-hidden border border-gray-100 bg-gray-50">
-                <div className="aspect-[16/9]">
-                  <iframe
-                    title="Lokacija salona"
-                    src={mapsEmbedUrl}
-                    className="w-full h-full"
-                    loading="lazy"
-                    referrerPolicy="no-referrer-when-downgrade"
-                  />
+                <div className="aspect-[16/9] relative w-full">
+                  <div className="absolute inset-0">
+                    <SalonMapPreview />
+                  </div>
                 </div>
               </div>
             </div>
@@ -1629,14 +1619,10 @@ const CustomerDashboard: React.FC = () => {
             </div>
             <div className="p-5 space-y-4">
               <div className="rounded-xl overflow-hidden border border-gray-100 bg-gray-50">
-                <div className="aspect-[16/10]">
-                  <iframe
-                    title="Lokacija salona"
-                    src={mapsEmbedUrl}
-                    className="w-full h-full"
-                    loading="lazy"
-                    referrerPolicy="no-referrer-when-downgrade"
-                  />
+                <div className="aspect-[16/10] relative w-full min-h-[220px]">
+                  <div className="absolute inset-0">
+                    <SalonMapPreview />
+                  </div>
                 </div>
               </div>
               <div className="flex items-center justify-between flex-wrap gap-3">
