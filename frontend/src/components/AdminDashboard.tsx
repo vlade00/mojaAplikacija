@@ -180,11 +180,32 @@ const AdminDashboard: React.FC = () => {
   };
 
   const formatDate = (dateString: string) => {
-    return new Date(dateString).toLocaleDateString('sr-RS', {
+    const s = String(dateString ?? '');
+    const m = s.match(/^(\d{4}-\d{2}-\d{2})/);
+    const ymd = m ? m[1] : s.slice(0, 10);
+    const d = new Date(`${ymd}T12:00:00`);
+    if (Number.isNaN(d.getTime())) return ymd;
+    return d.toLocaleDateString('sr-RS', {
       day: 'numeric',
       month: 'long',
       year: 'numeric',
     });
+  };
+
+  const formatAppointmentDisplayDate = (dateVal: string) => {
+    const s = String(dateVal ?? '');
+    const m = s.match(/^(\d{4}-\d{2}-\d{2})/);
+    const ymd = m ? m[1] : s.slice(0, 10);
+    const d = new Date(`${ymd}T12:00:00`);
+    if (Number.isNaN(d.getTime())) return ymd;
+    return d.toLocaleDateString('sr-RS', { day: 'numeric', month: 'short', year: 'numeric' });
+  };
+
+  const formatAppointmentTime = (timeVal: string) => {
+    const s = String(timeVal ?? '');
+    const m = s.match(/(\d{1,2}):(\d{2})/);
+    if (!m) return s.slice(0, 5);
+    return `${m[1].padStart(2, '0')}:${m[2]}`;
   };
 
   const getRoleLabel = (role: string) => {
@@ -272,75 +293,81 @@ const AdminDashboard: React.FC = () => {
   return (
     <div className="min-h-screen bg-gray-50">
       {/* Top Navigation */}
-      <div className="bg-white rounded-2xl shadow-lg p-6 mb-6 mx-6 mt-6">
-        <div className="flex justify-between items-center">
-          <div className="flex items-center gap-4">
-            <div className="w-14 h-14 bg-gradient-to-br from-indigo-500 to-purple-500 rounded-2xl flex items-center justify-center text-white text-2xl shadow-lg">
+      <div className="bg-white rounded-2xl shadow-lg p-4 sm:p-6 mb-6 mx-4 sm:mx-6 mt-4 sm:mt-6">
+        <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center gap-4">
+          <div className="flex items-center gap-3 sm:gap-4 min-w-0">
+            <div className="w-12 h-12 sm:w-14 sm:h-14 shrink-0 bg-gradient-to-br from-indigo-500 to-purple-500 rounded-2xl flex items-center justify-center text-white text-xl sm:text-2xl shadow-lg">
               <i className="fas fa-cut"></i>
             </div>
-            <div>
-              <h2 className="text-2xl font-bold text-gray-800">HairStudio</h2>
+            <div className="min-w-0">
+              <h2 className="text-xl sm:text-2xl font-bold text-gray-800">HairStudio</h2>
               <p className="text-sm text-gray-500">Admin Panel</p>
             </div>
           </div>
-          <div className="flex items-center gap-4">
-            <div className="text-right">
+          <div className="flex flex-col sm:flex-row sm:items-center gap-3 sm:gap-4 w-full sm:w-auto">
+            <div className="text-left sm:text-right min-w-0">
               <p className="text-sm text-gray-600">Dobrodošli,</p>
-              <p className="font-semibold text-gray-900">{user?.name}</p>
+              <p className="font-semibold text-gray-900 truncate">{user?.name}</p>
             </div>
             <button
+              type="button"
               onClick={logout}
-              className="px-6 py-2 bg-red-500 text-white rounded-xl font-semibold hover:bg-red-600 transition"
+              className="w-full sm:w-auto px-4 sm:px-6 py-2.5 bg-red-500 text-white rounded-xl font-semibold hover:bg-red-600 transition flex items-center justify-center gap-2 shrink-0"
             >
-              <i className="fas fa-sign-out-alt mr-2"></i>Odjavi se
+              <i className="fas fa-sign-out-alt"></i>
+              <span>Odjavi se</span>
             </button>
           </div>
         </div>
       </div>
 
-      <div className="px-6 pb-6">
+      <div className="px-4 sm:px-6 pb-6">
         {/* Tabs Navigation */}
         <div className="bg-white rounded-2xl shadow-lg p-2 mb-6">
-          <div className="flex gap-2">
+          <div className="grid grid-cols-2 lg:flex lg:flex-nowrap gap-2">
             <button
+              type="button"
               onClick={() => setActiveTab('overview')}
-              className={`flex-1 px-6 py-3 rounded-xl font-semibold transition ${
+              className={`lg:flex-1 px-3 sm:px-6 py-2.5 sm:py-3 rounded-xl font-semibold text-sm sm:text-base transition ${
                 activeTab === 'overview'
                   ? 'bg-indigo-600 text-white'
                   : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
               }`}
             >
-              <i className="fas fa-chart-line mr-2"></i>Pregled
+              <i className="fas fa-chart-line mr-1 sm:mr-2"></i>Pregled
             </button>
             <button
+              type="button"
               onClick={() => setActiveTab('users')}
-              className={`flex-1 px-6 py-3 rounded-xl font-semibold transition ${
+              className={`lg:flex-1 px-3 sm:px-6 py-2.5 sm:py-3 rounded-xl font-semibold text-sm sm:text-base transition ${
                 activeTab === 'users'
                   ? 'bg-indigo-600 text-white'
                   : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
               }`}
             >
-              <i className="fas fa-users mr-2"></i>Korisnici
+              <i className="fas fa-users mr-1 sm:mr-2"></i>Korisnici
             </button>
             <button
+              type="button"
               onClick={() => setActiveTab('stylists')}
-              className={`flex-1 px-6 py-3 rounded-xl font-semibold transition ${
+              className={`lg:flex-1 px-3 sm:px-6 py-2.5 sm:py-3 rounded-xl font-semibold text-sm sm:text-base transition ${
                 activeTab === 'stylists'
                   ? 'bg-indigo-600 text-white'
                   : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
               }`}
             >
-              <i className="fas fa-user-tie mr-2"></i>Frizeri
+              <i className="fas fa-user-tie mr-1 sm:mr-2"></i>Frizeri
             </button>
             <button
+              type="button"
               onClick={() => setActiveTab('appointments')}
-              className={`flex-1 px-6 py-3 rounded-xl font-semibold transition ${
+              className={`lg:flex-1 px-3 sm:px-6 py-2.5 sm:py-3 rounded-xl font-semibold text-sm sm:text-base transition ${
                 activeTab === 'appointments'
                   ? 'bg-indigo-600 text-white'
                   : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
               }`}
             >
-              <i className="fas fa-calendar mr-2"></i>Rezervacije
+              <i className="fas fa-calendar mr-1 sm:mr-2"></i>Rezervacije
             </button>
           </div>
         </div>
@@ -348,7 +375,7 @@ const AdminDashboard: React.FC = () => {
         {/* Tab Content */}
         {activeTab === 'overview' && (
           <div>
-            <h2 className="text-3xl font-bold text-gray-900 mb-6">Pregled sistema</h2>
+            <h2 className="text-2xl sm:text-3xl font-bold text-gray-900 mb-4 sm:mb-6">Pregled sistema</h2>
             
             {loading ? (
               <div className="text-center py-12">
@@ -358,88 +385,87 @@ const AdminDashboard: React.FC = () => {
             ) : stats ? (
               <>
                 {/* Statistics Cards */}
-                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-6">
+                <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-6 mb-6">
                   {/* Total Users */}
-                  <div className="bg-white rounded-2xl shadow-lg p-6 border-l-4 border-indigo-500">
-                    <div className="flex justify-between items-center">
-                      <div>
-                        <p className="text-sm text-gray-600 mb-1">Ukupno korisnika</p>
-                        <p className="text-3xl font-bold text-gray-900">{stats.users.total}</p>
+                  <div className="bg-white rounded-2xl shadow-lg p-4 sm:p-6 border-l-4 border-indigo-500 min-w-0">
+                    <div className="flex justify-between items-center gap-2">
+                      <div className="min-w-0">
+                        <p className="text-xs sm:text-sm text-gray-600 mb-1 leading-tight">Ukupno korisnika</p>
+                        <p className="text-2xl sm:text-3xl font-bold text-gray-900 tabular-nums">{stats.users.total}</p>
                       </div>
-                      <div className="w-12 h-12 bg-indigo-100 rounded-xl flex items-center justify-center">
-                        <i className="fas fa-users text-indigo-600 text-xl"></i>
+                      <div className="w-10 h-10 sm:w-12 sm:h-12 shrink-0 bg-indigo-100 rounded-xl flex items-center justify-center">
+                        <i className="fas fa-users text-indigo-600 text-lg sm:text-xl"></i>
                       </div>
                     </div>
                   </div>
 
                   {/* Active Stylists */}
-                  <div className="bg-white rounded-2xl shadow-lg p-6 border-l-4 border-purple-500">
-                    <div className="flex justify-between items-center">
-                      <div>
-                        <p className="text-sm text-gray-600 mb-1">Aktivni frizeri</p>
-                        <p className="text-3xl font-bold text-gray-900">{stats.stylists.active}</p>
+                  <div className="bg-white rounded-2xl shadow-lg p-4 sm:p-6 border-l-4 border-purple-500 min-w-0">
+                    <div className="flex justify-between items-center gap-2">
+                      <div className="min-w-0">
+                        <p className="text-xs sm:text-sm text-gray-600 mb-1 leading-tight">Aktivni frizeri</p>
+                        <p className="text-2xl sm:text-3xl font-bold text-gray-900 tabular-nums">{stats.stylists.active}</p>
                       </div>
-                      <div className="w-12 h-12 bg-purple-100 rounded-xl flex items-center justify-center">
-                        <i className="fas fa-user-tie text-purple-600 text-xl"></i>
+                      <div className="w-10 h-10 sm:w-12 sm:h-12 shrink-0 bg-purple-100 rounded-xl flex items-center justify-center">
+                        <i className="fas fa-user-tie text-purple-600 text-lg sm:text-xl"></i>
                       </div>
                     </div>
                   </div>
 
                   {/* Total Appointments */}
-                  <div className="bg-white rounded-2xl shadow-lg p-6 border-l-4 border-green-500">
-                    <div className="flex justify-between items-center">
-                      <div>
-                        <p className="text-sm text-gray-600 mb-1">Ukupno rezervacija</p>
-                        <p className="text-3xl font-bold text-gray-900">{stats.appointments.total}</p>
+                  <div className="bg-white rounded-2xl shadow-lg p-4 sm:p-6 border-l-4 border-green-500 min-w-0">
+                    <div className="flex justify-between items-center gap-2">
+                      <div className="min-w-0">
+                        <p className="text-xs sm:text-sm text-gray-600 mb-1 leading-tight">Ukupno rezervacija</p>
+                        <p className="text-2xl sm:text-3xl font-bold text-gray-900 tabular-nums">{stats.appointments.total}</p>
                       </div>
-                      <div className="w-12 h-12 bg-green-100 rounded-xl flex items-center justify-center">
-                        <i className="fas fa-calendar-check text-green-600 text-xl"></i>
+                      <div className="w-10 h-10 sm:w-12 sm:h-12 shrink-0 bg-green-100 rounded-xl flex items-center justify-center">
+                        <i className="fas fa-calendar-check text-green-600 text-lg sm:text-xl"></i>
                       </div>
                     </div>
                   </div>
 
                   {/* Total Revenue */}
-                  <div className="bg-white rounded-2xl shadow-lg p-6 border-l-4 border-yellow-500">
-                    <div className="flex justify-between items-center">
-                      <div>
-                        <p className="text-sm text-gray-600 mb-1">Ukupan prihod</p>
-                        <p className="text-xs text-gray-500 mb-1">
+                  <div className="bg-white rounded-2xl shadow-lg p-4 sm:p-6 border-l-4 border-yellow-500 min-w-0 col-span-2 lg:col-span-1">
+                    <div className="flex justify-between items-start gap-2">
+                      <div className="min-w-0">
+                        <p className="text-xs sm:text-sm text-gray-600 mb-1 leading-tight">Ukupan prihod</p>
+                        <p className="text-[11px] sm:text-xs text-gray-500 mb-1 leading-snug">
                           Zbir cena svih rezervacija sa statusom <span className="font-semibold">Završeno</span> (ceo salon).
                         </p>
-                        
-                        <p className="text-3xl font-bold text-gray-900">
+                        <p className="text-lg sm:text-2xl lg:text-3xl font-bold text-gray-900 break-words leading-tight">
                           {formatCurrency(stats.revenue.total)}
                         </p>
                       </div>
-                      <div className="w-12 h-12 bg-yellow-100 rounded-xl flex items-center justify-center">
-                        <i className="fas fa-money-bill-wave text-yellow-600 text-xl"></i>
+                      <div className="w-10 h-10 sm:w-12 sm:h-12 shrink-0 bg-yellow-100 rounded-xl flex items-center justify-center">
+                        <i className="fas fa-money-bill-wave text-yellow-600 text-lg sm:text-xl"></i>
                       </div>
                     </div>
                   </div>
                 </div>
 
                 {/* Appointments by Status */}
-                <div className="bg-white rounded-2xl shadow-lg p-6 mb-6">
-                  <h3 className="text-xl font-bold text-gray-900 mb-4">Rezervacije po statusu</h3>
-                  <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+                <div className="bg-white rounded-2xl shadow-lg p-4 sm:p-6 mb-6">
+                  <h3 className="text-lg sm:text-xl font-bold text-gray-900 mb-4">Rezervacije po statusu</h3>
+                  <div className="grid grid-cols-2 sm:grid-cols-4 gap-2 sm:gap-4">
                     {stats.appointments.byStatus.map((statusItem) => (
-                      <div key={statusItem.status} className="text-center p-4 bg-gray-50 rounded-xl">
-                        <p className="text-sm text-gray-600 mb-1">
+                      <div key={statusItem.status} className="text-center p-3 sm:p-4 bg-gray-50 rounded-xl min-w-0">
+                        <p className="text-xs sm:text-sm text-gray-600 mb-1 leading-tight">
                           {statusItem.status === 'PENDING' && 'Čeka potvrdu'}
                           {statusItem.status === 'CONFIRMED' && 'Potvrđeno'}
                           {statusItem.status === 'COMPLETED' && 'Završeno'}
                           {statusItem.status === 'CANCELLED' && 'Otkazano'}
                         </p>
-                        <p className="text-2xl font-bold text-gray-900">{statusItem.count}</p>
+                        <p className="text-xl sm:text-2xl font-bold text-gray-900 tabular-nums">{statusItem.count}</p>
                       </div>
                     ))}
                   </div>
                 </div>
 
                 {/* Popular Services — samo završeni termini (COMPLETED), kao i „Ukupan prihod“ */}
-                <div className="bg-white rounded-2xl shadow-lg p-6">
-                  <h3 className="text-xl font-bold text-gray-900 mb-1">Najpopularnije usluge</h3>
-                  <p className="text-sm text-gray-500 mb-4">
+                <div className="bg-white rounded-2xl shadow-lg p-4 sm:p-6">
+                  <h3 className="text-lg sm:text-xl font-bold text-gray-900 mb-1">Najpopularnije usluge</h3>
+                  <p className="text-xs sm:text-sm text-gray-500 mb-4 leading-relaxed">
                     Za svaku uslugu: koliko puta je termin <span className="font-semibold text-gray-700">označen kao završen</span>,
                     i koliki je <span className="font-semibold text-gray-700">zbir cena</span> tih završenih termina (RSD).
                   </p>
@@ -447,13 +473,13 @@ const AdminDashboard: React.FC = () => {
                     {stats.popularServices.map((service, index) => (
                       <div
                         key={index}
-                        className="flex justify-between items-center p-4 bg-gray-50 rounded-xl"
+                        className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 p-4 bg-gray-50 rounded-xl"
                       >
-                        <div>
-                          <p className="font-semibold text-gray-900">{service.name}</p>
+                        <div className="min-w-0">
+                          <p className="font-semibold text-gray-900 break-words">{service.name}</p>
                           <p className="text-sm text-gray-600">{service.category}</p>
                         </div>
-                        <div className="text-right">
+                        <div className="text-left sm:text-right shrink-0 space-y-0.5">
                           <p className="text-sm text-gray-700">
                             Broj završenih:{' '}
                             <span className="font-bold text-indigo-600">{service.count}</span>
@@ -478,20 +504,21 @@ const AdminDashboard: React.FC = () => {
         {/* Users Tab */}
         {activeTab === 'users' && (
           <div>
-            <div className="flex justify-between items-center mb-6">
-              <h2 className="text-3xl font-bold text-gray-900">Upravljanje korisnicima</h2>
+            <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 mb-4 sm:mb-6">
+              <h2 className="text-2xl sm:text-3xl font-bold text-gray-900 min-w-0">Upravljanje korisnicima</h2>
               <button
                 type="button"
                 onClick={() => setShowCreateUserModal(true)}
-                className="px-6 py-3 bg-indigo-600 text-white rounded-xl font-semibold hover:bg-indigo-700 transition"
+                className="w-full sm:w-auto px-4 sm:px-6 py-3 bg-indigo-600 text-white rounded-xl font-semibold hover:bg-indigo-700 transition flex items-center justify-center gap-2 shrink-0"
               >
-                <i className="fas fa-plus mr-2"></i>Novi korisnik
+                <i className="fas fa-plus"></i>
+                <span>Novi korisnik</span>
               </button>
             </div>
 
             {/* Search and Filter */}
-            <div className="bg-white rounded-2xl shadow-lg p-6 mb-6">
-              <div className="grid md:grid-cols-2 gap-4">
+            <div className="bg-white rounded-2xl shadow-lg p-4 sm:p-6 mb-6">
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div>
                   <label className="block text-sm font-semibold text-gray-700 mb-2">
                     <i className="fas fa-search mr-2 text-indigo-500"></i>Pretraga
@@ -523,7 +550,7 @@ const AdminDashboard: React.FC = () => {
             </div>
 
             {/* Users List */}
-            <div className="bg-white rounded-2xl shadow-lg p-6">
+            <div className="bg-white rounded-2xl shadow-lg p-4 sm:p-6">
               {usersLoading ? (
                 <div className="text-center py-12">
                   <i className="fas fa-spinner fa-spin text-4xl text-indigo-600 mb-4"></i>
@@ -536,53 +563,95 @@ const AdminDashboard: React.FC = () => {
                 </div>
               ) : (
                 <>
-                  <div className="overflow-x-auto">
-                    <table className="w-full">
+                  <div className="md:hidden space-y-4">
+                    {(showAllUsers ? filteredUsers : filteredUsers.slice(0, USERS_LIMIT)).map((u) => (
+                      <div key={u.id} className="border-2 border-gray-100 rounded-2xl p-4 space-y-3">
+                        <div className="flex items-center gap-3 min-w-0">
+                          <div className="w-10 h-10 shrink-0 bg-gradient-to-br from-indigo-400 to-purple-400 rounded-full flex items-center justify-center text-white font-bold">
+                            {u.name.charAt(0).toUpperCase()}
+                          </div>
+                          <span className="font-semibold text-gray-900 break-words">{u.name}</span>
+                        </div>
+                        <p className="text-sm text-gray-700 break-all">{u.email}</p>
+                        <p className="text-sm text-gray-600">{u.phone || '—'}</p>
+                        <span className={`inline-flex px-3 py-1 rounded-full text-sm font-semibold ${getRoleBadge(u.role)}`}>
+                          {getRoleLabel(u.role)}
+                        </span>
+                        <p className="text-xs text-gray-500">Registracija: {formatDate(u.createdAt)}</p>
+                        <div className="flex flex-wrap gap-2 pt-1">
+                          <button
+                            type="button"
+                            onClick={() => handleEditUser(u)}
+                            className="flex-1 min-w-[120px] px-3 py-2.5 bg-indigo-100 text-indigo-700 rounded-xl text-sm font-semibold hover:bg-indigo-200 transition"
+                          >
+                            <i className="fas fa-edit mr-1"></i>Izmeni
+                          </button>
+                          <button
+                            type="button"
+                            onClick={() => handleDeleteUser(u.id)}
+                            disabled={u.role === 'ADMIN'}
+                            className={`flex-1 min-w-[120px] px-3 py-2.5 rounded-xl text-sm font-semibold transition ${
+                              u.role === 'ADMIN'
+                                ? 'bg-gray-100 text-gray-400 cursor-not-allowed'
+                                : 'bg-red-100 text-red-700 hover:bg-red-200'
+                            }`}
+                          >
+                            <i className="fas fa-trash mr-1"></i>Obriši
+                          </button>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+
+                  <div className="hidden md:block overflow-x-auto rounded-xl border border-gray-100">
+                    <table className="w-full min-w-[800px]">
                       <thead>
-                        <tr className="border-b-2 border-gray-200">
-                          <th className="text-left py-4 px-4 font-semibold text-gray-700">Ime</th>
-                          <th className="text-left py-4 px-4 font-semibold text-gray-700">Email</th>
-                          <th className="text-left py-4 px-4 font-semibold text-gray-700">Telefon</th>
-                          <th className="text-left py-4 px-4 font-semibold text-gray-700">Uloga</th>
-                          <th className="text-left py-4 px-4 font-semibold text-gray-700">Datum registracije</th>
-                          <th className="text-left py-4 px-4 font-semibold text-gray-700">Akcije</th>
+                        <tr className="border-b-2 border-gray-200 bg-gray-50">
+                          <th className="text-left py-3 px-3 text-sm font-semibold text-gray-700">Ime</th>
+                          <th className="text-left py-3 px-3 text-sm font-semibold text-gray-700">Email</th>
+                          <th className="text-left py-3 px-3 text-sm font-semibold text-gray-700">Telefon</th>
+                          <th className="text-left py-3 px-3 text-sm font-semibold text-gray-700">Uloga</th>
+                          <th className="text-left py-3 px-3 text-sm font-semibold text-gray-700">Datum registracije</th>
+                          <th className="text-left py-3 px-3 text-sm font-semibold text-gray-700">Akcije</th>
                         </tr>
                       </thead>
                       <tbody>
                         {(showAllUsers ? filteredUsers : filteredUsers.slice(0, USERS_LIMIT)).map((user) => (
                         <tr key={user.id} className="border-b border-gray-100 hover:bg-gray-50 transition">
-                          <td className="py-4 px-4">
-                            <div className="flex items-center gap-3">
-                              <div className="w-10 h-10 bg-gradient-to-br from-indigo-400 to-purple-400 rounded-full flex items-center justify-center text-white font-bold">
+                          <td className="py-3 px-3 align-top">
+                            <div className="flex items-center gap-3 min-w-0">
+                              <div className="w-10 h-10 shrink-0 bg-gradient-to-br from-indigo-400 to-purple-400 rounded-full flex items-center justify-center text-white font-bold">
                                 {user.name.charAt(0).toUpperCase()}
                               </div>
-                              <span className="font-semibold text-gray-900">{user.name}</span>
+                              <span className="font-semibold text-gray-900 break-words">{user.name}</span>
                             </div>
                           </td>
-                          <td className="py-4 px-4 text-gray-700">{user.email}</td>
-                          <td className="py-4 px-4 text-gray-700">{user.phone || '-'}</td>
-                          <td className="py-4 px-4">
+                          <td className="py-3 px-3 text-gray-700 break-all max-w-[220px]">{user.email}</td>
+                          <td className="py-3 px-3 text-gray-700 whitespace-nowrap">{user.phone || '-'}</td>
+                          <td className="py-3 px-3 align-top">
                             <span className={`px-3 py-1 rounded-full text-sm font-semibold ${getRoleBadge(user.role)}`}>
                               {getRoleLabel(user.role)}
                             </span>
                           </td>
-                          <td className="py-4 px-4 text-gray-600 text-sm">
+                          <td className="py-3 px-3 text-gray-600 text-sm whitespace-nowrap">
                             {formatDate(user.createdAt)}
                           </td>
-                          <td className="py-4 px-4">
-                            <div className="flex gap-2">
-                              <button 
+                          <td className="py-3 px-3 align-top">
+                            <div className="flex flex-wrap gap-2">
+                              <button
+                                type="button"
                                 onClick={() => handleEditUser(user)}
                                 className="px-3 py-1 bg-indigo-100 text-indigo-700 rounded-lg text-sm font-semibold hover:bg-indigo-200 transition"
                               >
                                 <i className="fas fa-edit mr-1"></i>Izmeni
                               </button>
-                              <button 
+                              <button
+                                type="button"
                                 onClick={() => handleDeleteUser(user.id)}
                                 disabled={user.role === 'ADMIN'}
                                 className={`px-3 py-1 rounded-lg text-sm font-semibold transition ${
-                                  user.role === 'ADMIN' 
-                                    ? 'bg-gray-100 text-gray-400 cursor-not-allowed' 
+                                  user.role === 'ADMIN'
+                                    ? 'bg-gray-100 text-gray-400 cursor-not-allowed'
                                     : 'bg-red-100 text-red-700 hover:bg-red-200'
                                 }`}
                               >
@@ -595,17 +664,17 @@ const AdminDashboard: React.FC = () => {
                       </tbody>
                     </table>
                   </div>
-                  
-                  {/* Show More/Less Button */}
+
                   {filteredUsers.length > USERS_LIMIT && (
-                    <div className="mt-6 text-center">
+                    <div className="mt-6 text-center px-1">
                       <button
+                        type="button"
                         onClick={() => setShowAllUsers(!showAllUsers)}
-                        className="px-6 py-3 bg-indigo-100 text-indigo-700 rounded-xl font-semibold hover:bg-indigo-200 transition flex items-center gap-2 mx-auto"
+                        className="w-full sm:w-auto px-4 sm:px-6 py-3 bg-indigo-100 text-indigo-700 rounded-xl font-semibold hover:bg-indigo-200 transition inline-flex items-center justify-center gap-2 text-sm sm:text-base"
                       >
                         <i className={`fas fa-${showAllUsers ? 'chevron-up' : 'chevron-down'}`}></i>
-                        {showAllUsers 
-                          ? `Prikaži manje (prikaži prvih ${USERS_LIMIT})` 
+                        {showAllUsers
+                          ? `Prikaži manje (prvih ${USERS_LIMIT})`
                           : `Prikaži sve (${filteredUsers.length - USERS_LIMIT} više)`}
                       </button>
                     </div>
@@ -619,18 +688,20 @@ const AdminDashboard: React.FC = () => {
             {/* Stylists Tab */}
         {activeTab === 'stylists' && (
           <div>
-            <div className="flex justify-between items-center mb-6">
-              <h2 className="text-3xl font-bold text-gray-900">Upravljanje frizerima</h2>
+            <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 mb-4 sm:mb-6">
+              <h2 className="text-2xl sm:text-3xl font-bold text-gray-900 min-w-0">Upravljanje frizerima</h2>
               <button
+                type="button"
                 onClick={() => setShowCreateStylistModal(true)}
-                className="px-6 py-3 bg-indigo-600 text-white rounded-xl font-semibold hover:bg-indigo-700 transition"
+                className="w-full sm:w-auto px-4 sm:px-6 py-3 bg-indigo-600 text-white rounded-xl font-semibold hover:bg-indigo-700 transition flex items-center justify-center gap-2 shrink-0"
               >
-                <i className="fas fa-plus mr-2"></i>Novi frizer
+                <i className="fas fa-plus"></i>
+                <span>Novi frizer</span>
               </button>
             </div>
 
             {/* Search */}
-            <div className="bg-white rounded-2xl shadow-lg p-6 mb-6">
+            <div className="bg-white rounded-2xl shadow-lg p-4 sm:p-6 mb-6">
               <label className="block text-sm font-semibold text-gray-700 mb-2">
                 <i className="fas fa-search mr-2 text-indigo-500"></i>Pretraga frizera
               </label>
@@ -644,7 +715,7 @@ const AdminDashboard: React.FC = () => {
             </div>
 
             {/* Stylists List */}
-            <div className="bg-white rounded-2xl shadow-lg p-6">
+            <div className="bg-white rounded-2xl shadow-lg p-4 sm:p-6">
               {stylistsLoading ? (
                 <div className="text-center py-12">
                   <i className="fas fa-spinner fa-spin text-4xl text-indigo-600 mb-4"></i>
@@ -662,14 +733,14 @@ const AdminDashboard: React.FC = () => {
                   </button>
                 </div>
               ) : (
-                <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
+                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6">
                   {filteredStylists.map((stylist) => (
                     <div
                       key={stylist.stylistId}
-                      className="border-2 border-gray-200 rounded-2xl p-6 hover:shadow-lg transition"
+                      className="border-2 border-gray-200 rounded-2xl p-4 sm:p-6 hover:shadow-lg transition min-w-0"
                     >
-                      <div className="flex items-center gap-4 mb-4">
-                        <div className="w-16 h-16 bg-gradient-to-br from-purple-400 to-pink-400 rounded-2xl flex items-center justify-center text-white text-2xl font-bold shadow-lg">
+                      <div className="flex items-center gap-3 sm:gap-4 mb-4 min-w-0">
+                        <div className="w-14 h-14 sm:w-16 sm:h-16 shrink-0 bg-gradient-to-br from-purple-400 to-pink-400 rounded-2xl flex items-center justify-center text-white text-xl sm:text-2xl font-bold shadow-lg">
                           {stylist.name
                             .split(' ')
                             .map((n) => n[0])
@@ -677,18 +748,18 @@ const AdminDashboard: React.FC = () => {
                             .toUpperCase()
                             .substring(0, 2)}
                         </div>
-                        <div className="flex-1">
-                          <h3 className="font-bold text-gray-900 text-lg">{stylist.name}</h3>
-                          <p className="text-sm text-gray-600 flex items-center gap-1">
+                        <div className="flex-1 min-w-0">
+                          <h3 className="font-bold text-gray-900 text-base sm:text-lg break-words">{stylist.name}</h3>
+                          <p className="text-sm text-gray-600 flex flex-wrap items-center gap-1">
                             <i className="fas fa-star text-yellow-400"></i>
                             {stylist.rating} ({stylist.totalReviews} ocena)
                           </p>
                         </div>
                       </div>
 
-                      <div className="space-y-2 mb-4">
-                        <p className="text-sm text-gray-600">
-                          <i className="fas fa-envelope mr-2 text-indigo-500"></i>
+                      <div className="space-y-2 mb-4 min-w-0">
+                        <p className="text-sm text-gray-600 break-all">
+                          <i className="fas fa-envelope mr-2 text-indigo-500 shrink-0"></i>
                           {stylist.email}
                         </p>
                         {stylist.phone && (
@@ -718,24 +789,29 @@ const AdminDashboard: React.FC = () => {
                         </span>
                       </div>
 
-                      <div className="flex gap-2">
-                        <button 
+                      <div className="flex flex-wrap gap-2">
+                        <button
+                          type="button"
                           onClick={() => handleEditStylist(stylist)}
-                          className="flex-1 px-4 py-2 bg-indigo-100 text-indigo-700 rounded-xl font-semibold hover:bg-indigo-200 transition text-sm"
+                          className="flex-1 min-w-[100px] px-3 sm:px-4 py-2.5 bg-indigo-100 text-indigo-700 rounded-xl font-semibold hover:bg-indigo-200 transition text-sm"
                         >
                           <i className="fas fa-edit mr-1"></i>Izmeni
                         </button>
-                        <button 
+                        <button
+                          type="button"
                           onClick={() => handleAssignServices(stylist)}
-                          className="flex-1 px-4 py-2 bg-gray-100 text-gray-700 rounded-xl font-semibold hover:bg-gray-200 transition text-sm"
+                          className="flex-1 min-w-[100px] px-3 sm:px-4 py-2.5 bg-gray-100 text-gray-700 rounded-xl font-semibold hover:bg-gray-200 transition text-sm"
                         >
                           <i className="fas fa-cog mr-1"></i>Usluge
                         </button>
-                        <button 
+                        <button
+                          type="button"
                           onClick={() => handleDeleteStylist(stylist.stylistId)}
-                          className="px-4 py-2 bg-red-100 text-red-700 rounded-xl font-semibold hover:bg-red-200 transition text-sm"
+                          className="px-4 py-2.5 bg-red-100 text-red-700 rounded-xl font-semibold hover:bg-red-200 transition text-sm shrink-0"
+                          title="Obriši frizera"
                         >
-                          <i className="fas fa-trash"></i>
+                          <i className="fas fa-trash sm:mr-1"></i>
+                          <span className="hidden sm:inline">Obriši</span>
                         </button>
                       </div>
                     </div>
@@ -749,11 +825,11 @@ const AdminDashboard: React.FC = () => {
         {/* Appointments Tab */}
         {activeTab === 'appointments' && (
           <div>
-            <h2 className="text-3xl font-bold text-gray-900 mb-6">Upravljanje rezervacijama</h2>
+            <h2 className="text-2xl sm:text-3xl font-bold text-gray-900 mb-4 sm:mb-6">Upravljanje rezervacijama</h2>
 
             {/* Search and Filter */}
-            <div className="bg-white rounded-2xl shadow-lg p-6 mb-6">
-              <div className="grid md:grid-cols-2 gap-4">
+            <div className="bg-white rounded-2xl shadow-lg p-4 sm:p-6 mb-6">
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div>
                   <label className="block text-sm font-semibold text-gray-700 mb-2">
                     <i className="fas fa-search mr-2 text-indigo-500"></i>Pretraga
@@ -786,7 +862,7 @@ const AdminDashboard: React.FC = () => {
             </div>
 
             {/* Appointments List */}
-            <div className="bg-white rounded-2xl shadow-lg p-6">
+            <div className="bg-white rounded-2xl shadow-lg p-4 sm:p-6">
               {appointmentsLoading ? (
                 <div className="text-center py-12">
                   <i className="fas fa-spinner fa-spin text-4xl text-indigo-600 mb-4"></i>
@@ -799,116 +875,193 @@ const AdminDashboard: React.FC = () => {
                 </div>
               ) : (
                 <>
-                  <div className="overflow-x-auto">
-                    <table className="w-full">
-                      <thead>
-                        <tr className="border-b-2 border-gray-200">
-                          <th className="text-left py-4 px-4 font-semibold text-gray-700">Datum i vreme</th>
-                          <th className="text-left py-4 px-4 font-semibold text-gray-700">Klijent</th>
-                          <th className="text-left py-4 px-4 font-semibold text-gray-700">Frizer</th>
-                          <th className="text-left py-4 px-4 font-semibold text-gray-700">Usluga</th>
-                          <th className="text-left py-4 px-4 font-semibold text-gray-700 min-w-[10rem] max-w-xs">
-                            Napomena
-                          </th>
-                          <th className="text-left py-4 px-4 font-semibold text-gray-700">Status</th>
-                          <th className="text-left py-4 px-4 font-semibold text-gray-700">Cena</th>
-                          <th className="text-left py-4 px-4 font-semibold text-gray-700">Akcije</th>
-                        </tr>
-                      </thead>
-                      <tbody>
-                        {(showAllAppointments ? filteredAppointments : filteredAppointments.slice(0, APPOINTMENTS_LIMIT)).map((appointment) => (
-                          <tr key={appointment.id} className="border-b border-gray-100 hover:bg-gray-50 transition">
-                          <td className="py-4 px-4">
-                            <div>
+                  <div className="md:hidden space-y-4">
+                    {(showAllAppointments ? filteredAppointments : filteredAppointments.slice(0, APPOINTMENTS_LIMIT)).map(
+                      (appointment) => (
+                        <div key={appointment.id} className="border-2 border-gray-100 rounded-2xl p-4 space-y-3">
+                          <div className="flex flex-wrap justify-between gap-2 border-b border-gray-100 pb-3">
+                            <div className="min-w-0">
                               <p className="font-semibold text-gray-900">
-                                {new Date(appointment.date).toLocaleDateString('sr-RS', {
-                                  day: 'numeric',
-                                  month: 'short',
-                                  year: 'numeric',
-                                })}
+                                {formatAppointmentDisplayDate(appointment.date)}
                               </p>
-                              <p className="text-sm text-gray-600">{appointment.time}</p>
+                              <p className="text-sm text-gray-600">{formatAppointmentTime(appointment.time)}</p>
                             </div>
-                          </td>
-                          <td className="py-4 px-4">
-                            <div>
-                              <p className="font-semibold text-gray-900">{appointment.customer.name}</p>
-                              <p className="text-sm text-gray-600">{appointment.customer.email}</p>
-                              {appointment.customer.phone && (
-                                <p className="text-sm text-gray-600">{appointment.customer.phone}</p>
-                              )}
-                            </div>
-                          </td>
-                          <td className="py-4 px-4">
-                            <div>
-                              <p className="font-semibold text-gray-900">{appointment.stylist.name}</p>
-                              <p className="text-sm text-gray-600 flex items-center gap-1">
-                                <i className="fas fa-star text-yellow-400"></i>
-                                {appointment.stylist.rating}
-                              </p>
-                            </div>
-                          </td>
-                          <td className="py-4 px-4">
-                            <div>
-                              <p className="font-semibold text-gray-900">{appointment.service.name}</p>
-                              <p className="text-sm text-gray-600">{appointment.service.category}</p>
-                              <p className="text-xs text-gray-500">{appointment.service.duration} min</p>
-                            </div>
-                          </td>
-                          <td className="py-4 px-4 max-w-xs align-top">
-                            {appointment.notes?.trim() ? (
-                              <p
-                                className="text-sm text-gray-700 whitespace-pre-wrap break-words"
-                                title={appointment.notes}
-                              >
-                                {appointment.notes}
-                              </p>
-                            ) : (
-                              <span className="text-sm text-gray-400">—</span>
+                            <p className="font-semibold text-indigo-700 whitespace-nowrap tabular-nums shrink-0">
+                              {formatCurrency(parseFloat(appointment.price))}
+                            </p>
+                          </div>
+                          <div className="min-w-0">
+                            <p className="text-xs font-semibold text-gray-500 uppercase tracking-wide mb-0.5">
+                              Klijent
+                            </p>
+                            <p className="font-semibold text-gray-900 break-words">{appointment.customer.name}</p>
+                            <p className="text-sm text-gray-600 break-all">{appointment.customer.email}</p>
+                            {appointment.customer.phone && (
+                              <p className="text-sm text-gray-600">{appointment.customer.phone}</p>
                             )}
-                          </td>
-                          <td className="py-4 px-4">
+                          </div>
+                          <div className="min-w-0">
+                            <p className="text-xs font-semibold text-gray-500 uppercase tracking-wide mb-0.5">
+                              Frizer
+                            </p>
+                            <p className="font-semibold text-gray-900 break-words">{appointment.stylist.name}</p>
+                            <p className="text-sm text-gray-600 flex items-center gap-1">
+                              <i className="fas fa-star text-yellow-400"></i>
+                              {appointment.stylist.rating}
+                            </p>
+                          </div>
+                          <div className="min-w-0">
+                            <p className="text-xs font-semibold text-gray-500 uppercase tracking-wide mb-0.5">
+                              Usluga
+                            </p>
+                            <p className="font-semibold text-gray-900 break-words">{appointment.service.name}</p>
+                            <p className="text-sm text-gray-600">
+                              {appointment.service.duration} min · {appointment.service.category}
+                            </p>
+                          </div>
+                          {appointment.notes?.trim() && (
+                            <div className="rounded-xl bg-gray-50 p-3 text-sm text-gray-700">
+                              <span className="font-semibold text-gray-600">Napomena: </span>
+                              <span className="break-words whitespace-pre-wrap">{appointment.notes}</span>
+                            </div>
+                          )}
+                          <div>
+                            <label className="block text-xs font-semibold text-gray-500 mb-1">Status</label>
                             <select
                               value={appointment.status}
                               onChange={(e) => handleUpdateAppointmentStatus(appointment.id, e.target.value)}
-                              className={`px-3 py-1 rounded-full text-sm font-semibold border-2 ${getStatusBadge(appointment.status)} border-transparent hover:border-gray-300 transition cursor-pointer`}
+                              className={`w-full px-3 py-2.5 rounded-xl text-sm font-semibold border-2 ${getStatusBadge(
+                                appointment.status
+                              )} border-transparent`}
                             >
                               <option value="PENDING">Čeka potvrdu</option>
                               <option value="CONFIRMED">Potvrđeno</option>
                               <option value="COMPLETED">Završeno</option>
                               <option value="CANCELLED">Otkazano</option>
                             </select>
-                          </td>
-                          <td className="py-4 px-4">
-                            <p className="font-semibold text-gray-900">
-                              {formatCurrency(parseFloat(appointment.price))}
-                            </p>
-                          </td>
-                          <td className="py-4 px-4">
-                            <button
-                              type="button"
-                              onClick={() => handleDeleteAppointment(appointment.id)}
-                              className="px-3 py-1 bg-red-100 text-red-700 rounded-lg text-sm font-semibold hover:bg-red-200 transition"
-                            >
-                              <i className="fas fa-trash mr-1"></i>Obriši
-                            </button>
-                          </td>
+                          </div>
+                          <button
+                            type="button"
+                            onClick={() => handleDeleteAppointment(appointment.id)}
+                            className="w-full px-3 py-2.5 bg-red-100 text-red-700 rounded-xl text-sm font-semibold hover:bg-red-200 transition"
+                          >
+                            <i className="fas fa-trash mr-1"></i>Obriši rezervaciju
+                          </button>
+                        </div>
+                      )
+                    )}
+                  </div>
+
+                  <div className="hidden md:block overflow-x-auto rounded-xl border border-gray-100">
+                    <table className="w-full min-w-[960px]">
+                      <thead>
+                        <tr className="border-b-2 border-gray-200 bg-gray-50">
+                          <th className="text-left py-3 px-3 text-sm font-semibold text-gray-700">Datum i vreme</th>
+                          <th className="text-left py-3 px-3 text-sm font-semibold text-gray-700">Klijent</th>
+                          <th className="text-left py-3 px-3 text-sm font-semibold text-gray-700">Frizer</th>
+                          <th className="text-left py-3 px-3 text-sm font-semibold text-gray-700">Usluga</th>
+                          <th className="text-left py-3 px-3 text-sm font-semibold text-gray-700 min-w-[10rem] max-w-xs">
+                            Napomena
+                          </th>
+                          <th className="text-left py-3 px-3 text-sm font-semibold text-gray-700">Status</th>
+                          <th className="text-left py-3 px-3 text-sm font-semibold text-gray-700">Cena</th>
+                          <th className="text-left py-3 px-3 text-sm font-semibold text-gray-700">Akcije</th>
                         </tr>
-                        ))}
+                      </thead>
+                      <tbody>
+                        {(showAllAppointments ? filteredAppointments : filteredAppointments.slice(0, APPOINTMENTS_LIMIT)).map(
+                          (appointment) => (
+                            <tr key={appointment.id} className="border-b border-gray-100 hover:bg-gray-50 transition">
+                              <td className="py-3 px-3 align-top">
+                                <div>
+                                  <p className="font-semibold text-gray-900">
+                                    {formatAppointmentDisplayDate(appointment.date)}
+                                  </p>
+                                  <p className="text-sm text-gray-600">{formatAppointmentTime(appointment.time)}</p>
+                                </div>
+                              </td>
+                              <td className="py-3 px-3 align-top max-w-[200px]">
+                                <div className="min-w-0">
+                                  <p className="font-semibold text-gray-900 break-words">{appointment.customer.name}</p>
+                                  <p className="text-sm text-gray-600 break-all">{appointment.customer.email}</p>
+                                  {appointment.customer.phone && (
+                                    <p className="text-sm text-gray-600">{appointment.customer.phone}</p>
+                                  )}
+                                </div>
+                              </td>
+                              <td className="py-3 px-3 align-top">
+                                <div className="min-w-0">
+                                  <p className="font-semibold text-gray-900 break-words">{appointment.stylist.name}</p>
+                                  <p className="text-sm text-gray-600 flex items-center gap-1">
+                                    <i className="fas fa-star text-yellow-400"></i>
+                                    {appointment.stylist.rating}
+                                  </p>
+                                </div>
+                              </td>
+                              <td className="py-3 px-3 align-top">
+                                <div className="min-w-0">
+                                  <p className="font-semibold text-gray-900 break-words">{appointment.service.name}</p>
+                                  <p className="text-sm text-gray-600">{appointment.service.category}</p>
+                                  <p className="text-xs text-gray-500">{appointment.service.duration} min</p>
+                                </div>
+                              </td>
+                              <td className="py-3 px-3 max-w-xs align-top">
+                                {appointment.notes?.trim() ? (
+                                  <p
+                                    className="text-sm text-gray-700 whitespace-pre-wrap break-words"
+                                    title={appointment.notes}
+                                  >
+                                    {appointment.notes}
+                                  </p>
+                                ) : (
+                                  <span className="text-sm text-gray-400">—</span>
+                                )}
+                              </td>
+                              <td className="py-3 px-3 align-top">
+                                <select
+                                  value={appointment.status}
+                                  onChange={(e) => handleUpdateAppointmentStatus(appointment.id, e.target.value)}
+                                  className={`max-w-full px-2 py-1 rounded-full text-sm font-semibold border-2 ${getStatusBadge(
+                                    appointment.status
+                                  )} border-transparent hover:border-gray-300 transition cursor-pointer`}
+                                >
+                                  <option value="PENDING">Čeka potvrdu</option>
+                                  <option value="CONFIRMED">Potvrđeno</option>
+                                  <option value="COMPLETED">Završeno</option>
+                                  <option value="CANCELLED">Otkazano</option>
+                                </select>
+                              </td>
+                              <td className="py-3 px-3 align-top whitespace-nowrap tabular-nums">
+                                <p className="font-semibold text-gray-900">
+                                  {formatCurrency(parseFloat(appointment.price))}
+                                </p>
+                              </td>
+                              <td className="py-3 px-3 align-top">
+                                <button
+                                  type="button"
+                                  onClick={() => handleDeleteAppointment(appointment.id)}
+                                  className="px-3 py-1 bg-red-100 text-red-700 rounded-lg text-sm font-semibold hover:bg-red-200 transition"
+                                >
+                                  <i className="fas fa-trash mr-1"></i>Obriši
+                                </button>
+                              </td>
+                            </tr>
+                          )
+                        )}
                       </tbody>
                     </table>
                   </div>
-                  
-                  {/* Show More/Less Button */}
+
                   {filteredAppointments.length > APPOINTMENTS_LIMIT && (
-                    <div className="mt-6 text-center">
+                    <div className="mt-6 text-center px-1">
                       <button
+                        type="button"
                         onClick={() => setShowAllAppointments(!showAllAppointments)}
-                        className="px-6 py-3 bg-indigo-100 text-indigo-700 rounded-xl font-semibold hover:bg-indigo-200 transition flex items-center gap-2 mx-auto"
+                        className="w-full sm:w-auto px-4 sm:px-6 py-3 bg-indigo-100 text-indigo-700 rounded-xl font-semibold hover:bg-indigo-200 transition inline-flex items-center justify-center gap-2 text-sm sm:text-base"
                       >
                         <i className={`fas fa-${showAllAppointments ? 'chevron-up' : 'chevron-down'}`}></i>
-                        {showAllAppointments 
-                          ? `Prikaži manje (prikaži prvih ${APPOINTMENTS_LIMIT})` 
+                        {showAllAppointments
+                          ? `Prikaži manje (prvih ${APPOINTMENTS_LIMIT})`
                           : `Prikaži sve (${filteredAppointments.length - APPOINTMENTS_LIMIT} više)`}
                       </button>
                     </div>
@@ -1041,17 +1194,17 @@ const CreateStylistModal: React.FC<CreateStylistModalProps> = ({ onClose, onSucc
   return (
     <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
       <div className="bg-white rounded-2xl shadow-2xl max-w-2xl w-full max-h-[90vh] overflow-y-auto">
-        <div className="p-6 border-b border-gray-200 flex justify-between items-center">
-          <h3 className="text-2xl font-bold text-gray-900">Kreiraj novog frizera</h3>
+        <div className="p-4 sm:p-6 border-b border-gray-200 flex justify-between items-start gap-3">
+          <h3 className="text-xl sm:text-2xl font-bold text-gray-900 min-w-0 break-words pr-2">Kreiraj novog frizera</h3>
           <button
             onClick={onClose}
-            className="text-gray-400 hover:text-gray-600 text-2xl"
+            className="shrink-0 text-gray-400 hover:text-gray-600 text-2xl leading-none p-1"
           >
             <i className="fas fa-times"></i>
           </button>
         </div>
 
-        <form onSubmit={handleSubmit} className="p-6 space-y-6">
+        <form onSubmit={handleSubmit} className="p-4 sm:p-6 space-y-6">
           {error && (
             <div className="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded-xl">
               {error}
@@ -1246,17 +1399,17 @@ const CreateUserModal: React.FC<CreateUserModalProps> = ({ onClose, onSuccess })
   return (
     <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
       <div className="bg-white rounded-2xl shadow-2xl max-w-md w-full">
-        <div className="p-6 border-b border-gray-200 flex justify-between items-center">
-          <h3 className="text-2xl font-bold text-gray-900">Kreiraj novog korisnika</h3>
+        <div className="p-4 sm:p-6 border-b border-gray-200 flex justify-between items-start gap-3">
+          <h3 className="text-xl sm:text-2xl font-bold text-gray-900 min-w-0 break-words pr-2">Kreiraj novog korisnika</h3>
           <button
             onClick={onClose}
-            className="text-gray-400 hover:text-gray-600 text-2xl"
+            className="shrink-0 text-gray-400 hover:text-gray-600 text-2xl leading-none p-1"
           >
             <i className="fas fa-times"></i>
           </button>
         </div>
 
-        <form onSubmit={handleSubmit} className="p-6 space-y-4">
+        <form onSubmit={handleSubmit} className="p-4 sm:p-6 space-y-4">
           {error && (
             <div className="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded-xl">
               {error}
@@ -1383,17 +1536,17 @@ const EditUserModal: React.FC<EditUserModalProps> = ({ user, onClose, onSuccess 
   return (
     <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
       <div className="bg-white rounded-2xl shadow-2xl max-w-md w-full">
-        <div className="p-6 border-b border-gray-200 flex justify-between items-center">
-          <h3 className="text-2xl font-bold text-gray-900">Izmeni korisnika</h3>
+        <div className="p-4 sm:p-6 border-b border-gray-200 flex justify-between items-start gap-3">
+          <h3 className="text-xl sm:text-2xl font-bold text-gray-900 min-w-0 break-words pr-2">Izmeni korisnika</h3>
           <button
             onClick={onClose}
-            className="text-gray-400 hover:text-gray-600 text-2xl"
+            className="shrink-0 text-gray-400 hover:text-gray-600 text-2xl leading-none p-1"
           >
             <i className="fas fa-times"></i>
           </button>
         </div>
 
-        <form onSubmit={handleSubmit} className="p-6 space-y-4">
+        <form onSubmit={handleSubmit} className="p-4 sm:p-6 space-y-4">
           {error && (
             <div className="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded-xl">
               {error}
@@ -1520,17 +1673,17 @@ const EditStylistModal: React.FC<EditStylistModalProps> = ({ stylist, onClose, o
   return (
     <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
       <div className="bg-white rounded-2xl shadow-2xl max-w-2xl w-full max-h-[90vh] overflow-y-auto">
-        <div className="p-6 border-b border-gray-200 flex justify-between items-center">
-          <h3 className="text-2xl font-bold text-gray-900">Izmeni frizera</h3>
+        <div className="p-4 sm:p-6 border-b border-gray-200 flex justify-between items-start gap-3">
+          <h3 className="text-xl sm:text-2xl font-bold text-gray-900 min-w-0 break-words pr-2">Izmeni frizera</h3>
           <button
             onClick={onClose}
-            className="text-gray-400 hover:text-gray-600 text-2xl"
+            className="shrink-0 text-gray-400 hover:text-gray-600 text-2xl leading-none p-1"
           >
             <i className="fas fa-times"></i>
           </button>
         </div>
 
-        <form onSubmit={handleSubmit} className="p-6 space-y-6">
+        <form onSubmit={handleSubmit} className="p-4 sm:p-6 space-y-6">
           {error && (
             <div className="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded-xl">
               {error}
@@ -1696,17 +1849,17 @@ const AssignServicesModal: React.FC<AssignServicesModalProps> = ({ stylist, serv
   return (
     <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
       <div className="bg-white rounded-2xl shadow-2xl max-w-2xl w-full max-h-[90vh] overflow-y-auto">
-        <div className="p-6 border-b border-gray-200 flex justify-between items-center">
-          <h3 className="text-2xl font-bold text-gray-900">Dodela usluga - {stylist.name}</h3>
+        <div className="p-4 sm:p-6 border-b border-gray-200 flex justify-between items-start gap-3">
+          <h3 className="text-xl sm:text-2xl font-bold text-gray-900 min-w-0 break-words pr-2">Dodela usluga - {stylist.name}</h3>
           <button
             onClick={onClose}
-            className="text-gray-400 hover:text-gray-600 text-2xl"
+            className="shrink-0 text-gray-400 hover:text-gray-600 text-2xl leading-none p-1"
           >
             <i className="fas fa-times"></i>
           </button>
         </div>
 
-        <form onSubmit={handleSubmit} className="p-6 space-y-6">
+        <form onSubmit={handleSubmit} className="p-4 sm:p-6 space-y-6">
           {error && (
             <div className="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded-xl">
               {error}
