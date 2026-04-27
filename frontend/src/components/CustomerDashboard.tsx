@@ -27,6 +27,7 @@ const CustomerDashboard: React.FC = () => {
   const [showAvatarPickerModal, setShowAvatarPickerModal] = useState(false);
   const [selectedAppointment, setSelectedAppointment] = useState<Appointment | null>(null);
   const [showAllCompleted, setShowAllCompleted] = useState(false);
+  const [historySectionHighlighted, setHistorySectionHighlighted] = useState(false);
   const [showScrollTop, setShowScrollTop] = useState(false);
   const [editName, setEditName] = useState('');
   const [editEmail, setEditEmail] = useState('');
@@ -116,15 +117,17 @@ const CustomerDashboard: React.FC = () => {
   }, [appointments, user?.id]);
 
   const scrollToCompletedHistory = () => {
+    const go = () =>
+      historySectionRef.current?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+
     if (completedAppointments.length === 0) {
-      setSuccessMessage('Još uvek nemate završenih rezervacija u istoriji.');
-      setTimeout(() => setSuccessMessage(''), 4000);
+      setHistorySectionHighlighted(true);
+      window.setTimeout(() => setHistorySectionHighlighted(false), 3500);
+      requestAnimationFrame(() => go());
       return;
     }
     setShowAllCompleted(true);
-    requestAnimationFrame(() => {
-      historySectionRef.current?.scrollIntoView({ behavior: 'smooth', block: 'start' });
-    });
+    requestAnimationFrame(() => go());
   };
 
   const loadAppointments = async (forceRefresh = false) => {
@@ -662,7 +665,11 @@ const CustomerDashboard: React.FC = () => {
           <div
             ref={historySectionRef}
             id="istorija-zavrsenih"
-            className="bg-white rounded-2xl shadow-lg p-8 scroll-mt-24 lg:col-span-2 lg:row-start-2"
+            className={`bg-white rounded-2xl shadow-lg p-8 scroll-mt-24 lg:col-span-2 lg:row-start-2 transition-shadow duration-500 ${
+              historySectionHighlighted
+                ? 'ring-4 ring-indigo-400 ring-offset-2 ring-offset-gray-50'
+                : ''
+            }`}
           >
               <div className="flex items-center justify-between mb-6">
                 <h3 className="text-2xl font-bold text-gray-800 flex items-center gap-3">
