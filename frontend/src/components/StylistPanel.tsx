@@ -100,6 +100,26 @@ const StylistPanel: React.FC = () => {
     }).format(amount);
   };
 
+  const appointmentDateYmd = (dateVal: string) => {
+    const s = String(dateVal ?? '');
+    const m = s.match(/^(\d{4}-\d{2}-\d{2})/);
+    return m ? m[1] : s.slice(0, 10);
+  };
+
+  const formatAppointmentDisplayDate = (dateVal: string) => {
+    const ymd = appointmentDateYmd(dateVal);
+    const d = new Date(`${ymd}T12:00:00`);
+    if (Number.isNaN(d.getTime())) return ymd;
+    return d.toLocaleDateString('sr-RS', { day: 'numeric', month: 'short', year: 'numeric' });
+  };
+
+  const formatAppointmentTime = (timeVal: string) => {
+    const s = String(timeVal ?? '');
+    const m = s.match(/(\d{1,2}):(\d{2})/);
+    if (!m) return s.slice(0, 5);
+    return `${m[1].padStart(2, '0')}:${m[2]}`;
+  };
+
   const getStatusBadge = (status: string) => {
     const styles: { [key: string]: string } = {
       PENDING: 'bg-yellow-100 text-yellow-700',
@@ -155,38 +175,40 @@ const StylistPanel: React.FC = () => {
   return (
     <div className="min-h-screen bg-gray-50">
       {/* Top Navigation */}
-      <div className="bg-white rounded-2xl shadow-lg p-6 mb-6 mx-6 mt-6">
-        <div className="flex justify-between items-center">
-          <div className="flex items-center gap-4">
-            <div className="w-14 h-14 bg-gradient-to-br from-purple-500 to-pink-500 rounded-2xl flex items-center justify-center text-white text-2xl shadow-lg">
+      <div className="bg-white rounded-2xl shadow-lg p-4 sm:p-6 mb-6 mx-4 sm:mx-6 mt-4 sm:mt-6">
+        <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center gap-4">
+          <div className="flex items-center gap-3 sm:gap-4 min-w-0">
+            <div className="w-12 h-12 sm:w-14 sm:h-14 shrink-0 bg-gradient-to-br from-purple-500 to-pink-500 rounded-2xl flex items-center justify-center text-white text-xl sm:text-2xl shadow-lg">
               <i className="fas fa-user-tie"></i>
             </div>
-            <div>
-              <h2 className="text-2xl font-bold text-gray-800">HairStudio</h2>
+            <div className="min-w-0">
+              <h2 className="text-xl sm:text-2xl font-bold text-gray-800">HairStudio</h2>
               <p className="text-sm text-gray-500">Frizer Panel</p>
             </div>
           </div>
-          <div className="flex items-center gap-4">
-            <div className="text-right">
-              <p className="font-semibold text-gray-900">{user?.name}</p>
-              <p className="text-sm text-gray-600">{user?.email}</p>
+          <div className="flex flex-col sm:flex-row sm:items-center gap-3 sm:gap-4 sm:justify-end w-full sm:w-auto">
+            <div className="text-left sm:text-right min-w-0">
+              <p className="font-semibold text-gray-900 truncate">{user?.name}</p>
+              <p className="text-sm text-gray-600 break-all">{user?.email}</p>
             </div>
             <button
+              type="button"
               onClick={logout}
-              className="px-6 py-2 bg-red-500 text-white rounded-xl font-semibold hover:bg-red-600 transition"
+              className="w-full sm:w-auto shrink-0 px-4 sm:px-6 py-2.5 bg-red-500 text-white rounded-xl font-semibold hover:bg-red-600 transition flex items-center justify-center gap-2"
             >
-              <i className="fas fa-sign-out-alt mr-2"></i>Odjavi se
+              <i className="fas fa-sign-out-alt"></i>
+              <span>Odjavi se</span>
             </button>
           </div>
         </div>
       </div>
 
-      <div className="px-6 pb-6">
+      <div className="px-4 sm:px-6 pb-6">
         {/* Profile Card */}
         {profile && (
-          <div className="bg-white rounded-2xl shadow-lg p-6 mb-6">
-            <div className="flex items-start gap-6">
-              <div className="w-24 h-24 bg-gradient-to-br from-purple-400 to-pink-400 rounded-2xl flex items-center justify-center text-white text-3xl font-bold shadow-lg">
+          <div className="bg-white rounded-2xl shadow-lg p-4 sm:p-6 mb-6">
+            <div className="flex flex-col sm:flex-row items-center sm:items-start gap-4 sm:gap-6 text-center sm:text-left">
+              <div className="w-20 h-20 sm:w-24 sm:h-24 shrink-0 bg-gradient-to-br from-purple-400 to-pink-400 rounded-2xl flex items-center justify-center text-white text-2xl sm:text-3xl font-bold shadow-lg">
                 {profile.name
                   .split(' ')
                   .map((n) => n[0])
@@ -194,29 +216,29 @@ const StylistPanel: React.FC = () => {
                   .toUpperCase()
                   .substring(0, 2)}
               </div>
-              <div className="flex-1">
-                <h3 className="text-2xl font-bold text-gray-900 mb-2">{profile.name}</h3>
-                <div className="flex items-center gap-4 mb-3">
-                  <p className="text-sm text-gray-600 flex items-center gap-1">
+              <div className="flex-1 min-w-0 w-full">
+                <h3 className="text-xl sm:text-2xl font-bold text-gray-900 mb-2">{profile.name}</h3>
+                <div className="flex flex-wrap items-center justify-center sm:justify-start gap-x-4 gap-y-2 mb-3 text-sm text-gray-600">
+                  <p className="flex items-center gap-1">
                     <i className="fas fa-star text-yellow-400"></i>
                     <span className="font-semibold text-gray-900">
                       {profile.rating ? parseFloat(profile.rating).toFixed(1) : '0.0'}
                     </span>
                     <span className="text-gray-500">({profile.totalReviews} ocena)</span>
                   </p>
-                  <p className="text-sm text-gray-600">
+                  <p>
                     <i className="fas fa-briefcase mr-1 text-indigo-500"></i>
                     {profile.yearsOfExperience} godina iskustva
                   </p>
                 </div>
-                {profile.bio && <p className="text-gray-700 mb-2">{profile.bio}</p>}
-                <div className="flex gap-2 text-sm text-gray-600">
-                  <p>
+                {profile.bio && <p className="text-gray-700 mb-2 text-sm sm:text-base">{profile.bio}</p>}
+                <div className="flex flex-col sm:flex-row sm:flex-wrap gap-2 text-sm text-gray-600">
+                  <p className="break-all">
                     <i className="fas fa-envelope mr-1 text-indigo-500"></i>
                     {profile.email}
                   </p>
                   {profile.phone && (
-                    <p>
+                    <p className="shrink-0">
                       <i className="fas fa-phone mr-1 text-indigo-500"></i>
                       {profile.phone}
                     </p>
@@ -228,82 +250,84 @@ const StylistPanel: React.FC = () => {
         )}
 
         {/* Statistics Cards */}
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-6 mb-6">
-          <div className="bg-white rounded-2xl shadow-lg p-6 border-l-4 border-indigo-500">
-            <div className="flex justify-between items-center">
-              <div>
-                <p className="text-sm text-gray-600 mb-1">Ukupno rezervacija</p>
-                <p className="text-3xl font-bold text-gray-900">{stats.total}</p>
+        <div className="grid grid-cols-2 lg:grid-cols-5 gap-3 sm:gap-6 mb-6">
+          <div className="bg-white rounded-2xl shadow-lg p-4 sm:p-6 border-l-4 border-indigo-500 min-w-0">
+            <div className="flex justify-between items-center gap-2">
+              <div className="min-w-0">
+                <p className="text-xs sm:text-sm text-gray-600 mb-1 leading-tight">Ukupno rezervacija</p>
+                <p className="text-2xl sm:text-3xl font-bold text-gray-900 tabular-nums">{stats.total}</p>
               </div>
-              <div className="w-12 h-12 bg-indigo-100 rounded-xl flex items-center justify-center">
-                <i className="fas fa-calendar text-indigo-600 text-xl"></i>
-              </div>
-            </div>
-          </div>
-
-          <div className="bg-white rounded-2xl shadow-lg p-6 border-l-4 border-yellow-500">
-            <div className="flex justify-between items-center">
-              <div>
-                <p className="text-sm text-gray-600 mb-1">Čeka potvrdu</p>
-                <p className="text-3xl font-bold text-gray-900">{stats.pending}</p>
-              </div>
-              <div className="w-12 h-12 bg-yellow-100 rounded-xl flex items-center justify-center">
-                <i className="fas fa-clock text-yellow-600 text-xl"></i>
+              <div className="w-10 h-10 sm:w-12 sm:h-12 shrink-0 bg-indigo-100 rounded-xl flex items-center justify-center">
+                <i className="fas fa-calendar text-indigo-600 text-lg sm:text-xl"></i>
               </div>
             </div>
           </div>
 
-          <div className="bg-white rounded-2xl shadow-lg p-6 border-l-4 border-green-500">
-            <div className="flex justify-between items-center">
-              <div>
-                <p className="text-sm text-gray-600 mb-1">Potvrđeno</p>
-                <p className="text-3xl font-bold text-gray-900">{stats.confirmed}</p>
+          <div className="bg-white rounded-2xl shadow-lg p-4 sm:p-6 border-l-4 border-yellow-500 min-w-0">
+            <div className="flex justify-between items-center gap-2">
+              <div className="min-w-0">
+                <p className="text-xs sm:text-sm text-gray-600 mb-1 leading-tight">Čeka potvrdu</p>
+                <p className="text-2xl sm:text-3xl font-bold text-gray-900 tabular-nums">{stats.pending}</p>
               </div>
-              <div className="w-12 h-12 bg-green-100 rounded-xl flex items-center justify-center">
-                <i className="fas fa-check-circle text-green-600 text-xl"></i>
-              </div>
-            </div>
-          </div>
-
-          <div className="bg-white rounded-2xl shadow-lg p-6 border-l-4 border-blue-500">
-            <div className="flex justify-between items-center">
-              <div>
-                <p className="text-sm text-gray-600 mb-1">Završeno</p>
-                <p className="text-3xl font-bold text-gray-900">{stats.completed}</p>
-              </div>
-              <div className="w-12 h-12 bg-blue-100 rounded-xl flex items-center justify-center">
-                <i className="fas fa-check-double text-blue-600 text-xl"></i>
+              <div className="w-10 h-10 sm:w-12 sm:h-12 shrink-0 bg-yellow-100 rounded-xl flex items-center justify-center">
+                <i className="fas fa-clock text-yellow-600 text-lg sm:text-xl"></i>
               </div>
             </div>
           </div>
 
-          <div className="bg-white rounded-2xl shadow-lg p-6 border-l-4 border-purple-500">
-            <div className="flex justify-between items-center">
-              <div>
-                <p className="text-sm text-gray-600 mb-1">Ukupan prihod</p>
-                <p className="text-2xl font-bold text-gray-900">{formatCurrency(stats.revenue)}</p>
+          <div className="bg-white rounded-2xl shadow-lg p-4 sm:p-6 border-l-4 border-green-500 min-w-0">
+            <div className="flex justify-between items-center gap-2">
+              <div className="min-w-0">
+                <p className="text-xs sm:text-sm text-gray-600 mb-1 leading-tight">Potvrđeno</p>
+                <p className="text-2xl sm:text-3xl font-bold text-gray-900 tabular-nums">{stats.confirmed}</p>
               </div>
-              <div className="w-12 h-12 bg-purple-100 rounded-xl flex items-center justify-center">
-                <i className="fas fa-money-bill-wave text-purple-600 text-xl"></i>
+              <div className="w-10 h-10 sm:w-12 sm:h-12 shrink-0 bg-green-100 rounded-xl flex items-center justify-center">
+                <i className="fas fa-check-circle text-green-600 text-lg sm:text-xl"></i>
+              </div>
+            </div>
+          </div>
+
+          <div className="bg-white rounded-2xl shadow-lg p-4 sm:p-6 border-l-4 border-blue-500 min-w-0">
+            <div className="flex justify-between items-center gap-2">
+              <div className="min-w-0">
+                <p className="text-xs sm:text-sm text-gray-600 mb-1 leading-tight">Završeno</p>
+                <p className="text-2xl sm:text-3xl font-bold text-gray-900 tabular-nums">{stats.completed}</p>
+              </div>
+              <div className="w-10 h-10 sm:w-12 sm:h-12 shrink-0 bg-blue-100 rounded-xl flex items-center justify-center">
+                <i className="fas fa-check-double text-blue-600 text-lg sm:text-xl"></i>
+              </div>
+            </div>
+          </div>
+
+          <div className="bg-white rounded-2xl shadow-lg p-4 sm:p-6 border-l-4 border-purple-500 min-w-0 col-span-2 lg:col-span-1">
+            <div className="flex justify-between items-center gap-2">
+              <div className="min-w-0">
+                <p className="text-xs sm:text-sm text-gray-600 mb-1 leading-tight">Ukupan prihod</p>
+                <p className="text-base sm:text-2xl font-bold text-gray-900 break-words leading-tight">
+                  {formatCurrency(stats.revenue)}
+                </p>
+              </div>
+              <div className="w-10 h-10 sm:w-12 sm:h-12 shrink-0 bg-purple-100 rounded-xl flex items-center justify-center">
+                <i className="fas fa-money-bill-wave text-purple-600 text-lg sm:text-xl"></i>
               </div>
             </div>
           </div>
         </div>
 
-        {/* Appointments Section - POMERENO GORE */}
-        <div className="bg-white rounded-2xl shadow-lg p-6 mb-6">
-          <div className="flex items-center justify-between mb-6">
-            <h3 className="text-2xl font-bold text-gray-900 flex items-center gap-3">
-              <i className="fas fa-calendar-check text-indigo-600"></i>
-              Moje rezervacije
+        {/* Appointments Section */}
+        <div className="bg-white rounded-2xl shadow-lg p-4 sm:p-6 mb-6">
+          <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 mb-6 min-w-0">
+            <h3 className="text-xl sm:text-2xl font-bold text-gray-900 flex items-center gap-2 sm:gap-3 min-w-0">
+              <i className="fas fa-calendar-check text-indigo-600 shrink-0"></i>
+              <span>Moje rezervacije</span>
             </h3>
-            <span className="px-4 py-2 bg-indigo-100 text-indigo-700 rounded-full font-semibold text-sm">
+            <span className="px-3 sm:px-4 py-2 bg-indigo-100 text-indigo-700 rounded-full font-semibold text-sm w-fit shrink-0">
               {filteredAppointments.length} rezervacija
             </span>
           </div>
 
           {/* Search and Filter */}
-          <div className="grid md:grid-cols-2 gap-4 mb-6">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
             <div>
               <label className="block text-sm font-semibold text-gray-700 mb-2">
                 <i className="fas fa-search mr-2 text-indigo-500"></i>Pretraga
@@ -346,88 +370,148 @@ const StylistPanel: React.FC = () => {
               <p className="text-gray-600">Nema rezervacija</p>
             </div>
           ) : (
-            <div className="overflow-x-auto">
-              <table className="w-full">
-                <thead>
-                  <tr className="border-b-2 border-gray-200">
-                    <th className="text-left py-4 px-4 font-semibold text-gray-700">Datum i vreme</th>
-                    <th className="text-left py-4 px-4 font-semibold text-gray-700">Klijent</th>
-                    <th className="text-left py-4 px-4 font-semibold text-gray-700">Usluga</th>
-                    <th className="text-left py-4 px-4 font-semibold text-gray-700">Status</th>
-                    <th className="text-left py-4 px-4 font-semibold text-gray-700">Cena</th>
-                    <th className="text-left py-4 px-4 font-semibold text-gray-700">Akcije</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {visibleAppointments.map((appointment) => (
-                    <tr key={appointment.id} className="border-b border-gray-100 hover:bg-gray-50 transition">
-                      <td className="py-4 px-4">
-                        <div>
-                          <p className="font-semibold text-gray-900">
-                            {new Date(appointment.date).toLocaleDateString('sr-RS', {
-                              day: 'numeric',
-                              month: 'short',
-                              year: 'numeric',
-                            })}
-                          </p>
-                          <p className="text-sm text-gray-600">{appointment.time}</p>
-                        </div>
-                      </td>
-                      <td className="py-4 px-4">
-                        <div>
-                          <p className="font-semibold text-gray-900">{appointment.customer.name}</p>
-                          <p className="text-sm text-gray-600">{appointment.customer.email}</p>
-                          {appointment.customer.phone && (
-                            <p className="text-sm text-gray-600">{appointment.customer.phone}</p>
-                          )}
-                        </div>
-                      </td>
-                      <td className="py-4 px-4">
-                        <div>
-                          <p className="font-semibold text-gray-900">{appointment.service.name}</p>
-                          <p className="text-sm text-gray-600">{appointment.service.category}</p>
-                          <p className="text-xs text-gray-500">{appointment.service.duration} min</p>
-                        </div>
-                      </td>
-                      <td className="py-4 px-4">
-                        <select
-                          value={appointment.status}
-                          onChange={(e) => handleStatusChange(appointment.id, e.target.value)}
-                          className={`px-3 py-1 rounded-full text-sm font-semibold border-2 ${getStatusBadge(
-                            appointment.status
-                          )} border-transparent hover:border-gray-300 transition cursor-pointer`}
-                        >
-                          <option value="PENDING">Čeka potvrdu</option>
-                          <option value="CONFIRMED">Potvrđeno</option>
-                          <option value="COMPLETED">Završeno</option>
-                          <option value="CANCELLED">Otkazano</option>
-                        </select>
-                      </td>
-                      <td className="py-4 px-4">
+            <>
+              <div className="md:hidden space-y-4">
+                {visibleAppointments.map((appointment) => (
+                  <div
+                    key={appointment.id}
+                    className="border-2 border-gray-100 rounded-2xl p-4 space-y-3"
+                  >
+                    <div className="flex flex-wrap justify-between items-start gap-2 border-b border-gray-100 pb-3">
+                      <div className="min-w-0">
                         <p className="font-semibold text-gray-900">
-                          {formatCurrency(parseFloat(appointment.price))}
+                          {formatAppointmentDisplayDate(appointment.date)}
                         </p>
-                      </td>
-                      <td className="py-4 px-4">
-                        {appointment.notes && (
-                          <button
-                            title={appointment.notes}
-                            className="px-3 py-1 bg-gray-100 text-gray-700 rounded-lg text-sm font-semibold hover:bg-gray-200 transition"
-                          >
-                            <i className="fas fa-sticky-note mr-1"></i>Napomene
-                          </button>
-                        )}
-                      </td>
+                        <p className="text-sm text-gray-600">{formatAppointmentTime(appointment.time)}</p>
+                      </div>
+                      <p className="font-semibold text-indigo-700 whitespace-nowrap tabular-nums shrink-0">
+                        {formatCurrency(parseFloat(appointment.price))}
+                      </p>
+                    </div>
+                    <div className="min-w-0">
+                      <p className="text-xs font-semibold text-gray-500 uppercase tracking-wide mb-0.5">
+                        Klijent
+                      </p>
+                      <p className="font-semibold text-gray-900 break-words">{appointment.customer.name}</p>
+                      <p className="text-sm text-gray-600 break-all">{appointment.customer.email}</p>
+                      {appointment.customer.phone && (
+                        <p className="text-sm text-gray-600">{appointment.customer.phone}</p>
+                      )}
+                    </div>
+                    <div className="min-w-0">
+                      <p className="text-xs font-semibold text-gray-500 uppercase tracking-wide mb-0.5">
+                        Usluga
+                      </p>
+                      <p className="font-semibold text-gray-900 break-words">{appointment.service.name}</p>
+                      <p className="text-sm text-gray-600">
+                        {appointment.service.duration} min · {appointment.service.category}
+                      </p>
+                    </div>
+                    <div>
+                      <label className="block text-xs font-semibold text-gray-500 mb-1">Status</label>
+                      <select
+                        value={appointment.status}
+                        onChange={(e) => handleStatusChange(appointment.id, e.target.value)}
+                        className={`w-full px-3 py-2.5 rounded-xl text-sm font-semibold border-2 ${getStatusBadge(
+                          appointment.status
+                        )} border-transparent`}
+                      >
+                        <option value="PENDING">Čeka potvrdu</option>
+                        <option value="CONFIRMED">Potvrđeno</option>
+                        <option value="COMPLETED">Završeno</option>
+                        <option value="CANCELLED">Otkazano</option>
+                      </select>
+                    </div>
+                    {appointment.notes && (
+                      <div className="rounded-xl bg-gray-50 p-3 text-sm text-gray-700">
+                        <span className="font-semibold text-gray-600">Napomene: </span>
+                        <span className="break-words">{appointment.notes}</span>
+                      </div>
+                    )}
+                  </div>
+                ))}
+              </div>
+
+              <div className="hidden md:block overflow-x-auto rounded-xl border border-gray-100">
+                <table className="w-full min-w-[720px]">
+                  <thead>
+                    <tr className="border-b-2 border-gray-200 bg-gray-50">
+                      <th className="text-left py-3 px-3 text-sm font-semibold text-gray-700">Datum i vreme</th>
+                      <th className="text-left py-3 px-3 text-sm font-semibold text-gray-700">Klijent</th>
+                      <th className="text-left py-3 px-3 text-sm font-semibold text-gray-700">Usluga</th>
+                      <th className="text-left py-3 px-3 text-sm font-semibold text-gray-700">Status</th>
+                      <th className="text-left py-3 px-3 text-sm font-semibold text-gray-700">Cena</th>
+                      <th className="text-left py-3 px-3 text-sm font-semibold text-gray-700">Akcije</th>
                     </tr>
-                  ))}
-                </tbody>
-              </table>
+                  </thead>
+                  <tbody>
+                    {visibleAppointments.map((appointment) => (
+                      <tr key={appointment.id} className="border-b border-gray-100 hover:bg-gray-50 transition">
+                        <td className="py-3 px-3 align-top">
+                          <div>
+                            <p className="font-semibold text-gray-900">
+                              {formatAppointmentDisplayDate(appointment.date)}
+                            </p>
+                            <p className="text-sm text-gray-600">{formatAppointmentTime(appointment.time)}</p>
+                          </div>
+                        </td>
+                        <td className="py-3 px-3 align-top max-w-[200px]">
+                          <div className="min-w-0">
+                            <p className="font-semibold text-gray-900 break-words">{appointment.customer.name}</p>
+                            <p className="text-sm text-gray-600 break-all">{appointment.customer.email}</p>
+                            {appointment.customer.phone && (
+                              <p className="text-sm text-gray-600">{appointment.customer.phone}</p>
+                            )}
+                          </div>
+                        </td>
+                        <td className="py-3 px-3 align-top">
+                          <div className="min-w-0">
+                            <p className="font-semibold text-gray-900 break-words">{appointment.service.name}</p>
+                            <p className="text-sm text-gray-600">{appointment.service.category}</p>
+                            <p className="text-xs text-gray-500">{appointment.service.duration} min</p>
+                          </div>
+                        </td>
+                        <td className="py-3 px-3 align-top">
+                          <select
+                            value={appointment.status}
+                            onChange={(e) => handleStatusChange(appointment.id, e.target.value)}
+                            className={`max-w-full px-2 py-1 rounded-full text-sm font-semibold border-2 ${getStatusBadge(
+                              appointment.status
+                            )} border-transparent hover:border-gray-300 transition cursor-pointer`}
+                          >
+                            <option value="PENDING">Čeka potvrdu</option>
+                            <option value="CONFIRMED">Potvrđeno</option>
+                            <option value="COMPLETED">Završeno</option>
+                            <option value="CANCELLED">Otkazano</option>
+                          </select>
+                        </td>
+                        <td className="py-3 px-3 align-top whitespace-nowrap tabular-nums">
+                          <p className="font-semibold text-gray-900">
+                            {formatCurrency(parseFloat(appointment.price))}
+                          </p>
+                        </td>
+                        <td className="py-3 px-3 align-top">
+                          {appointment.notes && (
+                            <button
+                              type="button"
+                              title={appointment.notes}
+                              className="px-3 py-1 bg-gray-100 text-gray-700 rounded-lg text-sm font-semibold hover:bg-gray-200 transition"
+                            >
+                              <i className="fas fa-sticky-note mr-1"></i>Napomene
+                            </button>
+                          )}
+                        </td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
               {filteredAppointments.length > STYLIST_APPOINTMENTS_LIMIT && (
-                <div className="mt-4 flex justify-center">
+                <div className="mt-4 flex justify-center px-1">
                   <button
                     type="button"
                     onClick={() => setShowAllAppointments((v) => !v)}
-                    className="px-6 py-3 bg-indigo-100 text-indigo-800 rounded-xl font-semibold hover:bg-indigo-200 transition"
+                    className="w-full sm:w-auto px-4 sm:px-6 py-3 bg-indigo-100 text-indigo-800 rounded-xl font-semibold hover:bg-indigo-200 transition text-center text-sm sm:text-base"
                   >
                     {showAllAppointments ? (
                       <>
@@ -443,16 +527,16 @@ const StylistPanel: React.FC = () => {
                   </button>
                 </div>
               )}
-            </div>
+            </>
           )}
         </div>
 
         {/* Reviews Section - POMERENO NA DNO */}
         {profile && (
-          <div className="bg-white rounded-2xl shadow-lg p-6">
-            <h3 className="text-2xl font-bold text-gray-900 mb-6">
-              <i className="fas fa-star text-yellow-400 mr-2"></i>
-              Ocene i komentari ({reviews.length})
+          <div className="bg-white rounded-2xl shadow-lg p-4 sm:p-6">
+            <h3 className="text-xl sm:text-2xl font-bold text-gray-900 mb-4 sm:mb-6 flex flex-wrap items-center gap-2">
+              <i className="fas fa-star text-yellow-400"></i>
+              <span>Ocene i komentari ({reviews.length})</span>
             </h3>
             {reviewsLoading ? (
               <div className="text-center py-8">
@@ -469,11 +553,11 @@ const StylistPanel: React.FC = () => {
                 {reviews.map((review) => (
                   <div
                     key={review.id}
-                    className="border-2 border-gray-100 rounded-xl p-5 hover:shadow-md transition"
+                    className="border-2 border-gray-100 rounded-xl p-4 sm:p-5 hover:shadow-md transition"
                   >
-                    <div className="flex items-start justify-between mb-3">
-                      <div className="flex items-center gap-3">
-                        <div className="w-12 h-12 bg-gradient-to-br from-indigo-400 to-purple-400 rounded-xl flex items-center justify-center text-white font-bold">
+                    <div className="flex flex-col sm:flex-row sm:items-start sm:justify-between gap-3 mb-3">
+                      <div className="flex items-start gap-3 min-w-0">
+                        <div className="w-11 h-11 sm:w-12 sm:h-12 shrink-0 bg-gradient-to-br from-indigo-400 to-purple-400 rounded-xl flex items-center justify-center text-white text-sm sm:text-base font-bold">
                           {review.customer.name
                             .split(' ')
                             .map((n) => n[0])
@@ -481,9 +565,9 @@ const StylistPanel: React.FC = () => {
                             .toUpperCase()
                             .substring(0, 2)}
                         </div>
-                        <div>
-                          <p className="font-semibold text-gray-900">{review.customer.name}</p>
-                          <p className="text-sm text-gray-600">{review.appointment.service}</p>
+                        <div className="min-w-0">
+                          <p className="font-semibold text-gray-900 break-words">{review.customer.name}</p>
+                          <p className="text-sm text-gray-600 break-words">{review.appointment.service}</p>
                           <p className="text-xs text-gray-500">
                             {new Date(review.createdAt).toLocaleDateString('sr-RS', {
                               day: 'numeric',
@@ -493,21 +577,21 @@ const StylistPanel: React.FC = () => {
                           </p>
                         </div>
                       </div>
-                      <div className="flex items-center gap-1">
+                      <div className="flex flex-wrap items-center gap-1 sm:justify-end shrink-0">
                         {[1, 2, 3, 4, 5].map((star) => (
                           <i
                             key={star}
-                            className={`fas fa-star ${
+                            className={`fas fa-star text-sm sm:text-base ${
                               star <= review.rating ? 'text-yellow-400' : 'text-gray-300'
                             }`}
                           ></i>
                         ))}
-                        <span className="ml-2 font-bold text-gray-900">{review.rating}/5</span>
+                        <span className="ml-1 sm:ml-2 font-bold text-gray-900">{review.rating}/5</span>
                       </div>
                     </div>
                     {review.comment && (
-                      <div className="bg-gray-50 rounded-lg p-4 mt-3">
-                        <p className="text-gray-700 italic">"{review.comment}"</p>
+                      <div className="bg-gray-50 rounded-lg p-3 sm:p-4 mt-2 sm:mt-3">
+                        <p className="text-gray-700 italic break-words">"{review.comment}"</p>
                       </div>
                     )}
                   </div>
