@@ -905,11 +905,11 @@ const CustomerDashboard: React.FC = () => {
               </div>
             </div>
 
-            <div className="px-5 py-3 bg-black/15 border-t border-white/10 flex items-center justify-between flex-wrap gap-2">
-              <p className="text-[11px] text-white/80">
+            <div className="px-5 py-3 pr-20 sm:pr-24 bg-black/15 border-t border-white/10 flex items-center justify-between flex-wrap gap-2">
+              <p className="text-[11px] text-white/80 min-w-0">
                 © {new Date().getFullYear()} HairStudio
               </p>
-              <p className="text-[11px] text-white/60">Sva prava zadržana</p>
+              <p className="text-[11px] text-white/60 text-right shrink-0">Sva prava zadržana</p>
             </div>
           </div>
         </footer>
