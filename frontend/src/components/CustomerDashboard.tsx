@@ -548,10 +548,10 @@ const CustomerDashboard: React.FC = () => {
           </div>
         </div>
 
-        {/* Main Content */}
-        <div className="grid lg:grid-cols-3 gap-6">
-          {/* Left: Appointments List */}
-          <div className="lg:col-span-2 space-y-6">
+        {/* Main Content: na lg drugi red = završene rezervacije | mapa (istovrh) */}
+        <div className="flex flex-col gap-6 lg:grid lg:grid-cols-3 lg:gap-6">
+          {/* Predstojeća — levo gore */}
+          <div className="lg:col-span-2 lg:row-start-1">
             <div className="bg-white rounded-2xl shadow-lg p-8">
               <div className="flex items-center justify-between mb-6">
                 <h3 className="text-2xl font-bold text-gray-800 flex items-center gap-3">
@@ -634,13 +634,14 @@ const CustomerDashboard: React.FC = () => {
                 </div>
               )}
             </div>
+          </div>
 
-            {/* Completed Appointments Section */}
-            <div
-              ref={historySectionRef}
-              id="istorija-zavrsenih"
-              className="bg-white rounded-2xl shadow-lg p-8 scroll-mt-24"
-            >
+          {/* Završene rezervacije — levo dole (ravno sa mapom na desktopu) */}
+          <div
+            ref={historySectionRef}
+            id="istorija-zavrsenih"
+            className="bg-white rounded-2xl shadow-lg p-8 scroll-mt-24 lg:col-span-2 lg:row-start-2"
+          >
               <div className="flex items-center justify-between mb-6">
                 <h3 className="text-2xl font-bold text-gray-800 flex items-center gap-3">
                   <span className="w-10 h-10 bg-blue-100 rounded-xl flex items-center justify-center">
@@ -762,11 +763,10 @@ const CustomerDashboard: React.FC = () => {
                   )}
                 </>
               )}
-            </div>
           </div>
 
-          {/* Right: Quick Actions & Stats */}
-          <div className="space-y-6">
+          {/* Desno gore: brze akcije + statistika */}
+          <div className="space-y-6 lg:col-start-3 lg:row-start-1">
             <div className="bg-gradient-to-br from-indigo-50 to-purple-50 rounded-2xl shadow-lg p-6 border-2 border-indigo-100">
               <h3 className="text-xl font-bold mb-4 text-gray-800">Rezervacije</h3>
               <button
@@ -803,9 +803,11 @@ const CustomerDashboard: React.FC = () => {
                 </div>
               </div>
             </div>
+          </div>
 
-            {/* Lokacija (mini mapa) */}
-            <div className="bg-white rounded-2xl shadow-lg p-6">
+          {/* Desno dole: mapa (ravno sa završenim rezervacijama na desktopu) */}
+          <div className="lg:col-start-3 lg:row-start-2">
+            <div className="bg-white rounded-2xl shadow-lg p-6 h-full flex flex-col">
               <div className="flex items-center justify-between mb-3">
                 <h3 className="text-xl font-bold text-gray-800">Lokacija</h3>
                 <a
@@ -817,8 +819,8 @@ const CustomerDashboard: React.FC = () => {
                   Otvori u Maps
                 </a>
               </div>
-              <div className="rounded-xl overflow-hidden border border-gray-100 bg-gray-50">
-                <div className="aspect-[16/9] relative w-full">
+              <div className="rounded-xl overflow-hidden border border-gray-100 bg-gray-50 flex-1 min-h-[200px]">
+                <div className="aspect-[16/9] lg:aspect-auto lg:h-full lg:min-h-[220px] relative w-full">
                   <div className="absolute inset-0">
                     <SalonMapPreview />
                   </div>
