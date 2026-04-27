@@ -256,8 +256,24 @@ const CustomerDashboard: React.FC = () => {
     }
   };
 
+  /** API ponekad vrati DATE kao ISO (npr. ...T00:00:00.000Z) — ne sme se lepiti kao ...ZT14:30 (Invalid Date). */
+  const appointmentDateYmd = (dateVal: string) => {
+    const s = String(dateVal ?? '');
+    const m = s.match(/^(\d{4}-\d{2}-\d{2})/);
+    return m ? m[1] : s.slice(0, 10);
+  };
+
+  const appointmentTimeHm = (timeVal: string) => {
+    const s = String(timeVal ?? '');
+    const m = s.match(/(\d{1,2}):(\d{2})/);
+    if (!m) return s.slice(0, 5);
+    return `${m[1].padStart(2, '0')}:${m[2]}`;
+  };
+
   const formatDate = (dateString: string) => {
-    const date = new Date(dateString);
+    const ymd = appointmentDateYmd(dateString);
+    const date = new Date(`${ymd}T12:00:00`);
+    if (Number.isNaN(date.getTime())) return ymd;
     return date.toLocaleDateString('sr-RS', {
       day: 'numeric',
       month: 'long',
@@ -265,8 +281,16 @@ const CustomerDashboard: React.FC = () => {
     });
   };
 
-  const formatTime = (timeString: string) => {
-    return timeString.substring(0, 5); // HH:MM
+  const formatTime = (timeString: string) => appointmentTimeHm(timeString);
+
+  const formatEndTimeFromAppointment = (a: Appointment) => {
+    const ymd = appointmentDateYmd(a.date);
+    const hm = appointmentTimeHm(a.time);
+    const start = new Date(`${ymd}T${hm}:00`);
+    if (Number.isNaN(start.getTime())) return hm;
+    const end = new Date(start.getTime() + a.service.duration * 60_000);
+    if (Number.isNaN(end.getTime())) return hm;
+    return `${String(end.getHours()).padStart(2, '0')}:${String(end.getMinutes()).padStart(2, '0')}`;
   };
 
   const getStatusBadge = (status: string) => {
@@ -576,9 +600,7 @@ const CustomerDashboard: React.FC = () => {
                 <div className="space-y-4">
                   {upcomingAppointments.map((appointment) => {
                     const startTime = formatTime(appointment.time);
-                    const endDate = new Date(`${appointment.date}T${appointment.time}`);
-                    endDate.setMinutes(endDate.getMinutes() + appointment.service.duration);
-                    const endTime = formatTime(endDate.toTimeString());
+                    const endTime = formatEndTimeFromAppointment(appointment);
 
                     return (
                       <div
@@ -676,9 +698,7 @@ const CustomerDashboard: React.FC = () => {
                   <div className="space-y-4">
                     {(showAllCompleted ? completedAppointments : completedAppointments.slice(0, COMPLETED_APPOINTMENTS_LIMIT)).map((appointment) => {
                       const startTime = formatTime(appointment.time);
-                      const endDate = new Date(`${appointment.date}T${appointment.time}`);
-                      endDate.setMinutes(endDate.getMinutes() + appointment.service.duration);
-                      const endTime = formatTime(endDate.toTimeString());
+                      const endTime = formatEndTimeFromAppointment(appointment);
 
                       return (
                         <div
@@ -1176,18 +1196,26 @@ const CustomerDashboard: React.FC = () => {
                     <i className="fas fa-calendar text-gray-400 w-5"></i>
                     <p className="text-gray-700">
                       <span className="font-semibold">Datum:</span>{' '}
-                      {new Date(selectedAppointment.date).toLocaleDateString('sr-RS', {
-                        weekday: 'long',
-                        day: 'numeric',
-                        month: 'long',
-                        year: 'numeric',
-                      })}
+                      {(() => {
+                        const ymd = appointmentDateYmd(selectedAppointment.date);
+                        const d = new Date(`${ymd}T12:00:00`);
+                        if (Number.isNaN(d.getTime())) return formatDate(selectedAppointment.date);
+                        return d.toLocaleDateString('sr-RS', {
+                          weekday: 'long',
+                          day: 'numeric',
+                          month: 'long',
+                          year: 'numeric',
+                        });
+                      })()}
                     </p>
                   </div>
                   <div className="flex items-center gap-3">
                     <i className="fas fa-clock text-gray-400 w-5"></i>
                     <p className="text-gray-700">
-                      <span className="font-semibold">Vreme:</span> {selectedAppointment.time}
+                      <span className="font-semibold">Vreme:</span>{' '}
+                      {formatTime(selectedAppointment.time)}
+                      {' - '}
+                      {formatEndTimeFromAppointment(selectedAppointment)}
                     </p>
                   </div>
                   <div className="flex items-center gap-3">
